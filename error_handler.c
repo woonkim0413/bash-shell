@@ -1,34 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   error_handler.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/19 17:22:45 by rakim            ###   ########.fr       */
+/*   Created: 2025/04/19 16:00:12 by rakim             #+#    #+#             */
+/*   Updated: 2025/04/19 17:22:54 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "minishell.h"
 
-# include "libft/libft.h"
-# include <stdio.h>
-# include <stdlib.h>
-# include <readline/readline.h>
-# include <readline/history.h>
-# include "signal.h"
-
-typedef struct s_env
+void	throw_error(char *message)
 {
-	char			*key;
-	char			*value;
-	struct s_env	*next;
-}	t_env;
-
-void	init_signal(void);
-void	throw_error(char *message);
-void	init_child_signal(void);
-
-#endif
+	printf("%s\n", message);
+	exit(1);
+}
