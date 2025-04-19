@@ -1,34 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   signal_handler.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/19 17:22:45 by rakim            ###   ########.fr       */
+/*   Created: 2025/04/19 16:43:10 by rakim             #+#    #+#             */
+/*   Updated: 2025/04/19 17:23:02 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "minishell.h"
 
-# include "libft/libft.h"
-# include <stdio.h>
-# include <stdlib.h>
-# include <readline/readline.h>
-# include <readline/history.h>
-# include "signal.h"
-
-typedef struct s_env
+static	void	sigint_handler(int signal)
 {
-	char			*key;
-	char			*value;
-	struct s_env	*next;
-}	t_env;
+	(void)signal;
+	rl_on_new_line();
+	write(1, "\n", 1);
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
 
-void	init_signal(void);
-void	throw_error(char *message);
-void	init_child_signal(void);
+void	init_signal(void)
+{
+	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, sigint_handler);
+}
 
-#endif
+void	init_child_signal(void)
+{
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+}
