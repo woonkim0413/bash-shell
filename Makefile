@@ -4,7 +4,7 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror -g
 LDFLAGS = -lreadline
 
-SRCS = minishell.c error_handler.c signal_handler.c
+SRCS = minishell.c error_handler.c signal_handler.c init_helper.c untils.c
 OBJS = $(SRCS:.c=.o)
 HEADER = minishell.h
 
