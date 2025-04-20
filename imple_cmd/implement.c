@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/20 22:13:21 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/20 22:25:36 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void implement(t_cmd_info* t_cmd, t_env *env)
 	if (pid == 0)
 		child_work(t_cmd, env, pipeFd);
 	// 부모 process
-	// 쓰기 fd close, 부모는 일기만 함
+	// 쓰기 fd close, 부모는 읽기만 함
 	close(pipeFd[1]);
 }
 
