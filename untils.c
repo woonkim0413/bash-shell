@@ -1,34 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signal_handler.c                                   :+:      :+:    :+:   */
+/*   untils.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/19 16:43:10 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/20 13:27:48 by rakim            ###   ########.fr       */
+/*   Created: 2025/04/20 16:04:33 by rakim             #+#    #+#             */
+/*   Updated: 2025/04/20 16:05:29 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static	void	sigint_handler(int signal)
+int	is_all_space(const char *line)
 {
-	(void)signal;
-	rl_on_new_line();
-	write(1, "\n", 1);
-	rl_replace_line("", 0);
-	rl_redisplay();
+	int	idx;
+
+	idx = 0;
+	while (line[idx])
+	{
+		if (line[idx] != 32 && !(line[idx] >= 9 && line[idx] <= 13))
+			return (0);
+		idx++;
+	}
+	return (1);
 }
 
-void	init_signal(void)
+void	print_env_list(t_env *env_list)
 {
-	signal(SIGQUIT, SIG_IGN);
-	signal(SIGINT, sigint_handler);
-}
-
-void	init_child_signal(void)
-{
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
+	while (env_list)
+	{
+		printf("%s=%s\n", env_list->key, env_list->value);
+		env_list = env_list->next;
+	}
 }
