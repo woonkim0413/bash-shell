@@ -6,19 +6,29 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 22:13:19 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/20 22:14:57 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/21 13:26:59 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../minishell.h"
+#include "../minishell.h"
 
-char **make_path(char **paths, char *command)
+static void memory_free(char** argv)
+{
+	int	i;
+
+	i = 0;
+	while(argv[i])
+		free(argv[i++]);
+	free(argv);
+}
+
+static char **make_path(char **paths, char *command)
 {
 	int i;
 	char *temp;
 
 	i = -1;
-	while (paths[++i]) // 27번 반복
+	while (paths[++i])
 	{
 		// path + command를 합침 (join의 반환값은 malloc)
 		// split의 반환값은 free해줬음
@@ -36,7 +46,7 @@ char **make_path(char **paths, char *command)
 	return (paths);
 }
 
-char *check_and_return_path(char **paths)
+static char *check_and_return_path(char **paths)
 {
 	int	i;
 	char *cmd_path;
@@ -61,24 +71,29 @@ char *check_and_return_path(char **paths)
 	return (NULL);
 }
 
-char *find_path(char *command, char **main_envp)
+void find_path(t_cmd_info* t_cmd, t_env* env)
 {
+	t_env *temp;
 	char **paths;
 	char *cmd_path;
 	int i;
 
 	i = 0;
-	// envp의 몇 번째 index에 PATH 환경변수가 들어 있는지 확인
-	while (main_envp[i]) // 25반복
+	temp = env;
+	// env의 몇 번째 노드에 PATH 환경변수가 들어 있는지 확인
+	while (temp)
 	{
-		if (ft_strncmp(main_envp[i++], "PATH=", 5) == 0)
+		if (ft_strncmp(temp->key, "PATH=", 5) == 0)
 		{
 			// 하나의 string에 담겨져 있는 path들을 :을 기준으로 쪼갬
-			paths = ft_split(main_envp[i - 1], ':');
-			paths = make_path(paths, command);
-			cmd_path = check_and_return_path(paths);
-			return (cmd_path);
+			// 다 malloc으로 생성하기에 free해줘야 함
+			paths = ft_split(temp->value, ':');
+			paths = make_path(paths, t_cmd->cmd);
+			t_cmd->cmd_path = check_and_return_path(paths);
+			return ;
 		}
+		temp = temp->next;
 	}
-	return (NULL);
+	// 명령어가 존재하지 않으면 null담음
+	t_cmd->cmd_path = NULL;
 }

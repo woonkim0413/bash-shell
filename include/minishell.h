@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/21 16:16:11 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/21 19:25:53 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,4 +79,8 @@ void		free_string_arr(char **string_arr);
 void		handle_env(char **src, int idx, t_env *env);
 void		print_cmd(t_cmd_info *cmd_info);
 
+/* ./imple_cmd/cmd_path_find.c*/
+void	find_path(t_cmd_info* t_cmd, t_env* env);
+
 #endif
+
