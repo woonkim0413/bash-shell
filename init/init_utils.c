@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   untils.c                                           :+:      :+:    :+:   */
+/*   init_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:04:33 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/20 16:05:29 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/21 15:46:39 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,4 @@ int	is_all_space(const char *line)
 		idx++;
 	}
 	return (1);
-}
-
-void	print_env_list(t_env *env_list)
-{
-	while (env_list)
-	{
-		printf("%s=%s\n", env_list->key, env_list->value);
-		env_list = env_list->next;
-	}
 }

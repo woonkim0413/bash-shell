@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 15:47:27 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/20 16:05:21 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/21 15:46:12 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,31 +29,28 @@ static	void	make_key_value_in_list(t_env *node, char *origin)
 	}
 }
 
-static	t_env	*env_string_arr_to_env_list(char *string_arr[])
+static	void	env_string_arr_to_env_list(char *string_arr[], \
+	t_object *object)
 {
-	t_env	*head;
 	t_env	*tail;
 	t_env	*node;
 	int		idx;
 
 	idx = 0;
-	head = NULL;
 	while (string_arr[idx])
 	{
 		node = malloc(sizeof(t_env));
 		if (!node)
-			throw_error("malloc error", head);
+			throw_error("malloc error", object);
 		make_key_value_in_list(node, string_arr[idx]);
 		node->next = NULL;
-		if (!head)
-			head = node;
+		if (!object->env)
+			object->env = node;
 		else
 			tail->next = node;
 		tail = node;
 		idx++;
 	}
-	print_env_list(head);
-	return (head);
 }
 
 static	void	check_input(int length, char *input[])
@@ -63,9 +60,11 @@ static	void	check_input(int length, char *input[])
 	(void)input;
 }
 
-t_env	*init(int length, char *input[], char *env[])
+void	init(int length, char *input[], t_object *object, char **env)
 {
+	object->env = NULL;
+	object->cmd_info = NULL;
 	check_input(length, input);
 	init_signal();
-	return (env_string_arr_to_env_list(env));
+	env_string_arr_to_env_list(env, object);
 }
