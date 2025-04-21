@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_path_find.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 22:13:19 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/21 13:26:59 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/21 19:29:58 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "minishell.h"
 
 static void memory_free(char** argv)
 {

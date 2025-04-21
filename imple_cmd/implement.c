@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   implement.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/21 17:56:23 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/21 19:29:54 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "minishell.h"
 
 static int **create_pipFd(t_cmd_info *t_cmd);
 static void parent_work(t_cmd_info *t_cmd, int *pipeFd);
