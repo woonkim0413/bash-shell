@@ -1,39 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.c                                        :+:      :+:    :+:   */
+/*   env_handler.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/18 16:53:47 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/21 14:51:18 by rakim            ###   ########.fr       */
+/*   Created: 2025/04/21 15:21:30 by rakim             #+#    #+#             */
+/*   Updated: 2025/04/21 16:12:59 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	main(int length, char *input[], char *env[])
+static	char	*get_env(char *key, t_env *env)
 {
-	char		*line;
-	char		**line_splited_pipe;
-	t_object	object;
+	char	*key_name;
 
-	init(length, input, &object, env);
-	while (1)
+	key_name = key + 1;
+	while (env)
 	{
-		line = readline("minishell $ : ");
-		if (!line)
-			break ;
-		if (*line != '\0')
-			add_history(line);
-		if (*line != '\0' && !is_all_space(line))
-		{
-			line_splited_pipe = ft_split(line, '|');
-			parsing(line_splited_pipe, &object);
-
-		}
-		free(line);
+		if (ft_strlen(env->key) == ft_strlen(key_name) && \
+		ft_strncmp(env->key, key_name, ft_strlen(key_name)) == 0)
+			return (ft_strdup(env->value));
+		env = env->next;
 	}
-	(void)env;
-	return (0);
+	return (ft_strdup(""));
+}
+
+void	handle_env(char **src, int idx, t_env *env)
+{
+	char	*env_value;
+
+	env_value = get_env(src[idx], env);
+	free(src[idx]);
+	src[idx] = env_value;
 }

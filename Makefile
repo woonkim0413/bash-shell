@@ -1,12 +1,21 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror -g -Iinclude
 LDFLAGS = -lreadline
 
-SRCS = minishell.c error_handler.c signal_handler.c init_helper.c untils.c
+SRCS = minishell.c \
+error/error_handler.c \
+init/init_signal.c \
+init/init_helper.c \
+init/init_utils.c \
+parsing/parsing_token.c \
+parsing/utils/parsing_utils.c \
+parsing/utils/split_from_whitespace.c \
+parsing/env_handler.c
+
 OBJS = $(SRCS:.c=.o)
-HEADER = minishell.h
+HEADER = include/minishell.h
 
 LIBFT_DIR = libft
 LIBFT_NAME = libft.a
