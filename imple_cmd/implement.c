@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/27 21:02:08 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/27 21:03:45 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ static void child_work(t_object *object, t_imp_stus *imp_stus);
 void implement(t_object *object)
 {
 	t_imp_stus imp_stus;
-	pid_t pid;
 
 	// imp_stus 초기화
 	init_t_imp_stus(&imp_stus);
@@ -36,17 +35,19 @@ void implement(t_object *object)
 		// builtins check후 맞다면 builtin 실행
 		if (is_builtins(object->cmd_info))
 		{
-			execute_buitins(object);
+			execute_buitins(object, &imp_stus);
 			continue ;
 		}
-		// 실행파일 준비 및 실행
+		// 실행 준비 및 실행
 		prepare_and_fork(&imp_stus);
 		// 자식 process 실행
-		if (pid == 0)
+		if (imp_stus.chil_stus == 0)
 			child_work(object, &imp_stus); // 실행 완료되면 pipe buffer에 값 저장됨
 		// 부모 process 실행
 		else 
 		{
+			// 자식 process가 종료될 때까지 대기하는 함수
+			waitpid(imp_stus.pid, &(imp_stus.chil_stus), NULL);
 			object->cmd_info = object->cmd_info->next; // 다음 명령어로 이동
 			// TODO : pipeFd 배열에 pipe가 10개 이상 쌓이면 해제해주기
 		}
@@ -56,11 +57,11 @@ void implement(t_object *object)
 }
 
 // 파이프 생성 및 fork하는 함수
-prepare_fork(int **pipeFd, int *pid)
+prepare_fork(t_imp_stus *imp_stus)
 {
-	pipeFd[0] = (int *)malloc(sizeof(int) * 2);
-	pipe(pipeFd[0]);
-	*pid = fork();
+	// 현재 명령어 index에 위치한 pipFd배열로 pipe buffer생성
+	pipe(imp_stus->pipeFd[imp_stus->cur_c_n]);
+	imp_stus->pid = fork();
 }
 
 // 자식 process를 명령어에 맞게 execve하여 동작하게 함

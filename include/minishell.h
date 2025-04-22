@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 21:03:19 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/27 21:04:14 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ typedef struct s_cmd_info
 	struct s_cmd_info	*next;
 }	t_cmd_info;
 
+// parsing부에서 전달 받은 정보 저장
 typedef struct s_object
 {
 	t_cmd_info	*cmd_info;
@@ -74,14 +75,16 @@ typedef struct s_object
 void		throw_error(char *message, t_object *object);
 void		free_all(t_object *object);
 
+// imple에서 사용할 정보 저장
 typedef struct s_imp_stus
 {
 	int		input_fd;
 	int		output_fd;
-	int		stdoutFd;
+	int		stdoutFd; // stdout buffer에 연결된 fd보존
 	int		cur_c_n; // curent_command_number
 	int		total_c_n; //total_cmmand_number
-	int		**pipeFd;
+	int		chil_stus; // children_status (waitpid에 건네줌)
+	int		**pipeFd; // 명령어 갯수에 따른 pipe용 int배열 저장
 	pid_t	pid;
 } t_imp_stus;
 
