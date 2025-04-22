@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 21:00:39 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/27 21:03:19 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,21 +70,21 @@ typedef struct s_object
 	int			last_exit_status;
 }	t_object;
 
-<<<<<<< HEAD
 /* error */
 void		throw_error(char *message, t_object *object);
 void		free_all(t_object *object);
-=======
+
 typedef struct s_imp_stus
 {
 	int		input_fd;
 	int		output_fd;
-	int		current_cmd_num;
+	int		stdoutFd;
+	int		cur_c_n; // curent_command_number
+	int		total_c_n; //total_cmmand_number
 	int		**pipeFd;
 	pid_t	pid;
 } t_imp_stus;
 
->>>>>>> 774d665 (working on)
 /* init */
 void		init(int length, char *input[], t_object *object, char **env);
 void		init_signal(void);
@@ -114,6 +114,9 @@ char		**split_with_quote(char const *s);
 
 /* ./imple_cmd/cmd_path_find.c*/
 void		find_path(t_cmd_info *t_cmd, t_env *env);
+
+/* .imple_cmd/imp_utils1.c */
+void	init_t_imp_stus(t_imp_stus *imp_stus);
 
 #endif
 
