@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/27 20:59:37 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/27 21:00:26 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,32 +21,46 @@ static void child_work(t_object *object, int* pipeFd);
 // 명령어가 없는 경우엔 cmd에 NULL
 void implement(t_object *object)
 {
+	t_imp_stus imp_stus;
 	int **pipeFd;
-	int child_status;
 	pid_t pid;
 
-	pipeFd = create_pipeFd(object->cmd_info);
-	if (pipeFd[0] != NULL)
-		pipe(pipeFd);
-	pid = fork();
-	if (pid == 0)
-		child_work(object, pipeFd);
+	// 명령어 순서에 맞게 pipe 생성
+	imp_stus.pipeFd = create_pipFd(object->cmd_info);
 	// 부모 process부분, 명령어 반복 실행
-	whild () 
+	while (object->cmd_info != NULL) 
 	{
-
+		// input이 있다면 열어서 fd반환, 없다면 -1
+		object->cmd_info->input_fd = is_input(object);
+		// builtins check
+		if (is_builtins(object->cmd_info))
+			execute_buitins(object);
+		// 실행파일 준비 및 실행
+		prepare_and_fork(&imp_stus);
+		// 자식 process 실행
+		if (pid == 0)
+			child_work(object, &imp_stus); // 실행 완료되면 pipe buffer에 값 저장됨
+		object->cmd_info = object->cmd_info->next; // 다음 명령어로 이동
 	}
+}
+
+// 파이프 생성 및 fork하는 함수
+prepare_fork(int **pipeFd, int *pid)
+{
+	pipeFd[0] = (int *)malloc(sizeof(int) * 2);
+	pipe(pipeFd[0]);
+	*pid = fork();
 }
 
 // 자식 process를 명령어에 맞게 execve하여 동작하게 함
 // 자식 process의 input과 output fd를 dup2로 적절히 컨트롤 해야함
-static void child_work(t_object *object, int *pipeFd)
+static void child_work(t_object *object, t_imp_stus *imp_stus)
 {
 	char **envp;
 
 	envp = NULL;
 	// 읽기 fd close, 자식을 쓰기만 함
-	close(pipeFd[0]);
+	close(imp_stus->pipeFd[0][0]);
 	// inputFd가 있다면 input을 stdin으로 받도록 설정
 	if (object->cmd_info->input_fd != -1)
 	{
@@ -54,8 +68,8 @@ static void child_work(t_object *object, int *pipeFd)
 		close(object->cmd_info->input_fd);
 	}
 	// output은 pipeFd를 통해 부모 process에 전달
-	dup2(pipeFd[1], 1);
-	close(pipeFd[1]);
+	dup2(imp_stus->pipeFd[0][1], 1);
+	close(imp_stus->pipeFd[0][1]);
 	// find_path로 찾은 path는 t_cmd의 cmd_path에 저장
     find_path(object->cmd_info, object->env);
 	// 명령어가 없는 경우 free
@@ -69,7 +83,6 @@ static void child_work(t_object *object, int *pipeFd)
 
 // t_cmd를 받아서 명령어 숫자를 세고 그에 맞게 pipeFd 배열 생성
 // pipFd는 각 index마다 fd closs하고 index free하고 pipFd free해야 함
-// 만약 첫 번째 노드의 t_cmd->cmd가 NULL이면 실행명령 없음
 static int **create_pipFd(t_cmd_info *t_cmd)
 {
 	int i;
@@ -77,7 +90,7 @@ static int **create_pipFd(t_cmd_info *t_cmd)
 	char **pipFd;
 
 	num = 0;
-	while (t_cmd && t_cmd->cmd)
+	while (t_cmd)
 	{
 		num ++;
 		t_cmd = t_cmd->next;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 20:18:16 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/27 21:00:39 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,21 @@ typedef struct s_object
 	int			last_exit_status;
 }	t_object;
 
+<<<<<<< HEAD
 /* error */
 void		throw_error(char *message, t_object *object);
 void		free_all(t_object *object);
+=======
+typedef struct s_imp_stus
+{
+	int		input_fd;
+	int		output_fd;
+	int		current_cmd_num;
+	int		**pipeFd;
+	pid_t	pid;
+} t_imp_stus;
+
+>>>>>>> 774d665 (working on)
 /* init */
 void		init(int length, char *input[], t_object *object, char **env);
 void		init_signal(void);
