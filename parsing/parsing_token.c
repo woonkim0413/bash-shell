@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 20:10:44 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/21 17:37:54 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/22 18:25:36 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ t_object *object)
 	while (src[idx])
 	{
 		if (ft_strchr(src[idx], '$'))
-			handle_env(src, idx, object->env);
+			handle_dollar(src, idx, object->env);
 		if (!check_redirect(src, &redirect, idx, object) && !(node->cmd))
 			node->cmd = ft_strdup(src[idx]);
 		idx++;
@@ -86,8 +86,7 @@ void	parsing(char **line_splited_pipe, t_object *object)
 	next_node = head;
 	while (line_splited_pipe[idx])
 	{
-		line_splited_whitespace = \
-		ft_split_from_whitespace(line_splited_pipe[idx]);
+		line_splited_whitespace = ft_split(line_splited_pipe[idx], ' ');
 		seperate_element(line_splited_whitespace, next_node, object);
 		print_cmd(next_node);
 		next_node->next = ft_calloc(sizeof(t_cmd_info), 1);

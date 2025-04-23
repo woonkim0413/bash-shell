@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:53:47 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/21 14:51:18 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/23 17:42:15 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,15 @@ int	main(int length, char *input[], char *env[])
 			add_history(line);
 		if (*line != '\0' && !is_all_space(line))
 		{
+			whitespace_convert_to_space(&line);
+			check_double_pipe(&line, &object);
+			check_quotes(&line, &object);
 			line_splited_pipe = ft_split(line, '|');
+			free(line);
 			parsing(line_splited_pipe, &object);
-
 		}
-		free(line);
+		else
+			free(line);
 	}
-	(void)env;
 	return (0);
 }
