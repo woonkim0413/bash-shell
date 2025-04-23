@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/21 19:25:53 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/23 17:40:39 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,10 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <signal.h>
+
+# define DOLLAR_ASCII 36
+# define DOUBLE_QUOTE_ASCII 34
+# define SINGLE_QUOTE_ASCII 39
 
 typedef enum e_token_type
 {
@@ -73,14 +77,18 @@ int			is_all_space(const char *line);
 void		throw_error(char *message, t_object *object);
 /* parsing */
 void		parsing(char **line_splited_pipe, t_object *object);
+char		*get_env(char *key, t_env *env);
+char		*extract_key_in(char *src);
+void		check_quotes(char **line, t_object *object);
 /* parsing/utils */
-char		**ft_split_from_whitespace(char *line);
+void		check_double_pipe(char **line, t_object *s_object);
 void		free_string_arr(char **string_arr);
-void		handle_env(char **src, int idx, t_env *env);
+void		handle_dollar(char **src, int idx, t_env *env);
 void		print_cmd(t_cmd_info *cmd_info);
+void		whitespace_convert_to_space(char **line);
 
 /* ./imple_cmd/cmd_path_find.c*/
-void	find_path(t_cmd_info* t_cmd, t_env* env);
+void		find_path(t_cmd_info *t_cmd, t_env *env);
 
 #endif
 

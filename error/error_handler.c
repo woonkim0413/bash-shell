@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 16:00:12 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/21 14:42:14 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/23 17:29:31 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,6 @@ void	throw_error(char *message, t_object *object)
 {
 	if (object)
 		free_all(object);
-	printf("%s\n", message);
+	printf("Error : %s\n", message);
 	exit(1);
 }

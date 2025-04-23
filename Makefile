@@ -11,8 +11,8 @@ init/init_helper.c \
 init/init_utils.c \
 parsing/parsing_token.c \
 parsing/utils/parsing_utils.c \
-parsing/utils/split_from_whitespace.c \
-parsing/env_handler.c
+parsing/env_handler.c \
+parsing/quote_handler.c
 
 OBJS = $(SRCS:.c=.o)
 HEADER = include/minishell.h
