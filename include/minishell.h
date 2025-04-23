@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 21:04:14 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/27 21:05:27 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,6 @@ typedef struct s_cmd_info
 	char				*cmd;
 	char				**evecve_argv;
 	char				*cmd_path;
-	int					input_fd;
-	int					output_fd;
 	t_redirect			*redirect;
 	int					heredoc_fd;
 	struct s_cmd_info	*prev;
@@ -76,16 +74,18 @@ void		throw_error(char *message, t_object *object);
 void		free_all(t_object *object);
 
 // imple에서 사용할 정보 저장
+// 구현부에서 사용할 정보 저장 (나중에 error handler로 free할 수 있게 코드 변경)
 typedef struct s_imp_stus
 {
+	int		i;
 	int		input_fd;
 	int		output_fd;
 	int		stdoutFd; // stdout buffer에 연결된 fd보존
 	int		cur_c_n; // curent_command_number
-	int		total_c_n; //total_cmmand_number
-	int		chil_stus; // children_status (waitpid에 건네줌)
+	int		total_c_n; // total_cmmand_number
+	pid_t	*chil_pid;
+	int		*chil_e_stus; // child exit status (waitpid에 건네줌)
 	int		**pipeFd; // 명령어 갯수에 따른 pipe용 int배열 저장
-	pid_t	pid;
 } t_imp_stus;
 
 /* init */
@@ -115,11 +115,19 @@ void		print_all_cmd(t_cmd_info *cmd_info);
 void		whitespace_convert_to_space(char **line);
 char		**split_with_quote(char const *s);
 
+/*---------------------- 구현부 함수 ----------------------*/
+
 /* ./imple_cmd/cmd_path_find.c*/
 void		find_path(t_cmd_info *t_cmd, t_env *env);
 
 /* .imple_cmd/imp_utils1.c */
 void	init_t_imp_stus(t_imp_stus *imp_stus);
+void	input_check(t_object *object);
+
+/* .imple_cmd/imp_utils2.c */
+char	**env_to_char(t_env *env);
+void 	wait_childs_process(t_object *object, t_imp_stus *imp_stus);
+void 	execute_builtins(t_object *object, t_imp_stus *imp_stus);
 
 #endif
 

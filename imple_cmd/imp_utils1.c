@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:02:03 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/22 20:07:04 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/23 21:12:00 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,14 @@
 
 void	init_t_imp_stus(t_imp_stus *imp_stus)
 {
+	imp_stus->i = 0;
 	imp_stus->cur_c_n = 0;
 	imp_stus->total_c_n = 0;
 	imp_stus->input_fd = -1;
 	imp_stus->output_fd = -1;
 	imp_stus->pipeFd = NULL;
+	imp_stus->chil_pid = NULL;
+	imp_stus->chil_e_stus = NULL;
 	// 1이 카리키는 buffer(출력 buffer)을 가리키는 새로운 fd생성 
 	imp_stus->stdoutFd = dup(STDOUT_FILENO);
 }
@@ -33,7 +36,7 @@ void	init_t_imp_stus(t_imp_stus *imp_stus)
 
 // 만약 마지막에 builtins가 호출되어 stdout을 호출해야 한다면?
 // - int saved_stdout = dup(STDOUT_FILENO);로 미리 imp_stus->stdoutFd에 stdout Fd저장
-void	is_input(t_object *object)
+void	input_check(t_object *object)
 {
 	
 }

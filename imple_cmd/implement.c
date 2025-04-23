@@ -6,13 +6,13 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/27 21:03:45 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/27 21:04:49 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void create_pipFd(t_cmd_info *t_cmd, t_imp_stus *imp_stus);
+static void setting_pipline(t_cmd_info *t_cmd, t_imp_stus *imp_stus);
 static void child_work(t_object *object, t_imp_stus *imp_stus);
 
 // 명령어와 환경 병수 링크드 리스크로 받음
@@ -23,56 +23,51 @@ void implement(t_object *object)
 {
 	t_imp_stus imp_stus;
 
-	// imp_stus 초기화
-	init_t_imp_stus(&imp_stus);
-	// 명령어 갯수에 맞게 2차원 pipe 배열 생성, 저장은 imp_stus 구조체에
-	create_pipFd(object->cmd_info, &imp_stus);
+	// 명령어 갯수에 맞게 2차원 pipe 배열, child pid배열, child 종료 상태 배열 저장
+	setting_pipline(object->cmd_info, &imp_stus);
 	// 부모 process부분, 명령어 반복 실행 (cur_c_n은 index로 쓰이기에 0부터 시작)
 	while (imp_stus.cur_c_n < imp_stus.total_c_n)
 	{
 		// input이 있다면 열어서 fd반환, 없다면 -1
-		imp_stus.input_fd = is_input(object);
-		// builtins check후 맞다면 builtin 실행
-		if (is_builtins(object->cmd_info))
-		{
-			execute_buitins(object, &imp_stus);
-			continue ;
-		}
-		// 실행 준비 및 실행
+		imp_stus.input_fd = input_check(object);
 		prepare_and_fork(&imp_stus);
-		// 자식 process 실행
-		if (imp_stus.chil_stus == 0)
-			child_work(object, &imp_stus); // 실행 완료되면 pipe buffer에 값 저장됨
+		// 자식 process 실행 (실행파일 + builtin모두 처리)
+		if (imp_stus.chil_pid[imp_stus.cur_c_n] == 0)
+			child_work(object, &imp_stus);
 		// 부모 process 실행
-		else 
+		else
 		{
-			// 자식 process가 종료될 때까지 대기하는 함수
-			waitpid(imp_stus.pid, &(imp_stus.chil_stus), NULL);
-			object->cmd_info = object->cmd_info->next; // 다음 명령어로 이동
-			// TODO : pipeFd 배열에 pipe가 10개 이상 쌓이면 해제해주기
+			imp_stus.cur_c_n += 1; // 현재 명령어 index ++;
+			object->cmd_info = object->cmd_info->next;
 		}
 	}
+	// 자식 프로세스 종료 대기 (비정상 종료시 상태 저장)
+	wait_childs_process(&imp_stus);
 	// TODO : pipe배열 모두 close및 free해주기
-	// STDIN : 모니터로 변경하기 (만약 소실됐다면?)
+	safety_exit(object, &imp_stus);
 }
 
-// 파이프 생성 및 fork하는 함수
+// 파이프 생성 및 fork()하는 함수
 prepare_fork(t_imp_stus *imp_stus)
 {
 	// 현재 명령어 index에 위치한 pipFd배열로 pipe buffer생성
 	pipe(imp_stus->pipeFd[imp_stus->cur_c_n]);
-	imp_stus->pid = fork();
+	imp_stus->chil_pid[imp_stus->cur_c_n] = fork();
 }
 
 // 자식 process를 명령어에 맞게 execve하여 동작하게 함
 // 자식 process의 input과 output fd를 dup2로 적절히 컨트롤 해야함
+// 명령어가 builtin이라고 해도 fork()로 처리하는 것이 파이프라인 전체 구조를
+// 설계할 때 더 편하다
 static void child_work(t_object *object, t_imp_stus *imp_stus)
 {
 	char **envp;
 
 	envp = NULL;
 	// 읽기 fd close, 자식을 쓰기만 함
-	close(imp_stus->pipeFd[0][0]);
+	close(imp_stus->pipeFd[imp_stus->cur_c_n][0]);
+	// builtins check후 맞다면 builtin 실행
+	execute_buitins(object, &imp_stus);
 	// inputFd가 있다면 input을 stdin으로 받도록 설정
 	if (object->cmd_info->input_fd != -1)
 	{
@@ -83,38 +78,41 @@ static void child_work(t_object *object, t_imp_stus *imp_stus)
 	dup2(imp_stus->pipeFd[0][1], 1);
 	close(imp_stus->pipeFd[0][1]);
 	// find_path로 찾은 path는 t_cmd의 cmd_path에 저장
-    find_path(object->cmd_info, object->env);
+	find_path(object->cmd_info, object->env);
 	// 명령어가 없는 경우 free
 	if (object->cmd_info->cmd_path == NULL)
 		throw_error("NOT FOUND CMD", object);
-	// TODO : 링크드리스크 -> 2차원 배열 환경변수 전환
-	 if (execve(object->cmd_info->cmd_path, \
-	 	object->cmd_info->evecve_argv, envp) == -1)
-    	throw_error("FAILD EXECVE", object);
+	// env 링크드리스크 -> 2차원 배열 전환
+	envp = env_to_char(object->env);
+	if (execve(object->cmd_info->cmd_path,
+			   object->cmd_info->evecve_argv, envp) == -1)
+		throw_error("FAILD EXECVE", object);
 }
 
 // t_cmd를 받아서 명령어 숫자를 세고 그에 맞게 pipeFd 배열 생성
 // pipFd는 각 index마다 fd closs하고 index free하고 pipFd free해야 함
-static void create_pipFd(t_cmd_info *t_cmd, t_imp_stus *imp_stus)
+static void setting_pipline(t_cmd_info *t_cmd, t_imp_stus *imp_stus)
 {
 	int i;
 	int num;
-	char **pipFd;
 
+	// imp_stus 초기화
+	init_t_imp_stus(imp_stus);
 	num = 0;
 	while (t_cmd)
 	{
-		num ++;
+		num++;
 		t_cmd = t_cmd->next;
 	}
 	// 총 명령어 갯수 저장
 	imp_stus->total_c_n = num;
-	// 맨 뒤에 NULL 넣기 위한 자리, char **아니어도 괜찮음
-	pipFd = (int **)malloc((sizeof(int *) * num) + 1);
+	// child pid 배열 저장
+	imp_stus->chil_pid = (pid_t *)malloc(sizeof(pid_t) * num);
+	// child process가 어떻게 종료됐는지 상태 저장하는 변수 배열 저장
+	imp_stus->pipeFd = (int *)malloc(sizeof(int) * num);
+	// pipFd[2]배열 저장
+	imp_stus->pipeFd = (int **)malloc((sizeof(int *) * num);
 	i = 0;
 	while (i < num)
-		pipFd[i ++] = (int *)malloc(sizeof(int) * 2);
-	pipFd[i] = NULL;
-	imp_stus->pipeFd = pipFd;
+		imp_stus->pipeFd[i ++] = (int *)malloc(sizeof(int) * 2);
 }
-
