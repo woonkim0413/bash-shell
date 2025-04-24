@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/27 21:06:08 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/27 21:07:08 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,17 @@ void implement(t_object *object)
 		{
 			// 부모 proecess는 쓰기 close
 			close(imp_stus.pipeFd[imp_stus.cur_c_n][1]);
+			// 이전 명령어 read를 닫기 (fork한 후 생성한 자식이 유지하고 있음)
+			if (imp_stus.cur_c_n > 0)
+				close(imp_stus.pipeFd[imp_stus.cur_c_n - 1][0]);
 			// 명령어 index 및 node 이동
 			imp_stus.cur_c_n += 1;
 			object->cmd_info = object->cmd_info->next;
 		}
 	}
 	// 자식 프로세스 종료 대기 (비정상 종료시 상태 저장)
-	wait_childs_process(&imp_stus, &imp_stus);
-	// TODO : pipe배열 모두 close및 free해주기
+	wait_childs_process(object, &imp_stus);
+	// pipe배열 모두 close및 free해주기
 	safety_exit(object, &imp_stus);
 }
 
@@ -69,24 +72,14 @@ static void child_work(t_object *object, t_imp_stus *imp_stus)
 	close(imp_stus->pipeFd[imp_stus->cur_c_n][0]);
 	// env 링크드리스크 -> 2차원 배열 전환
 	envp = env_to_char(object->env);
+	// 최신 부모 프로세스를 복사했기에 pipfd[i][0]이 다 열려있음 닫아야함 
+	fd_clean(imp_stus); // TODO :
 	// input, output을 재설정 해야 한다면 재설정
-	input_output_connect(object, &imp_stus);
+	input_output_setting(object, &imp_stus);
 	// builtins check후 맞다면 builtin 실행
 	execute_buitins(object, &imp_stus);
-	// inputFd가 있다면 input을 stdin으로 받도록 설정
-	if (object->cmd_info->input_fd != -1)
-	{
-		dup2(object->cmd_info->input_fd, 0);
-		close(object->cmd_info->input_fd);
-	}
-	// output은 pipeFd를 통해 부모 process에 전달
-	dup2(imp_stus->pipeFd[0][1], 1);
-	close(imp_stus->pipeFd[0][1]);
 	// find_path로 찾은 path는 t_cmd의 cmd_path에 저장
 	find_path(object->cmd_info, object->env);
-	// 명령어가 없는 경우 free
-	if (object->cmd_info->cmd_path == NULL)
-		throw_error("NOT FOUND CMD", object);
 	if (execve(object->cmd_info->cmd_path,
 			   object->cmd_info->evecve_argv, envp) == -1)
 		throw_error("FAILD EXECVE", object);
@@ -112,9 +105,9 @@ static void setting_pipline(t_cmd_info *t_cmd, t_imp_stus *imp_stus)
 	// child pid 배열 저장
 	imp_stus->chil_pid = (pid_t *)malloc(sizeof(pid_t) * num);
 	// child process가 어떻게 종료됐는지 상태 저장하는 변수 배열 저장
-	imp_stus->pipeFd = (int *)malloc(sizeof(int) * num);
+	imp_stus->chil_e_stus = (int *)malloc(sizeof(int) * num);
 	// pipFd[2]배열 저장
-	imp_stus->pipeFd = (int **)malloc((sizeof(int *) * num);
+	imp_stus->pipeFd = (int **)malloc(sizeof(int *) * num);
 	i = 0;
 	while (i < num)
 		imp_stus->pipeFd[i ++] = (int *)malloc(sizeof(int) * 2);
