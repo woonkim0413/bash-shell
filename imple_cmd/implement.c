@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/27 21:04:49 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/27 21:06:08 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,27 +28,29 @@ void implement(t_object *object)
 	// 부모 process부분, 명령어 반복 실행 (cur_c_n은 index로 쓰이기에 0부터 시작)
 	while (imp_stus.cur_c_n < imp_stus.total_c_n)
 	{
-		// input이 있다면 열어서 fd반환, 없다면 -1
-		imp_stus.input_fd = input_check(object);
-		prepare_and_fork(&imp_stus);
+		// 파이프 생성 및 fork()하는 함수
+		pipe_and_fork(&imp_stus);
 		// 자식 process 실행 (실행파일 + builtin모두 처리)
 		if (imp_stus.chil_pid[imp_stus.cur_c_n] == 0)
 			child_work(object, &imp_stus);
 		// 부모 process 실행
 		else
 		{
-			imp_stus.cur_c_n += 1; // 현재 명령어 index ++;
+			// 부모 proecess는 쓰기 close
+			close(imp_stus.pipeFd[imp_stus.cur_c_n][1]);
+			// 명령어 index 및 node 이동
+			imp_stus.cur_c_n += 1;
 			object->cmd_info = object->cmd_info->next;
 		}
 	}
 	// 자식 프로세스 종료 대기 (비정상 종료시 상태 저장)
-	wait_childs_process(&imp_stus);
+	wait_childs_process(&imp_stus, &imp_stus);
 	// TODO : pipe배열 모두 close및 free해주기
 	safety_exit(object, &imp_stus);
 }
 
 // 파이프 생성 및 fork()하는 함수
-prepare_fork(t_imp_stus *imp_stus)
+pipe_and_fork(t_imp_stus *imp_stus)
 {
 	// 현재 명령어 index에 위치한 pipFd배열로 pipe buffer생성
 	pipe(imp_stus->pipeFd[imp_stus->cur_c_n]);
@@ -63,9 +65,12 @@ static void child_work(t_object *object, t_imp_stus *imp_stus)
 {
 	char **envp;
 
-	envp = NULL;
 	// 읽기 fd close, 자식을 쓰기만 함
 	close(imp_stus->pipeFd[imp_stus->cur_c_n][0]);
+	// env 링크드리스크 -> 2차원 배열 전환
+	envp = env_to_char(object->env);
+	// input, output을 재설정 해야 한다면 재설정
+	input_output_connect(object, &imp_stus);
 	// builtins check후 맞다면 builtin 실행
 	execute_buitins(object, &imp_stus);
 	// inputFd가 있다면 input을 stdin으로 받도록 설정
@@ -82,8 +87,6 @@ static void child_work(t_object *object, t_imp_stus *imp_stus)
 	// 명령어가 없는 경우 free
 	if (object->cmd_info->cmd_path == NULL)
 		throw_error("NOT FOUND CMD", object);
-	// env 링크드리스크 -> 2차원 배열 전환
-	envp = env_to_char(object->env);
 	if (execve(object->cmd_info->cmd_path,
 			   object->cmd_info->evecve_argv, envp) == -1)
 		throw_error("FAILD EXECVE", object);

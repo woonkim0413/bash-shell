@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:02:03 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/23 21:12:00 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/24 09:50:21 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,15 +28,39 @@ void	init_t_imp_stus(t_imp_stus *imp_stus)
 
 // "<" redirection 처리
 // - ("cat", "-l", "<", "file2"); 이런건 구현부에서 처리 가능
-// - ("cat", "-l" "<<", EOF); 이런건 parsing부에서 처리를 해줘야 함
+// - ("<", "file1", "cat"); 이런 것도 처리 가능
+// - ("cat", "-l" "<<EOF"); 이런건 parsing부에서 처리를 해줘야 함
 
 // 이전 명령어 유무 check 
 // - 이전 명령어가 있다면 파이프라인으로 input이 들어옴
 // - output처리를 따로 안 해줘도 다음 명령어 실행시에 input으로써 처리됨
-
-// 만약 마지막에 builtins가 호출되어 stdout을 호출해야 한다면?
-// - int saved_stdout = dup(STDOUT_FILENO);로 미리 imp_stus->stdoutFd에 stdout Fd저장
-void	input_check(t_object *object)
+void	input_output_connect(t_object *object, t_imp_stus *imp_stus)
 {
-	
+	t_redirect *redirect;
+
+	redirect = object->cmd_info->redirect;
+	// output을 pipe쓰기 fd로 rediection (자식 출력은 무조건 파이프 버퍼)
+	dup2(imp_stus->pipeFd[imp_stus->cur_c_n][1], STDOUT_FILENO);
+	close(imp_stus->pipeFd[imp_stus->cur_c_n][1]);
+	// 이전 명령어가 있으면 이전 명령어 output을 현재 명령어 input으로 연결
+	if (object->cmd_info->prev != NULL)
+	{
+		dup2(imp_stus->pipeFd[imp_stus->cur_c_n - 1][0], STDIN_FILENO);
+		close(imp_stus->pipeFd[imp_stus->cur_c_n - 1][0]);
+	}
+	// < redirection이 있는 경우
+	if (redirect->type == TOKEN_REDIR_IN)
+	{
+		imp_stus->input_fd = open(redirect->file_path, O_RDONLY);
+		dup2(imp_stus->input_fd, STDIN_FILENO);
+		close(imp_stus->input_fd);
+	}
+	// > redirection이 있는 경우
+	if (redirect->type == TOKEN_REDIR_OUT)
+	{
+		imp_stus->output_fd = open(redirect->file_path, \
+							O_RDONLY, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		dup2(imp_stus->output_fd, STDIN_FILENO);
+		close(imp_stus->output_fd);
+	}
 }

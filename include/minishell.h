@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 21:05:27 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/27 21:05:48 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ void		find_path(t_cmd_info *t_cmd, t_env *env);
 
 /* .imple_cmd/imp_utils1.c */
 void	init_t_imp_stus(t_imp_stus *imp_stus);
-void	input_check(t_object *object);
+void	input_output_connect(t_object *object, t_imp_stus *imp_stus);
 
 /* .imple_cmd/imp_utils2.c */
 char	**env_to_char(t_env *env);
