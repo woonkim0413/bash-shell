@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:18:01 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/23 17:40:51 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/26 17:34:37 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,13 +64,15 @@ void	whitespace_convert_to_space(char **line)
 	}
 }
 
-void	check_double_pipe(char **line, t_object *object)
+void	check_pipe(char **line, t_object *object)
 {
 	int	idx;
 	int	before_pipe;
 
 	idx = 0;
 	before_pipe = 0;
+	if ((*line)[idx] == '|')
+		throw_error("argv error", object);
 	while ((*line)[idx])
 	{
 		if (before_pipe && (*line)[idx] == '|')

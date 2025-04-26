@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 20:10:44 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/22 18:25:36 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/26 19:26:25 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static	int	set_redirect(t_token_type token_type, char *file_path, \
 	else
 	{
 		temp = *redirect;
-		while (temp)
+		while (temp->next)
 			temp = temp->next;
 		temp->next = new_node;
 	}
@@ -38,14 +38,14 @@ static	int	set_redirect(t_token_type token_type, char *file_path, \
 static	int	check_redirect(char **src, t_redirect **redirect, int idx, \
 	t_object *object)
 {
-	if (ft_strchr(src[idx], '>'))
-		return (set_redirect(TOKEN_REDIR_OUT, src[idx + 1], redirect, object));
-	if (ft_strchr(src[idx], '<'))
-		return (set_redirect(TOKEN_REDIR_IN, src[idx + 1], redirect, object));
 	if (ft_strnstr(src[idx], "<<", ft_strlen(src[idx])))
 		return (set_redirect(TOKEN_HEREDOC, src[idx + 1], redirect, object));
 	if (ft_strnstr(src[idx], ">>", ft_strlen(src[idx])))
 		return (set_redirect(TOKEN_APPEND, src[idx + 1], redirect, object));
+	if (ft_strchr(src[idx], '>'))
+		return (set_redirect(TOKEN_REDIR_OUT, src[idx + 1], redirect, object));
+	if (ft_strchr(src[idx], '<'))
+		return (set_redirect(TOKEN_REDIR_IN, src[idx + 1], redirect, object));
 	return (0);
 }
 
@@ -61,8 +61,6 @@ t_object *object)
 	redirect = NULL;
 	while (src[idx])
 	{
-		if (ft_strchr(src[idx], '$'))
-			handle_dollar(src, idx, object->env);
 		if (!check_redirect(src, &redirect, idx, object) && !(node->cmd))
 			node->cmd = ft_strdup(src[idx]);
 		idx++;
@@ -76,7 +74,7 @@ void	parsing(char **line_splited_pipe, t_object *object)
 	int			idx;
 	t_cmd_info	*head;
 	t_cmd_info	*next_node;
-	char		**line_splited_whitespace;
+	char		**line_splited_space;
 
 	idx = 0;
 	head = ft_calloc(sizeof(t_cmd_info), 1);
@@ -86,8 +84,8 @@ void	parsing(char **line_splited_pipe, t_object *object)
 	next_node = head;
 	while (line_splited_pipe[idx])
 	{
-		line_splited_whitespace = ft_split(line_splited_pipe[idx], ' ');
-		seperate_element(line_splited_whitespace, next_node, object);
+		line_splited_space = ft_split(line_splited_pipe[idx], ' ');
+		seperate_element(line_splited_space, next_node, object);
 		print_cmd(next_node);
 		next_node->next = ft_calloc(sizeof(t_cmd_info), 1);
 		next_node->next->prev = next_node;
