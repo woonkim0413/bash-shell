@@ -6,13 +6,13 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 19:32:26 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/26 20:00:20 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/26 20:14:35 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static	void	set_toggle(char c, int *in_single, int *in_double)
+void	set_toggle(char c, int *in_single, int *in_double)
 {
 	if (c == SINGLE_QUOTE_ASCII && !(*in_double))
 		*in_single = !(*in_single);

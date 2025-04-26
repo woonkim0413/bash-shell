@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:21:30 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/26 19:52:12 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/26 20:22:43 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static	char	*make_new_line(char **line, char *dollar_location, \
 void	set_next_idx(int *dollar_idx, int value_len, int key_len)
 {
 	if (value_len > key_len)
-		*dollar_idx += value_len;
+		*dollar_idx += (value_len - 1);
 	else
 		*dollar_idx -= key_len - (value_len + 1);
 }

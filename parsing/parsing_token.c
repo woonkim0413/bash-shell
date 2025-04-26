@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 20:10:44 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/26 19:26:25 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/26 20:10:01 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	parsing(char **line_splited_pipe, t_object *object)
 	next_node = head;
 	while (line_splited_pipe[idx])
 	{
-		line_splited_space = ft_split(line_splited_pipe[idx], ' ');
+		line_splited_space = split_with_quote(line_splited_pipe[idx]);
 		seperate_element(line_splited_space, next_node, object);
 		print_cmd(next_node);
 		next_node->next = ft_calloc(sizeof(t_cmd_info), 1);

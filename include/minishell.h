@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/26 19:58:15 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/26 20:14:47 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ void		parsing(char **line_splited_pipe, t_object *object);
 void		check_quotes(char **line, t_object *object);
 /* parsing/seperate_helper */
 char		**extend_env_and_split(char **line, t_object *object);
+void		set_toggle(char c, int *in_single, int *in_double);
 /* parsing/env/env_helper */
 char		*get_env(char *key, t_env *env);
 /* parsing/env/extend_env */
@@ -93,6 +94,7 @@ void		check_pipe(char **line, t_object *object);
 void		free_string_arr(char **string_arr);
 void		print_cmd(t_cmd_info *cmd_info);
 void		whitespace_convert_to_space(char **line);
+char		**split_with_quote(char const *s);
 
 /* ./imple_cmd/cmd_path_find.c*/
 void		find_path(t_cmd_info *t_cmd, t_env *env);
