@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:18:01 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/23 17:40:51 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/27 14:44:45 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	free_string_arr(char **string_arr)
 	free(string_arr);
 }
 
-void	print_cmd(t_cmd_info *cmd_info)
+static	void	print_cmd(t_cmd_info *cmd_info)
 {
 	int			idx;
 	t_redirect	*redirect;
@@ -51,6 +51,15 @@ void	print_cmd(t_cmd_info *cmd_info)
 	printf("=========================\n");
 }
 
+void	print_all_cmd(t_cmd_info *cmd_info)
+{
+	while (cmd_info)
+	{
+		print_cmd(cmd_info);
+		cmd_info = cmd_info->next;
+	}
+}
+
 void	whitespace_convert_to_space(char **line)
 {
 	int	idx;
@@ -64,13 +73,15 @@ void	whitespace_convert_to_space(char **line)
 	}
 }
 
-void	check_double_pipe(char **line, t_object *object)
+void	check_pipe(char **line, t_object *object)
 {
 	int	idx;
 	int	before_pipe;
 
 	idx = 0;
 	before_pipe = 0;
+	if ((*line)[idx] == '|')
+		throw_error("argv error", object);
 	while ((*line)[idx])
 	{
 		if (before_pipe && (*line)[idx] == '|')

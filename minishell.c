@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:53:47 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/23 17:42:15 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/27 18:00:16 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	main(int length, char *input[], char *env[])
 {
 	char		*line;
-	char		**line_splited_pipe;
+	char		**line_splited_by_pipe;
 	t_object	object;
 
 	init(length, input, &object, env);
@@ -23,20 +23,22 @@ int	main(int length, char *input[], char *env[])
 	{
 		line = readline("minishell $ : ");
 		if (!line)
+		{
+			free(line);
+			free_all(&object);
 			break ;
+		}
 		if (*line != '\0')
 			add_history(line);
 		if (*line != '\0' && !is_all_space(line))
 		{
 			whitespace_convert_to_space(&line);
-			check_double_pipe(&line, &object);
+			check_pipe(&line, &object);
 			check_quotes(&line, &object);
-			line_splited_pipe = ft_split(line, '|');
-			free(line);
-			parsing(line_splited_pipe, &object);
+			line_splited_by_pipe = extend_env_and_split(&line, &object);
+			parsing(line_splited_by_pipe, &object);
+			print_all_cmd(object.cmd_info);
 		}
-		else
-			free(line);
 	}
 	return (0);
 }
