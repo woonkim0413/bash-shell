@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/26 20:14:47 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/27 14:46:02 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ typedef struct	s_env
 typedef struct s_redirect
 {
 	t_token_type		type;
+	// file_path free 해야함
 	char				*file_path;
 	struct s_redirect	*next;
 }	t_redirect;
@@ -71,6 +72,7 @@ typedef struct s_object
 
 /* error */
 void		throw_error(char *message, t_object *object);
+void		free_all(t_object *object);
 /* init */
 void		init(int length, char *input[], t_object *object, char **env);
 void		init_signal(void);
@@ -79,8 +81,10 @@ void		init_child_signal(void);
 int			is_all_space(const char *line);
 /* parsing */
 void		parsing(char **line_splited_pipe, t_object *object);
-/* parsing/quote_handler */
+/* parsing/quote/quote_handler */
 void		check_quotes(char **line, t_object *object);
+/* parsing/quote/clean_up_quote */
+void		clean_up_quote(t_cmd_info *cmd_info);
 /* parsing/seperate_helper */
 char		**extend_env_and_split(char **line, t_object *object);
 void		set_toggle(char c, int *in_single, int *in_double);
@@ -92,7 +96,7 @@ void		extend_env(char **line, int *dolloar_idx, t_object *object);
 /* parsing/utils */
 void		check_pipe(char **line, t_object *object);
 void		free_string_arr(char **string_arr);
-void		print_cmd(t_cmd_info *cmd_info);
+void		print_all_cmd(t_cmd_info *cmd_info);
 void		whitespace_convert_to_space(char **line);
 char		**split_with_quote(char const *s);
 

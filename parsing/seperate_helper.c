@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 19:32:26 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/26 20:14:35 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/27 13:45:56 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ static	void	process_seperate_line(char ***result, char **line, \
 		end++;
 	}
 	(*result)[result_idx] = ft_substr(*line, start, ft_strlen(*line) - start);
+	free(*line);
 }
 
 static	int	count_pipe_not_in_quote(char *line)
@@ -81,7 +82,10 @@ char	**extend_env_and_split(char **line, t_object *object)
 
 	result = ft_calloc(sizeof(char *), count_pipe_not_in_quote(*line) + 1);
 	if (!result)
+	{
+		free(*line);
 		throw_error("malloc_error", object);
+	}
 	process_seperate_line(&result, line, object, 0);
 	return (result);
 }

@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:21:30 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/26 20:22:43 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/27 13:49:15 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ char	*extract_key_in(char *src)
 	return (result);
 }
 
-static	char	*make_new_line(char **line, char *dollar_location, \
+static	char	*make_new_line(char **old_line, char *dollar_location, \
 	char **env_value, int key_len)
 {
 	char	*prefix;
@@ -38,8 +38,8 @@ static	char	*make_new_line(char **line, char *dollar_location, \
 	char	*result;
 	int		prefix_len;
 
-	prefix_len = dollar_location - *line;
-	prefix = ft_substr(*line, 0, prefix_len);
+	prefix_len = dollar_location - *old_line;
+	prefix = ft_substr(*old_line, 0, prefix_len);
 	suffix = ft_strdup(dollar_location + key_len);
 	temp = ft_strjoin(prefix, *env_value);
 	result = ft_strjoin(temp, suffix);
@@ -47,16 +47,8 @@ static	char	*make_new_line(char **line, char *dollar_location, \
 	free(suffix);
 	free(temp);
 	free(*env_value);
-	free(*line);
+	free(*old_line);
 	return (result);
-}
-
-void	set_next_idx(int *dollar_idx, int value_len, int key_len)
-{
-	if (value_len > key_len)
-		*dollar_idx += (value_len - 1);
-	else
-		*dollar_idx -= key_len - (value_len + 1);
 }
 
 static	void	handle_question_mark(int last_exit_status, \
@@ -64,6 +56,14 @@ static	void	handle_question_mark(int last_exit_status, \
 {
 	*env_value = ft_itoa(last_exit_status);
 	*key_len = 2;
+}
+
+static	void	set_env_value_and_key(char **env_value, char **env_key, \
+t_object *object, int *key_len)
+{
+	*env_value = get_env(*env_key, object->env);
+	*key_len = ft_strlen(*env_key);
+	free(*env_key);
 }
 
 void	extend_env(char **line, int *dollar_idx, t_object *object)
@@ -84,11 +84,12 @@ void	extend_env(char **line, int *dollar_idx, t_object *object)
 	{
 		env_key = extract_key_in(dollar_location);
 		if (env_key == NULL)
+		{
+			free(*line);
 			throw_error("syntax error", object);
-		env_value = get_env(env_key, object->env);
-		key_len = ft_strlen(env_key);
-		free(env_key);
+		}
+		set_env_value_and_key(&env_value, &env_key, object, &key_len);
 	}
-	set_next_idx(dollar_idx, ft_strlen(env_value), key_len);
+	*dollar_idx += (ft_strlen(env_value) - 1);
 	*line = make_new_line(&old_line, dollar_location, &env_value, key_len);
 }

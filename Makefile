@@ -10,12 +10,13 @@ init/init_signal.c \
 init/init_helper.c \
 init/init_utils.c \
 parsing/parsing_token.c \
-parsing/quote_handler.c \
 parsing/seperate_helper.c \
 parsing/utils/parsing_utils.c \
 parsing/utils/split_with_quote.c \
 parsing/env/extend_env.c \
 parsing/env/env_helper.c \
+parsing/quote/quote_handler.c \
+parsing/quote/clean_up_quote.c \
 
 OBJS = $(SRCS:.c=.o)
 HEADER = include/minishell.h

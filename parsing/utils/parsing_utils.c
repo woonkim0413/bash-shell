@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:18:01 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/26 17:34:37 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/27 14:44:45 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	free_string_arr(char **string_arr)
 	free(string_arr);
 }
 
-void	print_cmd(t_cmd_info *cmd_info)
+static	void	print_cmd(t_cmd_info *cmd_info)
 {
 	int			idx;
 	t_redirect	*redirect;
@@ -49,6 +49,15 @@ void	print_cmd(t_cmd_info *cmd_info)
 		redirect = redirect->next;
 	}
 	printf("=========================\n");
+}
+
+void	print_all_cmd(t_cmd_info *cmd_info)
+{
+	while (cmd_info)
+	{
+		print_cmd(cmd_info);
+		cmd_info = cmd_info->next;
+	}
 }
 
 void	whitespace_convert_to_space(char **line)
