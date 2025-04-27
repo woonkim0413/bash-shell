@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/27 21:07:26 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/27 21:09:31 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ void implement(t_object *object)
 
 	// 명령어 갯수에 맞게 2차원 pipe 배열, child pid배열, child 종료 상태 배열 저장
 	setting_pipline(object->cmd_info, &imp_stus);
+	// builtin 명령어 하나일 때 실행
+	one_builtin_case(object->cmd_info, &imp_stus);
 	// 부모 process부분, 명령어 반복 실행 (cur_c_n은 index로 쓰이기에 0부터 시작)
 	while (imp_stus.cur_c_n < imp_stus.total_c_n)
 	{
@@ -72,14 +74,14 @@ static void child_work(t_object *object, t_imp_stus *imp_stus)
 	close(imp_stus->pipeFd[imp_stus->cur_c_n][0]);
 	// env 링크드리스크 -> 2차원 배열 전환
 	envp = env_to_char(object->env);
+	// execve에 건네줄 수 있는 argv를 만든다
+	create_execve_args(object->cmd_info);
 	// input, output을 재설정 해야 한다면 재설정
 	input_output_setting(object, &imp_stus);
 	// builtins check후 맞다면 builtin 실행
 	execute_buitins(object, &imp_stus);
 	// find_path로 찾은 path는 t_cmd의 cmd_path에 저장
 	find_path(object->cmd_info, object->env);
-	// execve args를 만든다
-	create_execve_args(object->cmd_info);
 	if (execve(object->cmd_info->cmd_path,
 			   object->cmd_info->evecve_argv, envp) == -1)
 		throw_error("FAILD EXECVE", object, imp_stus);

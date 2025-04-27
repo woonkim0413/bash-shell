@@ -6,11 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 16:00:12 by rakim             #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2025/04/27 21:06:59 by woonkim          ###   ########.fr       */
-=======
-/*   Updated: 2025/04/26 19:47:17 by woonkim          ###   ########.fr       */
->>>>>>> ea9c012 (complete except builtins)
+/*   Updated: 2025/04/27 21:09:45 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

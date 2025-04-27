@@ -6,16 +6,17 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 20:07:27 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/27 14:19:39 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/27 20:19:17 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 // builtins : echo, pwd, unset, export, env, exit
-// 만약 pwd, echo, env인 경우 출력 값이 있으니 파이프라인을 통해서
+// pwd, echo, env인 경우 출력 값이 있으니 파이프라인을 통해서
 // 다음 명령어의 input으로 사용될 수 있음
-// 그러니 pipe를 이용하여 data를 buffer넣어주는 것이 좋을 것 같다
+// * builtin 단독 사용 : 부모 프로세스에서 실행됨
+//   파이프라인에서 builtin 사용 : fork()후 자식 프로세스에서 실행됨
 void execute_builtins(t_object *object, t_imp_stus *imp_stus)
 {
 	char *cmd;
@@ -23,16 +24,18 @@ void execute_builtins(t_object *object, t_imp_stus *imp_stus)
 	cmd = object->cmd_info->cmd;
 	if (ft_strcmp("echo", cmd, ft_strlen(cmd)))
 		execute_echo(object, imp_stus);
-	if (ft_strcmp("pwd", cmd, ft_strlen(cmd)))
-		execute_echo(object, imp_stus);
-	if (ft_strcmp("unset", cmd, ft_strlen(cmd)))
-		execute_echo(object, imp_stus);
-	if (ft_strcmp("export", cmd, ft_strlen(cmd)))
-		execute_echo(object, imp_stus);
-	if (ft_strcmp("env", cmd, ft_strlen(cmd)))
-		execute_echo(object, imp_stus);
-	if (ft_strcmp("exit", cmd, ft_strlen(cmd)))
-		execute_echo(object, imp_stus);
+	else if (ft_strcmp("pwd", cmd, ft_strlen(cmd)))
+		execute_pwd(object, imp_stus);
+	else if (ft_strcmp("unset", cmd, ft_strlen(cmd)))
+		execute_unset(object, imp_stus);
+	else if (ft_strcmp("export", cmd, ft_strlen(cmd)))
+		execute_export(object, imp_stus);
+	else if (ft_strcmp("env", cmd, ft_strlen(cmd)))
+		execute_env(object, imp_stus);
+	else if (ft_strcmp("exit", cmd, ft_strlen(cmd)))
+		execute_exit(object, imp_stus);
+	// 해당 프로세스를 정상 종료하는 함수
+	safety_exit(object, imp_stus);
 }
 
 // 모든 자식 프로세스 종료 대기 (비정상 종료시 상태 저장)
@@ -116,7 +119,7 @@ void create_execve_args(t_cmd_info *cmd_info)
 			cmd_info->evecve_argv[k] = NULL;
 			free(argv);
 			return ;
-		}
+		}ls
 	}
 }
 
