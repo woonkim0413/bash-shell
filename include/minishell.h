@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 21:06:51 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/27 21:08:00 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,6 @@ typedef struct s_imp_stus
 	int		cur_c_n; // curent_command_number
 	int		total_c_n; // total_cmmand_number
 	pid_t	*chil_pid;
-	int		*chil_e_stus; // child exit status (waitpid에 건네줌)
 	int		**pipeFd; // 명령어 갯수에 따른 pipe용 int배열 저장
 } t_imp_stus;
 
@@ -95,6 +94,10 @@ void		init_child_signal(void);
 /* init utils*/
 void		safety_exit(t_object *object, t_imp_stus *imp_stus);
 int			is_all_space(const char *line);
+
+/* error */
+void		throw_error(char *message, t_object *object, t_imp_stus *imp_stus);
+
 /* parsing */
 void		parsing(char **line_splited_pipe, t_object *object);
 /* parsing/quote/quote_handler */

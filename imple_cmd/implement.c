@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/27 21:07:08 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/27 21:07:26 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void implement(t_object *object)
 			// 부모 proecess는 쓰기 close
 			close(imp_stus.pipeFd[imp_stus.cur_c_n][1]);
 			// 이전 명령어 read를 닫기 (fork한 후 생성한 자식이 유지하고 있음)
-			if (imp_stus.cur_c_n > 0)
+			if (object->cmd_info->prev != NULL)
 				close(imp_stus.pipeFd[imp_stus.cur_c_n - 1][0]);
 			// 명령어 index 및 node 이동
 			imp_stus.cur_c_n += 1;
@@ -72,17 +72,17 @@ static void child_work(t_object *object, t_imp_stus *imp_stus)
 	close(imp_stus->pipeFd[imp_stus->cur_c_n][0]);
 	// env 링크드리스크 -> 2차원 배열 전환
 	envp = env_to_char(object->env);
-	// 최신 부모 프로세스를 복사했기에 pipfd[i][0]이 다 열려있음 닫아야함 
-	fd_clean(imp_stus); // TODO :
 	// input, output을 재설정 해야 한다면 재설정
 	input_output_setting(object, &imp_stus);
 	// builtins check후 맞다면 builtin 실행
 	execute_buitins(object, &imp_stus);
 	// find_path로 찾은 path는 t_cmd의 cmd_path에 저장
 	find_path(object->cmd_info, object->env);
+	// execve args를 만든다
+	create_execve_args(object->cmd_info);
 	if (execve(object->cmd_info->cmd_path,
 			   object->cmd_info->evecve_argv, envp) == -1)
-		throw_error("FAILD EXECVE", object);
+		throw_error("FAILD EXECVE", object, imp_stus);
 }
 
 // t_cmd를 받아서 명령어 숫자를 세고 그에 맞게 pipeFd 배열 생성
@@ -104,8 +104,6 @@ static void setting_pipline(t_cmd_info *t_cmd, t_imp_stus *imp_stus)
 	imp_stus->total_c_n = num;
 	// child pid 배열 저장
 	imp_stus->chil_pid = (pid_t *)malloc(sizeof(pid_t) * num);
-	// child process가 어떻게 종료됐는지 상태 저장하는 변수 배열 저장
-	imp_stus->chil_e_stus = (int *)malloc(sizeof(int) * num);
 	// pipFd[2]배열 저장
 	imp_stus->pipeFd = (int **)malloc(sizeof(int *) * num);
 	i = 0;

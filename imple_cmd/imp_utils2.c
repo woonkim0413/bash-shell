@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 20:07:27 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/24 14:59:13 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/27 14:19:39 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,26 +36,26 @@ void execute_builtins(t_object *object, t_imp_stus *imp_stus)
 }
 
 // 모든 자식 프로세스 종료 대기 (비정상 종료시 상태 저장)
+// 비정상 종료하는 경우 여기서 error메세지를 terminal로 출력
 void wait_childs_process(t_object *object, t_imp_stus *imp_stus)
 {
 	pid_t ret;
-	int status;
 	int sig;
 
 	sig = 0;
 	while (imp_stus->i < imp_stus->total_c_n)
 	{
 		// 특정 자식 process가 종료될 때까지 대기, 비정상 종료시 flag저장
-		pid_t ret = waitpid(-1, &status, NULL);
+		pid_t ret = waitpid(-1, &(object->last_exit_status), NULL);
 		if (ret < 0)
 			perror("waitpid error : ");
 		// 정상 종료가 아니면
-		if (!WIFEXITED(status)) 
+		if (!WIFEXITED(object->last_exit_status)) 
 		{	// 시그널 종료라면
-			if (WIFSIGNALED(status))
+			if (WIFSIGNALED(object->last_exit_status))
 			{
-				sig = WTERMSIG(status);
-				throw_error(strsignal(sig), object);
+				sig = WTERMSIG(object->last_exit_status);
+				throw_error(strsignal(sig), object, imp_stus);
 			}
     	}
 		imp_stus->i += 1;
@@ -89,3 +89,52 @@ char	**env_to_char(t_env *env)
 	}
 	return (str);
 }
+
+// 락윤이가 건네주는 execve는 한 파이프 안에 있는 모든 단어들임
+// 이것을 execve에 건네줄 수 있는 구조로 바꿔야 함 
+void create_execve_args(t_cmd_info *cmd_info)
+{
+	char **argv;
+	int		i;
+	int		j;
+	int		k;
+	
+	i = -1;
+	argv = cmd_info->evecve_argv;
+	while (argv[++i])
+	{
+		if (!ft_strncmp(cmd_info->cmd, argv[i], ft_strlen(cmd_info->cmd)))
+		{
+			j = i;
+			while (argv_end_check(argv[j]))
+				j ++;
+			cmd_info->evecve_argv = (char **)malloc(sizeof(char *) * \
+									(j - i + 1));
+			k = 0;
+			while (i < j)
+				cmd_info->evecve_argv[k++] = argv[i++];
+			cmd_info->evecve_argv[k] = NULL;
+			free(argv);
+			return ;
+		}
+	}
+}
+
+static int argv_end_check(char *argv)
+{
+	int flag;
+
+	flag = 1;
+	if (argv == NULL)
+		return (0);
+	if (!ft_strncmp(argv, "<", ft_strlen(argv)))
+		flag = 0;
+	if (!ft_strncmp(argv, "<<", ft_strlen(argv)))
+		flag = 0;	
+	if (!ft_strncmp(argv, ">", ft_strlen(argv)))
+		flag = 0;
+	if (!ft_strncmp(argv, ">>", ft_strlen(argv)))
+		flag = 0;
+	return (flag);
+}
+

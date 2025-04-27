@@ -6,7 +6,11 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 16:00:12 by rakim             #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/04/27 21:06:59 by woonkim          ###   ########.fr       */
+=======
+/*   Updated: 2025/04/26 19:47:17 by woonkim          ###   ########.fr       */
+>>>>>>> ea9c012 (complete except builtins)
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +47,12 @@ void	free_all(t_object *object)
 	}
 }
 
-void	throw_error(char *message, t_object *object)
+void	throw_error(char *message, t_object *object, t_imp_stus *imp_stus)
 {
 	if (object)
 		free_all(object);
+	if (imp_stus)
+		free_stus(imp_stus);
 	printf("Error : %s\n", message);
 	exit(1);
 }
@@ -56,7 +62,6 @@ static void free_stus(t_imp_stus *imp_stus)
 	int i;
 
 	free(imp_stus->chil_pid);
-	free(imp_stus->chil_e_stus);
 	close(imp_stus->stdoutFd);
 	i = 0;
 	// 일기 파이프 fd close해준 뒤 free
