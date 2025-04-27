@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error_handler.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 16:00:12 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 14:56:06 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/27 21:09:45 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,40 @@ void	free_all(t_object *object)
 	}
 }
 
-void	throw_error(char *message, t_object *object)
+void	throw_error(char *message, t_object *object, t_imp_stus *imp_stus)
 {
 	if (object)
 		free_all(object);
+	if (imp_stus)
+		free_stus(imp_stus);
 	printf("Error : %s\n", message);
 	exit(1);
+}
+
+static void free_stus(t_imp_stus *imp_stus)
+{
+	int i;
+
+	free(imp_stus->chil_pid);
+	close(imp_stus->stdoutFd);
+	i = 0;
+	// 일기 파이프 fd close해준 뒤 free
+	while (i < imp_stus->total_c_n)
+	{
+		close(imp_stus->pipeFd[i][0]);
+		free(imp_stus->pipeFd[i]);
+		i ++;
+	}
+	free(imp_stus->pipeFd);
+}
+
+// error_handler 사용하기 :
+// message에 NULL, imp_stus 객체 추가
+void	safety_exit(t_object *object, t_imp_stus *imp_stus)
+{
+	if (object)
+		free_all(object);
+	if (imp_stus)
+		free_stus(imp_stus);
+	exit(0);
 }
