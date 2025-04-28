@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_token.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 20:10:44 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 17:49:56 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/28 12:46:25 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ static	void	set_redirect(t_token_type token_type, char *file_path, \
 
 	new_node = ft_calloc(sizeof(t_redirect), 1);
 	if (!new_node)
-		throw_error("malloc error", object);
+		throw_error("malloc error", object, NULL);
 	if (!file_path)
-		throw_error("there is no file_path", object);
+		throw_error("there is no file_path", object, NULL);
 	new_node->type = token_type;
 	new_node->file_path = ft_strdup(file_path);
 	if (!(*redirect))
@@ -153,7 +153,7 @@ void	parsing(char **line_splited_pipe, t_object *object)
 	idx = 0;
 	head = ft_calloc(sizeof(t_cmd_info), 1);
 	if (!head)
-		throw_error("malloc error", object);
+		throw_error("malloc error", object, NULL);
 	object->cmd_info = head;
 	current_node = head;
 	while (line_splited_pipe[idx])

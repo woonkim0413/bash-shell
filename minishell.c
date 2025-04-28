@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:53:47 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 18:00:16 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/28 13:21:04 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ int	main(int length, char *input[], char *env[])
 			line_splited_by_pipe = extend_env_and_split(&line, &object);
 			parsing(line_splited_by_pipe, &object);
 			print_all_cmd(object.cmd_info);
+			implement(&object);
 		}
 	}
 	return (0);

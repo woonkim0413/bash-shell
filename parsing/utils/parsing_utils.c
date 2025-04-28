@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:18:01 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 14:44:45 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/28 12:48:26 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,6 @@ static	void	print_cmd(t_cmd_info *cmd_info)
 		idx++;
 	}
 	printf("cmd_path : %s\n", cmd_info->cmd_path);
-	printf("input_fd : %d\n", cmd_info->input_fd);
-	printf("output_fd : %d\n", cmd_info->output_fd);
 	while (redirect)
 	{
 		printf("redirect_type : %u\n", redirect->type);
@@ -81,13 +79,13 @@ void	check_pipe(char **line, t_object *object)
 	idx = 0;
 	before_pipe = 0;
 	if ((*line)[idx] == '|')
-		throw_error("argv error", object);
+		throw_error("argv error", object, NULL);
 	while ((*line)[idx])
 	{
 		if (before_pipe && (*line)[idx] == '|')
 		{
 			free((*line));
-			throw_error("argv error", object);
+			throw_error("argv error", object, NULL);
 		}
 		if ((*line)[idx] == '|')
 			before_pipe = 1;

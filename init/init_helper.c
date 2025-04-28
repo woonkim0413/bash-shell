@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_helper.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 15:47:27 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/26 14:34:23 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/28 12:45:33 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static	void	env_string_arr_to_env_list(char *string_arr[], \
 	{
 		node = malloc(sizeof(t_env));
 		if (!node)
-			throw_error("malloc error", object);
+			throw_error("malloc error", object, NULL);
 		make_key_value_in_list(node, string_arr[idx]);
 		node->next = NULL;
 		if (!object->env)
@@ -56,7 +56,7 @@ static	void	env_string_arr_to_env_list(char *string_arr[], \
 static	void	check_input(int length, char *input[])
 {
 	if (length != 1)
-		throw_error("argument input error", NULL);
+		throw_error("argument input error", NULL, NULL);
 	(void)input;
 }
 

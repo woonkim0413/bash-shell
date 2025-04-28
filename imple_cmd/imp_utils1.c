@@ -6,13 +6,14 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:02:03 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/27 15:37:52 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/28 18:48:06 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 static void redirect_process2(t_imp_stus *imp_stus, t_redirect *redirect);
+static void redirect_process(t_object *object, t_imp_stus *imp_stus);
 
 void	init_t_imp_stus(t_imp_stus *imp_stus)
 {
@@ -24,7 +25,7 @@ void	init_t_imp_stus(t_imp_stus *imp_stus)
 	imp_stus->pipeFd = NULL;
 	imp_stus->chil_pid = NULL;
 	// 1이 카리키는 buffer(출력 buffer)을 가리키는 새로운 fd생성 
-	imp_stus->stdoutFd = dup(STDOUT_FILENO);
+	imp_stus->stdoutFd = 0;
 }
 
 // "<" redirection 처리
@@ -69,11 +70,11 @@ static void redirect_process(t_object *object, t_imp_stus *imp_stus)
 			close(imp_stus->output_fd);
 		}
 		// << redirection이 있는 경우
-		if (redirect->type == TOKEN_HEREDOC)
-		{
-			dup2(redirect->heredoc_fd, STDIN_FILENO);
-			close(redirect->heredoc_fd);
-		}
+		// if (redirect->type == TOKEN_HEREDOC)
+		// {
+		// 	dup2(redirect->heredoc_fd, STDIN_FILENO);
+		// 	close(redirect->heredoc_fd);
+		// }
 		// 다음 redirect node로 이동
 		redirect = redirect->next;
 	}

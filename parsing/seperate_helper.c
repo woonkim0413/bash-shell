@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   seperate_helper.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 19:32:26 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 13:45:56 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/28 12:46:49 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ char	**extend_env_and_split(char **line, t_object *object)
 	if (!result)
 	{
 		free(*line);
-		throw_error("malloc_error", object);
+		throw_error("malloc_error", object, NULL);
 	}
 	process_seperate_line(&result, line, object, 0);
 	return (result);
