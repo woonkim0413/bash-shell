@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error_handler.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 16:00:12 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/09 11:11:23 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/10 15:33:40 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ void	free_all(t_object *object)
 		cmd_info_temp = cmd_info_temp->next;
 	}
 }
-
 
 void free_stus(t_imp_stus *imp_stus)
 {
@@ -85,5 +84,3 @@ void	throw_error(char *message, t_object *object, t_imp_stus *imp_stus)
 	printf("Error : %s\n", message);
 	exit(1);
 }
-
-
