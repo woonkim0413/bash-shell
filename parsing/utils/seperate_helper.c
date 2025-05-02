@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 19:32:26 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/10 15:31:10 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/10 15:35:14 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ static	void	process_seperate_line(char ***result, char **line, \
 		{
 			(*result)[result_idx] = ft_substr(*line, start, end - start);
 			result_idx++;
-			start = end + 1;
-			end++;
+			start = ++end;
+			continue ;
 		}
 		if ((*line)[end] == '$' && !in_single)
 			extend_env(line, &end, object);

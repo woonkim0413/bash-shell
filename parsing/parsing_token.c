@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 20:10:44 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/10 15:23:16 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/10 15:34:54 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,111 +36,96 @@ static	void	set_redirect(t_token_type token_type, char *file_path, \
 	}
 }
 
-static	int	check_redirect(char **src, t_redirect **redirect, \
-	t_object *object, int out_idx, char **cmd)
+static	void	handle_redirect(t_check_redir_arg *arg, \
+	int *idx, t_token_type token)
+{
+	int	next_idx;
+
+	next_idx = *idx;
+	if (token == TOKEN_REDIR_IN || token == TOKEN_REDIR_OUT)
+		next_idx++;
+	if (token == TOKEN_APPEND || token == TOKEN_HEREDOC)
+		next_idx += 2;
+	if (arg->src[arg->current_src][next_idx])
+	{
+		set_redirect(token, arg->src[arg->current_src] + (next_idx), \
+		&(arg->redirect), arg->object);
+		*idx += next_idx - 1;
+	}
+	else
+	{
+		set_redirect(token, arg->src[arg->current_src + 1], \
+			&(arg->redirect), arg->object);
+		*idx += next_idx - 1;
+		return (1);
+	}
+}
+
+static	void	check_redirect(t_check_redir_arg *arg)
 {
 	int		in_single;
 	int		in_double;
 	int		idx;
 
-	idx = 0;
+	idx = -1;
 	in_single = 0;
 	in_double = 0;
-	while (src[out_idx][idx])
+	while (arg->src[arg->current_src][++idx])
 	{
-		set_toggle(src[out_idx][idx], &in_single, &in_double);
+		set_toggle(arg->src[arg->current_src][idx], &in_single, &in_double);
 		if (!in_single && !in_double)
 		{
-			if (src[out_idx][idx] == '<' && src[out_idx][idx + 1] == '<')
-			{
-				if (!(*cmd) && idx > 0)
-					*cmd = ft_substr(src[out_idx], 0, idx);
-				if (src[out_idx][idx + 2])
-				{
-					set_redirect(TOKEN_HEREDOC, src[out_idx] + (idx + 2), redirect, object);
-					return (1);
-				}
-				else
-				{
-					set_redirect(TOKEN_HEREDOC, src[out_idx + 1], redirect, object);
-					return (2);
-				}
-			}
-			else if (src[out_idx][idx] == '>' && src[out_idx][idx + 1] == '>')
-			{
-				if (!(*cmd) && idx > 0)
-					*cmd = ft_substr(src[out_idx], 0, idx);
-				if (src[out_idx][idx + 2])
-				{
-					set_redirect(TOKEN_APPEND, src[out_idx] + (idx + 2), redirect, object);
-					return (1);
-				}
-				else
-				{
-					set_redirect(TOKEN_APPEND, src[out_idx + 1], redirect, object);
-					return (2);
-				}
-			}
-			else if (src[out_idx][idx] == '>')
-			{
-				if (!(*cmd) && idx > 0)
-					*cmd = ft_substr(src[out_idx], 0, idx);
-				if (src[out_idx][idx + 1])
-				{
-					set_redirect(TOKEN_REDIR_OUT, src[out_idx] + (idx + 1), redirect, object);
-					return (1);
-				}
-				else
-				{
-					set_redirect(TOKEN_REDIR_OUT, src[out_idx + 1], redirect, object);
-					return (2);
-				}
-
-			}
-			else if (src[out_idx][idx] == '<')
-			{
-				if (!(*cmd) && idx > 0)
-					*cmd = ft_substr(src[out_idx], 0, idx);
-				if (src[out_idx][idx + 1])
-				{
-					set_redirect(TOKEN_REDIR_IN, src[out_idx] + (idx + 1), redirect, object);
-					return (1);
-				}
-				else
-				{
-					set_redirect(TOKEN_REDIR_IN, src[out_idx + 1], redirect, object);
-					return (2);
-				}
-			}
+			if (arg->src[arg->current_src][idx] == '<' && \
+				arg->src[arg->current_src][idx + 1] == '<')
+				handle_redirect(arg, &idx, TOKEN_HEREDOC);
+			else if (arg->src[arg->current_src][idx] == '>' \
+				&& arg->src[arg->current_src][idx + 1] == '>')
+				handle_redirect(arg, &idx, TOKEN_APPEND);
+			else if (arg->src[arg->current_src][idx] == '>')
+				handle_redirect(arg, &idx, TOKEN_REDIR_OUT);
+			else if (arg->src[arg->current_src][idx] == '<')
+				handle_redirect(arg, &idx, TOKEN_REDIR_IN);
 		}
-		idx++;
 	}
-	return (0);
+}
+
+static	int	is_file_path(char *src, t_check_redir_arg *arg)
+{
+	if (!(arg->redirect))
+		return (0);
+	else if (!(arg->redirect->file_path))
+		return (0);
+	else
+	{
+		if (ft_strncmp(src, arg->redirect->file_path, \
+		ft_strlen(arg->redirect->file_path)))
+			return (1);
+	}
 }
 
 static	void	seperate_element(char **src, t_cmd_info *node, \
 t_object *object)
 {
-	int					out_idx;
-	t_redirect			*redirect;
-	int					is_file_path;
+	t_check_redir_arg	arg;
 
-	redirect = NULL;
-	out_idx = 0;
-	is_file_path = 0;
-	while (src[out_idx])
+	arg.current_src = 0;
+	arg.redirect = NULL;
+	while (src[arg.current_src])
 	{
-		is_file_path = check_redirect(src, &redirect, object, out_idx, &(node->cmd));
-		if (is_file_path == 2)
-			out_idx++;
-		if (!is_file_path && !(node->cmd))
-			node->cmd = ft_strdup(src[out_idx]);
-		if (!src[out_idx])
+		arg.src = src;
+		arg.object = object;
+		arg.cmd = (node->cmd);
+		check_redirect(&arg);
+		if (!(node->cmd) && \
+		(*(src[arg.current_src]) != '>' && *(src[arg.current_src]) != '<') && \
+		!is_file_path(src[arg.current_src], &arg))
+			node->cmd = ft_strdup(src[arg.current_src]);
+		if (!src[arg.current_src])
 			break ;
-		out_idx++;
+		(arg.current_src)++;
 	}
 	node->evecve_argv = src;
-	node->redirect = redirect;
+	node->redirect = arg.redirect;
 }
 
 void	parsing(char **line_splited_pipe, t_object *object)
