@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 20:07:27 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/28 18:09:51 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/04 15:26:48 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int execute_builtins(t_object *object, t_imp_stus *imp_stus)
 	if (!ft_strncmp("echo", cmd, ft_strlen(cmd)))
 		flag = execute_echo(object, imp_stus);
 	else if (!ft_strncmp("pwd", cmd, ft_strlen(cmd)))
-		flag = execute_pwd(object, imp_stus);
+		flag = execute_pwd(object, imp_stus, -1);
 	else if (!ft_strncmp("unset", cmd, ft_strlen(cmd)))
 		flag = execute_unset(object, imp_stus);
 	else if (!ft_strncmp("export", cmd, ft_strlen(cmd)))
@@ -38,6 +38,15 @@ int execute_builtins(t_object *object, t_imp_stus *imp_stus)
 		flag = execute_env(object, imp_stus);
 	else if (!ft_strncmp("exit", cmd, ft_strlen(cmd)))
 		flag = execute_exit(object, imp_stus);
+	else if (!ft_strncmp("cd", cmd, ft_strlen(cmd)))
+		flag = execute_cd(object, imp_stus);
+	if (flag)
+	{
+		// 현재 파이프 buffer 쓰기 fd를 STDOUT으로 재연결 한 뒤에 명령어 실행 후 close한다
+		// close(STDOUT_FILENO);
+		// 이전 파이프 buffer 읽기 fd를 STDIN으로 재연결 한 뒤에 명령어 실행 후 close한다 
+		// close(STDIN_FILENO);
+	}
 	return (flag);
 }
 
@@ -46,27 +55,35 @@ int execute_builtins(t_object *object, t_imp_stus *imp_stus)
 void wait_childs_process(t_object *object, t_imp_stus *imp_stus)
 {
 	pid_t ret;
-	int sig;
+	int code;
 
-	sig = 0;
 	while (imp_stus->i < imp_stus->total_c_n)
 	{
+		// printf("%d번 명령어 : before waitpid()\n", imp_stus->i);
 		// 특정 자식 process가 종료될 때까지 대기, 비정상 종료시 flag저장
 		ret = waitpid(-1, &(object->last_exit_status), 0);
+		// printf("%d번 명령어 : after waitpid()\n", imp_stus->i);
 		if (ret < 0)
 			perror("waitpid error : ");
-		// 정상 종료가 아니면
-		if (!WIFEXITED(object->last_exit_status))
-		{ // 시그널 종W료라면
-			if (WIFSIGNALED(object->last_exit_status))
+		//시그널 종료 확인
+		if (WIFSIGNALED(object->last_exit_status))
+			printf("%d 시그널 종료\n", WTERMSIG(object->last_exit_status));
+		// 자식 프로세스가 정상 종료됐는지 확인 (exit(), return 종료)
+		if (WIFEXITED(object->last_exit_status))
+		{
+			// 종료 상태 값 확인
+			code = WEXITSTATUS(object->last_exit_status);
+			if (code)
 			{
-				sig = WTERMSIG(object->last_exit_status);
-				throw_error(strsignal(sig), object, imp_stus);
+				printf("(%d)(임시출력) EXIT number : %d\n", (int)ret, WEXITSTATUS(object->last_exit_status));
+				error_process(object, imp_stus, ret);	
 			}
 		}
 		imp_stus->i += 1;
 		printf("(부모에서 출력) pid %d : child process exit \n", (int)ret);
 	}
+	// 에러 출력 후에 읽기 파이프도 닫아줌
+	close(imp_stus->stderr_pipe[0]);
 }
 
 char **env_to_char(t_env *env)
@@ -119,9 +136,9 @@ void create_execve_args(t_cmd_info *cmd_info)
 													(j - i + 1));
 			k = 0;
 			while (i < j)
-				cmd_info->evecve_argv[k++] = argv[i++];
+				cmd_info->evecve_argv[k++] = ft_strdup(argv[i++]);
 			cmd_info->evecve_argv[k] = NULL;
-			free(argv);
+			free_doublechar(argv);
 			return;
 		}
 	}

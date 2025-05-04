@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 22:13:19 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/28 16:29:57 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/01 00:59:20 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,11 @@ void find_path(t_cmd_info* t_cmd, t_env* env)
 	char **paths;
 
 	temp = env;
+	if (access(t_cmd->cmd, F_OK) == 0)
+	{
+		t_cmd->cmd_path = t_cmd->cmd;
+		return ;
+	}
 	// env의 몇 번째 노드에 PATH 환경변수가 들어 있는지 확인
 	while (temp)
 	{

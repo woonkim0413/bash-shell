@@ -28,6 +28,7 @@ imple_cmd/builtins/exit.c \
 imple_cmd/builtins/export.c \
 imple_cmd/builtins/pwd.c \
 imple_cmd/builtins/unset.c \
+imple_cmd/builtins/cd.c \
 
 OBJS = $(SRCS:.c=.o)
 HEADER = include/minishell.h

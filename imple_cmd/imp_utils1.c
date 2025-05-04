@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:02:03 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/28 18:48:06 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/04 15:24:49 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,6 @@ void	init_t_imp_stus(t_imp_stus *imp_stus)
 	imp_stus->stdoutFd = 0;
 }
 
-// "<" redirection 처리
-// - ("cat", "-l", "<", "file2"); 이런건 구현부에서 처리 가능
-// - ("<", "file1", "cat"); 이런 것도 처리 가능
-// - ("cat", "-l" "<<EOF"); 이런건 parsing부에서 처리를 해줘야 함
 
 // 이전 명령어 유무 check 
 // - 이전 명령어가 있다면 파이프라인으로 input이 들어옴
@@ -39,14 +35,20 @@ void	init_t_imp_stus(t_imp_stus *imp_stus)
 // - < file1.txt cat | < file2.txt wc -l | tee file5.txt 이런거 처리되고 있나?
 void	input_output_setting(t_object *object, t_imp_stus *imp_stus)
 {
-	// 이전 명령어 파이프 output을 현재 명령어 input으로 연결
+	// stderr 처리
+	close(imp_stus->stderr_pipe[0]);
+	dup2(imp_stus->stderr_pipe[1], STDERR_FILENO);
+	close(imp_stus->stderr_pipe[1]);
+	// child에선 현재 파이프 buffer 읽기 fd를 닫음
+	close(imp_stus->pipeFd[imp_stus->cur_c_n][0]);
+	// 이전 명령어 파이프 input을 현재 명령어 input으로 연결
 	if (object->cmd_info->prev != NULL)
 	{
 		dup2(imp_stus->pipeFd[imp_stus->cur_c_n - 1][0], STDIN_FILENO);
 		close(imp_stus->pipeFd[imp_stus->cur_c_n - 1][0]);
 	}
-	// output을 pipe쓰기 fd로 rediection 
-	// (자식 출력은 마지막 명령어는 부모 터미널 기본은 파이프 버퍼)
+	// 현재 명령어 파이프 쓰기 fd가 가리키는 buffer을 stdout도 가리키게 함 
+	// (마지막 명령어 출력은 redirection없이 부모 stdout 사용)
 	if (object->cmd_info->next != NULL)
 		dup2(imp_stus->pipeFd[imp_stus->cur_c_n][1], STDOUT_FILENO);
 	close(imp_stus->pipeFd[imp_stus->cur_c_n][1]);
@@ -69,13 +71,6 @@ static void redirect_process(t_object *object, t_imp_stus *imp_stus)
 			dup2(imp_stus->output_fd, STDOUT_FILENO);
 			close(imp_stus->output_fd);
 		}
-		// << redirection이 있는 경우
-		// if (redirect->type == TOKEN_HEREDOC)
-		// {
-		// 	dup2(redirect->heredoc_fd, STDIN_FILENO);
-		// 	close(redirect->heredoc_fd);
-		// }
-		// 다음 redirect node로 이동
 		redirect = redirect->next;
 	}
 }

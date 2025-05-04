@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:06:37 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/28 18:14:57 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/04/30 09:16:23 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,10 @@ int execute_echo(t_object *object, t_imp_stus *imp_stus)
 	{
 		if (i == 1 && flag == 1)
 			continue ;
-		write(1, argv[i], ft_strlen(argv[i]));	
+		// 여기서 pipe broken error가 뜬다 
+		// 이미 부모 프로세스에서 pipe 읽기 fd를 close()해서다
+		// child가 시작할 때 slgnal함수로 pipe broken을 무시하도록 했다
+		write(STDOUT_FILENO, argv[i], ft_strlen(argv[i]));	
 		if (argv[i + 1] != NULL)
 			write(1, " ", 1);	
 	}
