@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 20:10:44 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/10 15:34:54 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/10 15:44:56 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ static	void	handle_redirect(t_check_redir_arg *arg, \
 		set_redirect(token, arg->src[arg->current_src + 1], \
 			&(arg->redirect), arg->object);
 		*idx += next_idx - 1;
-		return (1);
 	}
 }
 
@@ -100,6 +99,7 @@ static	int	is_file_path(char *src, t_check_redir_arg *arg)
 		if (ft_strncmp(src, arg->redirect->file_path, \
 		ft_strlen(arg->redirect->file_path)))
 			return (1);
+		return (0);
 	}
 }
 

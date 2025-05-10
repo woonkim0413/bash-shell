@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   print_log.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 14:53:35 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/10 14:57:22 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/10 15:43:08 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	print_log(int stdout_fd, char *format, ...)
-{
+// void	print_log(int stdout_fd, char *format, ...)
+// {
 	
-}
+// }
