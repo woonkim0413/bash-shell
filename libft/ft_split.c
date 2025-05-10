@@ -6,14 +6,22 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 13:19:57 by rakim             #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/04/28 13:17:46 by woonkim          ###   ########.fr       */
+=======
+/*   Updated: 2025/04/28 13:29:35 by rakim            ###   ########.fr       */
+>>>>>>> 325c3ae (feat : split space and redir)
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "stdlib.h"
 
+<<<<<<< HEAD
 void	free_all_split(char **result, int result_len)
+=======
+static	void	free_all(char **result, int result_len)
+>>>>>>> 325c3ae (feat : split space and redir)
 {
 	int	idx;
 

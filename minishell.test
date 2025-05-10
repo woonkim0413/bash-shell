@@ -1,0 +1,196 @@
+# 1. 기본 명령어
+ls
+pwd
+echo hello
+
+# 2. 인자가 있는 명령어
+ls -l
+echo hello world
+cat file.txt
+
+# 3. 따옴표 처리 (싱글 쿼트) - 변수 확장 안 됨
+echo '$HOME'
+echo 'hello   world'
+echo 'cat > output.txt'
+
+# 4. 따옴표 처리 (더블 쿼트) - 변수 확장 됨
+echo "$HOME"
+echo "hello   world"
+echo "cat > output.txt"
+echo "Path is: $PATH"
+
+# 5. 따옴표 혼합 및 이스케이프 문자 (minishell 요구사항에 따라 이스케이프 처리 방식 확인)
+echo "'hello'"
+echo '"hello"'
+echo 'hello"world'
+echo "hello'world"
+echo "hello\"world"
+echo 'hello\'world' # 아마 \는 문자 그대로 취급될 가능성이 높아요.
+echo "hello\$WORLD" # $가 이스케이프되면 변수 확장 안 됨
+echo "hello \$ WORLD" # $ 뒤에 공백이 있으면 변수 확장 안 됨
+
+# 6. 파이프 (|)
+ls | cat
+echo hello | wc -c
+ls -l | grep .txt | wc -l
+
+# 7. 리다이렉션 (출력 >)
+ls > output.txt
+echo hello > output.txt
+cat file.txt > output2.txt
+
+# 8. 리다이렉션 (추가 >>)
+ls >> output.txt
+echo world >> output.txt
+
+# 9. 리다이렉션 (입력 <)
+cat < input.txt
+wc -l < input.txt
+
+# 10. 여기 도큐먼트 (<<) - delimiter 뒤에 입력 받을 때까지 기다려야 함 (파싱 단계에서 delimiter 확인)
+cat << EOF
+hello world
+this is here-document
+EOF
+grep a << END
+line one
+line two contains a
+line three
+END
+
+# 11. 파이프와 리다이렉션 조합
+ls | grep .txt > output.txt
+cat < input.txt | wc -l
+echo hello > output.txt | cat
+cat < input1.txt > output1.txt
+ls | grep a >> output.txt
+
+# 12. 여러 개의 리다이렉션
+cat < input1.txt < input2.txt # 어떤 input을 사용할지 확인
+echo hello > output1.txt > output2.txt # 어떤 output을 사용할지 확인
+< input.txt cat > output.txt
+cat > output.txt < input.txt
+cat < input1.txt > output1.txt < input2.txt > output2.txt # 복잡한 조합
+
+# 13. 공백 처리 (명령어, 인자, 리다이렉션/파이프 기호 주변 공백)
+  ls  -l
+echo   hello   world
+ls |  cat
+cat   <input.txt
+echo  hello  >  output.txt
+echo  "hello   world"  > output.txt
+
+# 14. 변수 확장 ($?) - 이전 명령어의 종료 상태 코드
+echo $?
+ls | echo $? # 파이프라인에서 $?의 의미 확인
+
+# 15. 비어있는 명령어 또는 요소
+| ls # 파이프 앞에 아무것도 없을 때
+ls | # 파이프 뒤에 아무것도 없을 때
+> output.txt # 출력 파일만 있을 때
+< input.txt # 입력 파일만 있을 때
+<> input_output.txt # 입출력 리다이렉션을 동시에 (파일이 없으면 생성)
+<< limit # 여기 도큐먼트 delimiter만 있을 때
+"" # 빈 문자열
+'' # 빈 문자열
+$ # $ 기호만 있을 때 (minishell 요구사항 확인)
+$$ # $$ 기호 (minishell 요구사항 확인 - 보통 현재 셸의 PID)
+
+# 16. 따옴표 안의 리다이렉션/파이프 기호
+echo ">"
+echo '<'
+echo "hello | world"
+echo 'hello > world'
+
+# 17. 경로 처리 (~, /) - minishell에서 ~ 확장을 요구할 수 있음
+ls ~
+ls ~/Desktop
+cat /etc/passwd
+ls ./
+ls ../
+
+# 18. 세미콜론 (;) - minishell에서 지원 안 함 (에러 처리 확인)
+ls ; cat file.txt
+
+# 19. 백슬래시 (\) - 인용되지 않은 백슬래시는 다음 문자를 이스케이프 (minishell 요구사항 확인)
+echo hello\ world # 공백 이스케이프
+echo hello\\world # 백슬래시 자체 이스케이프
+echo \>
+echo \<
+echo \|
+
+# 20. 명령어 이름에 따옴표 포함 (minishell 요구사항 확인)
+"ls" -l
+'cat' file.txt
+
+# 21. 환경 변수 이름에 특수 문자 (minishell 요구사항 확인)
+echo ${NA ME} # 중괄호 사용 또는 에러 처리
+echo $NA-ME # 변수 이름 규칙 확인
+
+# 22. 연속된 파이프 또는 리다이렉션 (문법 에러)
+ls || cat
+ls >> > output.txt
+
+# 23. 따옴표가 닫히지 않은 경우 (문법 에러)
+echo "hello
+echo 'world
+
+# 24. 리다이렉션 파일 이름에 공백 또는 따옴표
+> "output file.txt" ls
+> 'output file 2.txt' echo hello
+cat < "input file.txt"
+cat < 'input file 2.txt'
+
+# 25. 연속된 공백
+ls      -l
+echo        hello         world
+
+# 26. 숫자가 붙은 리다이렉션 (예: 2>) - minishell 요구사항 확인
+ls 2> error.log
+
+# 27. $ 뒤에 다른 기호
+echo $?a
+echo $$a
+echo $<
+echo $>
+echo $/
+
+# 28. 리다이렉션 기호 바로 뒤에 오는 따옴표
+>"" output.txt # 이게 유효한 파싱인지 확인
+>'' output.txt
+<"" input.txt
+<'' input.txt
+>>"" output.txt
+>>'' output.txt
+
+# 29. 여기 도큐먼트 delimiter에 따옴표
+cat << "EOF"
+hello
+EOF
+cat << 'EOF'
+world
+EOF
+cat << "E'O'F"
+mixed
+E'O'F
+
+# 30. 변수 확장 안 되는 $ (따옴표 안, 뒤에 문자 없는 경우 등)
+echo "$"
+echo "$ "
+echo "a $ b"
+echo "$_VAR" # _로 시작하는 변수 이름
+echo "$1" # 위치 인자 (minishell 요구사항 확인 - 지원 안 할 가능성 높음)
+echo "$$" # 셸의 PID (minishell 요구사항 확인)
+echo "$?" # 종료 상태 (minishell 요구사항 확인)
+
+# 31. ~ 뒤에 다른 문자
+echo ~test # 사용자 홈 디렉토리가 아닌 경우
+echo ~/
+echo ~test/file
+
+# 32. / 뒤에 다른 기호
+echo // # 연속된 슬래시
+echo /../file # 절대 경로와 상대 경로 조합
+
+
+

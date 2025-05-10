@@ -10,9 +10,11 @@ init/init_signal.c \
 init/init_helper.c \
 init/init_utils.c \
 parsing/parsing_token.c \
-parsing/seperate_helper.c \
+parsing/utils/seperate_helper.c \
 parsing/utils/parsing_utils.c \
 parsing/utils/split_with_quote.c \
+parsing/utils/split_by_redir.c \
+parsing/utils/split_by_redir_2.c \
 parsing/env/extend_env.c \
 parsing/env/env_helper.c \
 parsing/quote/quote_handler.c \

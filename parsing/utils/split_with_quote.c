@@ -6,91 +6,80 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 20:07:38 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/26 20:28:07 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/30 15:17:28 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	count_word(char const *s)
+static	int	count_word_split_by_space(char *s)
 {
-	int	count;
 	int	in_word;
+	int	count;
+	int	idx;
 	int	in_single;
 	int	in_double;
-	int	idx;
 
 	count = 0;
-	in_word = 0;
+	idx = 0;
 	in_single = 0;
 	in_double = 0;
-	idx = 0;
+	in_word = 0;
 	while (s[idx])
 	{
-		set_toggle(s[idx], &in_single, &in_double);
-		if (!in_single && !in_double && (s[idx] == ' '))
+		if (!in_single && !in_double && s[idx] == ' ')
 			in_word = 0;
-		else if (!in_word)
+		if (!in_word && !in_single && !in_double && s[idx] != ' ')
 		{
 			in_word = 1;
 			count++;
 		}
+		set_toggle(s[idx], &in_single, &in_double);
 		idx++;
 	}
 	return (count);
 }
 
-static char	*alloc_word(char const *s, int start, int end)
+static	void	split_by_space(char ***result, char *s)
 {
-	char	*word;
-	int		i;
+	int	start;
+	int	idx;
+	int	in_single;
+	int	in_double;
+	int	word_count;
 
-	word = ft_calloc(end - start + 1, sizeof(char));
-	if (!word)
-		return (NULL);
-	i = 0;
-	while (start < end)
-		word[i++] = s[start++];
-	return (word);
-}
-
-static	void	process_set_result(char ***result, const char *s, int idx)
-{
-	int		start;
-	int		word_idx;
-	int		in_single;
-	int		in_double;
-
-	start = -1;
-	word_idx = 0;
+	idx = 0;
 	in_single = 0;
 	in_double = 0;
+	start = -1;
+	word_count = 0;
 	while (s[idx])
 	{
-		set_toggle(s[idx], &in_single, &in_double);
-		if (!in_single && !in_double && s[idx] == ' ')
+		if (start == -1 && s[idx] != ' ')
+			start = idx;
+		if (!in_single && !in_double && s[idx] == ' ' && start != -1)
 		{
-			if (start != -1)
-				(*result)[word_idx++] = alloc_word(s, start, idx);
+			(*result)[word_count++] = ft_substr(s, start, idx - start);
 			start = -1;
 		}
-		else if (start == -1)
-			start = idx;
+		set_toggle(s[idx], &in_single, &in_double);
 		idx++;
 	}
 	if (start != -1)
-		(*result)[word_idx++] = alloc_word(s, start, idx);
+		(*result)[word_count] = ft_substr(s, start, idx);
 }
 
-char	**split_with_quote(char const *s)
+char	**split_with_quote(char *s)
 {
 	char	**result;
+	int		word_count;
+	char	**temp;
 
 	if (!s)
 		return (NULL);
-	result = ft_calloc(count_word(s) + 1, sizeof(char *));
-	if (!result)
-		return (NULL);
-	process_set_result(&result, s, 0);
+	word_count = count_word_split_by_space(s);
+	temp = ft_calloc(word_count + 1, sizeof(char *));
+	split_by_space(&temp, s);
+	result = split_redir_with_quote(temp);
 	return (result);
 }
