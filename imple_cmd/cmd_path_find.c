@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 22:13:19 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/27 20:59:28 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/01 00:59:20 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,15 +75,17 @@ void find_path(t_cmd_info* t_cmd, t_env* env)
 {
 	t_env *temp;
 	char **paths;
-	char *cmd_path;
-	int i;
 
-	i = 0;
 	temp = env;
+	if (access(t_cmd->cmd, F_OK) == 0)
+	{
+		t_cmd->cmd_path = t_cmd->cmd;
+		return ;
+	}
 	// env의 몇 번째 노드에 PATH 환경변수가 들어 있는지 확인
 	while (temp)
 	{
-		if (ft_strncmp(temp->key, "PATH=", 5) == 0)
+		if (ft_strncmp(temp->key, "PATH", 4) == 0)
 		{
 			// 하나의 string에 담겨져 있는 path들을 :을 기준으로 쪼갬
 			// 다 malloc으로 생성하기에 free해줘야 함

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   extend_env.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:21:30 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 13:49:15 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/28 12:49:03 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ void	extend_env(char **line, int *dollar_idx, t_object *object)
 		if (env_key == NULL)
 		{
 			free(*line);
-			throw_error("syntax error", object);
+			throw_error("syntax error", object, NULL);
 		}
 		set_env_value_and_key(&env_value, &env_key, object, &key_len);
 	}

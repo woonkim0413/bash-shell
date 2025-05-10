@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quote_handler.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:50:00 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 14:41:20 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/28 12:49:31 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static	void	is_quote_close(char **line, t_object *object)
 	if (in_single || in_duoble)
 	{
 		free((*line));
-		throw_error("quote is not close", object);
+		throw_error("quote is not close", object, NULL);
 	}
 }
 

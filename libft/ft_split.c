@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 13:19:57 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/21 17:14:03 by rakim            ###   ########.fr       */
+/*   Updated: 2025/04/28 13:17:46 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "stdlib.h"
 
-void	free_all(char **result, int result_len)
+void	free_all_split(char **result, int result_len)
 {
 	int	idx;
 
@@ -41,7 +41,7 @@ int	malloc_each(char **result, char const *s, char c, int result_len)
 			result[out_idx] = (char *)ft_calloc(sizeof(char), (len + 1));
 			if (result[out_idx] == NULL)
 			{
-				free_all(result, result_len);
+				free_all_split(result, result_len);
 				return (0);
 			}
 			out_idx++;

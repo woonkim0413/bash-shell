@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 21:08:00 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/09 16:29:42 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,9 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <signal.h>
+# include <sys/stat.h>
+# include <sys/types.h>
+# include <dirent.h>
 
 # define DOLLAR_ASCII 36
 # define DOUBLE_QUOTE_ASCII 34
@@ -45,13 +48,16 @@ typedef struct	s_env
 typedef struct s_redirect
 {
 	t_token_type		type;
-	// file_path free 해야함
 	char				*file_path;
+	int					heredoc_fd; // pipe 읽기 fd여야 함
 	struct s_redirect	*next;
 }	t_redirect;
 
+// heredoc_fd 이렇게 하면 안됨
+// 만약 heredoc다음에 redirect가 나온 경우 heredoc는 무시되어야 함
+// 즉, heredoc도 s_redirect node에 들어가야 한다
 typedef struct s_cmd_info
-{
+{	
 	char				*cmd;
 	char				**evecve_argv;
 	char				*cmd_path;
@@ -69,10 +75,6 @@ typedef struct s_object
 	int			last_exit_status;
 }	t_object;
 
-/* error */
-void		throw_error(char *message, t_object *object);
-void		free_all(t_object *object);
-
 // imple에서 사용할 정보 저장
 // 구현부에서 사용할 정보 저장 (나중에 error handler로 free할 수 있게 코드 변경)
 typedef struct s_imp_stus
@@ -81,8 +83,10 @@ typedef struct s_imp_stus
 	int		input_fd;
 	int		output_fd;
 	int		stdoutFd; // stdout buffer에 연결된 fd보존
+	int		stdinFd;
 	int		cur_c_n; // curent_command_number
 	int		total_c_n; // total_cmmand_number
+	int		stderr_pipe[2];
 	pid_t	*chil_pid;
 	int		**pipeFd; // 명령어 갯수에 따른 pipe용 int배열 저장
 } t_imp_stus;
@@ -91,12 +95,15 @@ typedef struct s_imp_stus
 void		init(int length, char *input[], t_object *object, char **env);
 void		init_signal(void);
 void		init_child_signal(void);
+
 /* init utils*/
-void		safety_exit(t_object *object, t_imp_stus *imp_stus);
 int			is_all_space(const char *line);
 
 /* error */
 void		throw_error(char *message, t_object *object, t_imp_stus *imp_stus);
+void		free_all(t_object *object);
+void 		free_stus(t_imp_stus *imp_stus);
+void		free_stus_and_object(t_object *object, t_imp_stus *imp_stus);
 
 /* parsing */
 void		parsing(char **line_splited_pipe, t_object *object);
@@ -121,17 +128,43 @@ char		**split_with_quote(char const *s);
 
 /*---------------------- 구현부 함수 ----------------------*/
 
-/* ./imple_cmd/cmd_path_find.c*/
-void		find_path(t_cmd_info *t_cmd, t_env *env);
+/* /imple_cmd/builtin */
+int		execute_echo(t_object *object, t_imp_stus *imp_stus);
+int		execute_env(t_object *object, t_imp_stus *imp_stus);
+int		execute_exit(t_object *object, t_imp_stus *imp_stus);
+int		execute_export(t_object *object, t_imp_stus *imp_stus);
+int		execute_pwd(t_object *object, t_imp_stus *imp_stus, int prev_cwd_fd);
+int		execute_unset(t_object *object, t_imp_stus *imp_stus);
+int		execute_cd(t_object *object, t_imp_stus *imp_stus);
 
-/* .imple_cmd/imp_utils1.c */
-void	init_t_imp_stus(t_imp_stus *imp_stus);
-void	input_output_setting(t_object *object, t_imp_stus *imp_stus);
+/* /imple_cmd/implement.c*/
+void	implement(t_object *object);
 
-/* .imple_cmd/imp_utils2.c */
+/* /imple_cmd/cmd_path_find.c*/
+void	find_path(t_cmd_info *t_cmd, t_env *env);
+
+/* /imple_cmd/redirect_setting.c */
+void	input_output_setting(t_object *object, t_imp_stus *imp_stus, \
+		int one_builtin_flag);
+
+/* /imple_cmd/imp_utils.c */
+void	create_execve_args(t_cmd_info *cmd_info);
 char	**env_to_char(t_env *env);
+void	free_doublechar(char **argv);
+int		cmd_null_check(t_object *object,t_imp_stus *imp_stus);
+
+/* /imple_cmd/parent_wait_to_child.c */
 void 	wait_childs_process(t_object *object, t_imp_stus *imp_stus);
-void 	execute_builtins(t_object *object, t_imp_stus *imp_stus);
+
+/* /imple_cmd/builtins/builtin_utils1.c */
+void	execute_one_builtin(t_object *object, t_imp_stus *imp_stus);
+int		check_one_builtin(t_object *object, t_imp_stus *imp_stus);
+int 	execute_builtins(t_object *object, t_imp_stus *imp_stus);
+
+/* /imple_cmd/imple_setting */
+void	setting_pipline(t_cmd_info *t_cmd, t_imp_stus *imp_stus);
+void	pipe_and_fork(t_imp_stus *imp_stus);
+void	init_t_imp_stus(t_imp_stus *imp_stus);
 
 #endif
 
