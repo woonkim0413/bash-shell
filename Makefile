@@ -21,6 +21,7 @@ imple_cmd/redirect_setting.c \
 imple_cmd/imp_utils1.c \
 imple_cmd/parent_wait_to_child.c \
 imple_cmd/cmd_path_find.c \
+imple_cmd/print_log.c \
 imple_cmd/implement.c \
 imple_cmd/imple_setting.c \
 imple_cmd/builtins/echo.c \
