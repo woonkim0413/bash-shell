@@ -17,11 +17,12 @@ parsing/env/extend_env.c \
 parsing/env/env_helper.c \
 parsing/quote/quote_handler.c \
 parsing/quote/clean_up_quote.c \
+imple_cmd/redirect_setting.c \
 imple_cmd/imp_utils1.c \
-imple_cmd/imp_utils2.c \
-imple_cmd/imp_utils3.c \
+imple_cmd/parent_wait_to_child.c \
 imple_cmd/cmd_path_find.c \
 imple_cmd/implement.c \
+imple_cmd/imple_setting.c \
 imple_cmd/builtins/echo.c \
 imple_cmd/builtins/env.c \
 imple_cmd/builtins/exit.c \
@@ -29,6 +30,8 @@ imple_cmd/builtins/export.c \
 imple_cmd/builtins/pwd.c \
 imple_cmd/builtins/unset.c \
 imple_cmd/builtins/cd.c \
+imple_cmd/builtins/builtin_utils.c \
+
 
 OBJS = $(SRCS:.c=.o)
 HEADER = include/minishell.h

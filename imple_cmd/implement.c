@@ -6,15 +6,15 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/04 17:28:42 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/09 16:35:38 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void setting_pipline(t_cmd_info *t_cmd, t_imp_stus *imp_stus);
-static void child_work(t_object *object, t_imp_stus *imp_stus);
-static void pipe_and_fork(t_imp_stus *imp_stus);
+static void	child_work(t_object *object, t_imp_stus *imp_stus);
+static void	parent_while_process(t_object *object, t_imp_stus *imp_stus);
+static void	child_while_process(t_object *object, t_imp_stus *imp_stus);
 
 // 명령어와 환경 병수 링크드 리스크로 받음
 // t_cmd : 명령어에 대한 meta data를 저장하고 있는 node
@@ -22,14 +22,20 @@ static void pipe_and_fork(t_imp_stus *imp_stus);
 // 명령어 없이 파이프라인만 있는 경우
 void implement(t_object *object)
 {
-	t_imp_stus imp_stus;
+	t_imp_stus	imp_stus;
+	int			one_builtin_flag;	
 
 	printf("\n---------------------- 구현부 -------------------------\n\n");
 	// 명령어 갯수에 맞게 2차원 pipe 배열, child pid배열, child 종료 상태 배열 저장
 	setting_pipline(object->cmd_info, &imp_stus);
-	// builtin 명령어 하나일 때 실행
-	if (one_builtin_case(object, &imp_stus))
-	{
+	// builtin 명령어 하나일 때 true return
+	one_builtin_flag = check_one_builtin(object, &imp_stus);
+	if (one_builtin_flag)
+	{	
+		// 명령어가 하나일 때 처리
+		input_output_setting(object, &imp_stus, one_builtin_flag);
+		execute_one_builtin(object, &imp_stus);
+		// TODO 다시 stdout, stdin으로 리다이렉션 해야함
 		free_stus(&imp_stus);
 		printf("(부모에서 실행) complete one builtin execution\n");
 		return ;
@@ -44,33 +50,10 @@ void implement(t_object *object)
 			printf("(부모에서 출력) pid %d : create child process ok\n", imp_stus.chil_pid[imp_stus.cur_c_n]);
 		// 자식 process 실행 (실행파일 + builtin모두 처리)
 		if (imp_stus.chil_pid[imp_stus.cur_c_n] == 0)
-		{
-			// 자식 프로세스 시그널 처리
-			init_child_signal();
-			signal(SIGPIPE, SIG_IGN);
-			// 실행파일 명령어라면 child_work()까지만 실행된다
-			child_work(object, &imp_stus);
-			dprintf(imp_stus.stdoutFd, "(builtin %d) ok (before exit())\n", (int)getpid());
-			// safety_exit()이 실행되는 상황은 builtin일 때임
-			// 자식 프로세스는 object, imp_stus 다 free하고 exit()해야 한다
-			free_stus_and_object(object, &imp_stus);
-			exit(0);
-		}
+			child_while_process(object, &imp_stus);
 		// 부모 process 실행
 		else
-		{
-			// 부모 proecess는 쓰기 close
-			close(imp_stus.pipeFd[imp_stus.cur_c_n][1]);
-			// 이전 파이프 buffer 읽기 fd 닫기 (fork한 후 생성한 자식이 유지하고 있음)
-			// 마지막 명령어에선 이전 buufer 파이프 읽기 fd 닫기
-			if (object->cmd_info->prev != NULL)
-				close(imp_stus.pipeFd[imp_stus.cur_c_n - 1][0]);
-			if (object->cmd_info->next == NULL)
-				close(imp_stus.pipeFd[imp_stus.cur_c_n][0]);
-			// 명령어 index 및 node 이동
-			imp_stus.cur_c_n += 1;
-			object->cmd_info = object->cmd_info->next;
-		}
+			parent_while_process(object, &imp_stus);
 	}
 	// 자식 프로세스를 모두 생성한 후에 에러 출력 파이프 닫아줌
 	close(imp_stus.stderr_pipe[1]);
@@ -78,16 +61,38 @@ void implement(t_object *object)
 	wait_childs_process(object, &imp_stus);
 	// imp_stus 초기화 (부모 프로세스라 exit()실행하면 안됨)
 	free_stus(&imp_stus);
-	printf("----- all complete ------\n");
 	return ;
 }
 
-// 파이프 생성 및 fork()하는 함수
-static void pipe_and_fork(t_imp_stus *imp_stus)
+// fork후 자식 프로세스를 처리하는 함수
+static void	child_while_process(t_object *object, t_imp_stus *imp_stus)
 {
-	// 현재 명령어 index에 위치한 pipFd배열로 pipe buffer생성
-	pipe(imp_stus->pipeFd[imp_stus->cur_c_n]);
-	imp_stus->chil_pid[imp_stus->cur_c_n] = fork();
+	// 자식 프로세스 시그널 처리
+	init_child_signal();
+	signal(SIGPIPE, SIG_IGN);
+	// 실행파일 명령어라면 child_work()까지만 실행된다
+	child_work(object, imp_stus);
+	dprintf(imp_stus->stdoutFd, "(builtin %d) ok (before exit())\n", (int)getpid());
+	// safety_exit()이 실행되는 상황은 builtin일 때임
+	// 자식 프로세스는 object, imp_stus 다 free하고 exit()해야 한다
+	free_stus_and_object(object, imp_stus);
+	exit(0);
+}
+
+// fork후 부모 프로세스를 처리하는 함수
+static void	parent_while_process(t_object *object, t_imp_stus *imp_stus)
+{
+	// 부모 proecess는 쓰기 close
+	close(imp_stus->pipeFd[imp_stus->cur_c_n][1]);
+	// 이전 파이프 buffer 읽기 fd 닫기 (fork한 후 생성한 자식이 유지하고 있음)
+	// 마지막 명령어에선 이전 buufer 파이프 읽기 fd 닫기
+	if (object->cmd_info->prev != NULL)
+		close(imp_stus->pipeFd[imp_stus->cur_c_n - 1][0]);
+	if (object->cmd_info->next == NULL)
+		close(imp_stus->pipeFd[imp_stus->cur_c_n][0]);
+	// 명령어 index 및 node 이동
+	imp_stus->cur_c_n += 1;
+	object->cmd_info = object->cmd_info->next;
 }
 
 // 자식 process를 명령어에 맞게 execve하여 동작하게 함
@@ -102,7 +107,7 @@ static void child_work(t_object *object, t_imp_stus *imp_stus)
 	// env 링크드리스크 -> 2차원 배열 전환
 	envp = env_to_char(object->env);
 	// input, output을 재설정 해야 한다면 재설정
-	input_output_setting(object, imp_stus);
+	input_output_setting(object, imp_stus, 0);
 	// cmd가 널인 경우 check
 	flag = cmd_null_check(object, imp_stus);
 	if (flag)
@@ -130,33 +135,4 @@ static void child_work(t_object *object, t_imp_stus *imp_stus)
 	if (execve(object->cmd_info->cmd_path,
 			   object->cmd_info->evecve_argv, envp) == -1)
 		throw_error("FAILD EXECVE", object, imp_stus);
-}
-
-// t_cmd를 받아서 명령어 숫자를 세고 그에 맞게 pipeFd 배열 생성
-// pipFd는 각 index마다 fd closs하고 index free하고 pipFd free해야 함
-static void setting_pipline(t_cmd_info *t_cmd, t_imp_stus *imp_stus)
-{
-	int i;
-	int num;
-
-	// imp_stus 초기화
-	init_t_imp_stus(imp_stus);
-	num = 0;
-	imp_stus->stdoutFd = dup(STDOUT_FILENO);
-	// 에러 처리 버퍼
-	pipe(imp_stus->stderr_pipe);
-	while (t_cmd)
-	{
-		num++;
-		t_cmd = t_cmd->next;
-	}
-	// 총 명령어 갯수 저장
-	imp_stus->total_c_n = num;
-	// child pid 배열 저장
-	imp_stus->chil_pid = (pid_t *)malloc(sizeof(pid_t) * num);
-	// pipFd[2]배열 저장
-	imp_stus->pipeFd = (int **)malloc(sizeof(int *) * num);
-	i = 0;
-	while (i < num)
-		imp_stus->pipeFd[i ++] = (int *)malloc(sizeof(int) * 2);
 }

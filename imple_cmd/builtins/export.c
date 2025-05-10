@@ -6,41 +6,91 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:33:32 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/04 23:24:22 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/05 10:36:30 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 static void printf_env(t_object *object);
-static void insert_node(t_object *object, char **argv);
+static void insert_node(t_object *object, char **argv, int equals_flag);
+static int update_node(t_object *object, char **argv_equals, int equals_flag);
 
-// TODO : 만약, 기존에 있는 key값과 동일한 경우 update해야한다
-// TODO : export aaa=aaaaaaa kkk=aaaaaaaa ttt=aaaaaaa hhhhhhh
-// 이런 경우에 모든 목록을 등록해야 한다.... 시발
+// 환경 변수를 추가하는 함수이다
+// 인자 없이 export만 사용하는 경우, declare -x : "~" 형식으로 출력된다
+// a=t가 등록된 상태에서 export a=ttt를 사용하면 update되어야 한다
+// export aaa=bbb kkk= ttt 이렇게 사용하는 경우,
+// 3개의 인자가 모두 반영되어야 한다
 int	execute_export(t_object *object, t_imp_stus *imp_stus)
 {
-	char 	**argv;
-	int		i;
+	char 	**evecve_arg;
+	char 	**argv_equals;
+	int		idx;
+	int		equals_flag;
 
-	(void)imp_stus;
-	// export만 실행
+	// (void)imp_stus;
+	// export 출력 실행
 	if (!object->cmd_info->evecve_argv[1])
 	{
 		printf_env(object);
 		return (1);
 	}
 	// env node 추가
-	argv = ft_split(object->cmd_info->evecve_argv[1], ' ');
-	i = 0;
-	while (argv[++i])
-		free(argv[i]);
-	argv = ft_split(argv[0], '=');
-	insert_node(object, argv);
+	evecve_arg = object->cmd_info->evecve_argv;
+	idx = 0;
+	equals_flag = 0;
+	while (evecve_arg[++idx])
+	{
+		// kkk=이런 경우엔 =으로 쪼개면 kkk와 같아지니 equals_flag를 두어 구분한다
+		if (ft_strnstr(evecve_arg[idx], "=", ft_strlen(evecve_arg[idx])))
+			equals_flag = 1;
+		argv_equals = ft_split(evecve_arg[idx], '=');
+		int i = 0;
+		while (argv_equals[i])
+			dprintf(imp_stus->stdoutFd, "(%s) ", argv_equals[i++]);
+		dprintf(imp_stus->stdoutFd, "\n");
+		// argv_equals[0]과 동일한 key를 같는 노드가 있는지 확인해야 한다
+		// 있다면 node추가가 아니라 update해야됨
+		if (!update_node(object, argv_equals, equals_flag))
+			insert_node(object, argv_equals, equals_flag);
+		free_doublechar(argv_equals);
+	}
+	free_doublechar(evecve_arg);
 	return (1);
 }
 
-static void insert_node(t_object *object, char **argv)
+// 만약 export로 추가한 path key를 갖고 있는 기존 node가 있다면
+// env node를 추가하는 것 대신 해당 node의 값을 update한다
+static int update_node(t_object *object, char **argv_equals, int equals_flag)
+{
+	t_env	*temp;
+	temp = object->env;
+	while (temp)
+	{
+		if (!ft_strncmp(temp->key, argv_equals[0], ft_strlen(temp->key)))
+		{
+			printf("ok\n");
+			if (temp->value)
+				free(temp->value);
+			if (argv_equals[1])
+				temp->value = ft_strdup(argv_equals[1]);
+			// 환경변수 value는 없지만 =는 있는 경우 NULL char*할당 
+			else if (equals_flag)
+			{
+				temp->value = (char *)malloc(sizeof(char));
+				temp->value[0] = '\0';
+			}
+			else
+				temp->value = NULL;
+			return (1);
+		}
+		temp = temp->next;
+	}
+	return (0);
+}
+
+// env node를 새로 생성하여 기존 env linked list 끝에 붙인다 
+static void insert_node(t_object *object, char **argv, int equals_flag)
 {
 	t_env	*temp;
 	t_env 	*env;
@@ -49,9 +99,15 @@ static void insert_node(t_object *object, char **argv)
 	temp = object->env;
 	while (temp->next)
 		temp = temp->next;
-	env->key = argv[0];
+	env->key = ft_strdup(argv[0]);
 	if (argv[1])
-		env->value = argv[1];
+		env->value = ft_strdup(argv[1]);
+	// 환경변수 value는 없지만 =는 있는 경우 NULL char*할당 
+	else if (equals_flag)
+	{
+		temp->value = (char *)malloc(sizeof(char));
+		temp->value[0] = '\0';
+	}
 	else
 		env->value = NULL;
 	env->next = NULL;
@@ -67,7 +123,7 @@ static void printf_env(t_object *object)
 	{
 		printf("declare -x %s", temp->key);
 		if (temp->value)
-			printf("=%s", temp->value);
+			printf("=\"%s\"", temp->value);
 		printf("\n");
 		temp = temp->next;
 	}

@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 16:00:12 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/02 14:34:58 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/09 11:11:23 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void free_stus(t_imp_stus *imp_stus)
 	// 왜 close(imp_stus->stdoutFd);에서 segment fault가 뜨는거지?
 	// -> stdoutFd를 close하여 이후엔 dprintf가 실행되지 못하는 것이지 여기서 error가 뜨는게 아님
 	close(imp_stus->stdoutFd);
+	close(imp_stus->stdinFd);
 	// 
 	i = 0;
 	// 일기 파이프 fd close해준 뒤 free
