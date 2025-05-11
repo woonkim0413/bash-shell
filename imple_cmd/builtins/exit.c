@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:32:46 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/07 15:36:37 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/11 18:13:55 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,9 @@ int execute_exit(t_object *object, t_imp_stus *imp_stus)
 		free_stus_and_object(object, imp_stus);
 		exit(255);
 	}
-	return (1);
+	write(imp_stus->stdoutFd, "exit\n", 5);
+	free_stus_and_object(object, imp_stus);
+	exit(0);
 }
 
 // argv[1]의 값이 long long type 범위를 넘어가는지를 판단
@@ -69,13 +71,11 @@ static int is_valid_numeric(const char *str, long long *num)
 	{
 		if (!is_digit_char(str[idx]))
 			return (0);
-		if (sign == 1 && (unsigned long long)*num > (((1ULL << 63) - 1) + \
-						('0' - str[idx])) / 10)
+		if (sign == 1 && *num > (LLONG_MAX - (str[idx] - '0')) / 10)
 			return (0);
-		if (sign == -1 && (unsigned long long)*num > ((1ULL << 63) + \
-						('0' - str[idx])) / 10)
+		if (sign == -1 && *num < (LLONG_MIN + (str[idx] - '0')) / 10)
 			return (0);
-		*num = (*num * 10) + str[idx++] - '0';
+		*num = (*num * 10) + str[idx] - '0';
 		idx ++;  	
 	}
 	*num = *num * sign;

@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/09 16:35:38 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/11 19:38:28 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,29 +25,30 @@ void implement(t_object *object)
 	t_imp_stus	imp_stus;
 	int			one_builtin_flag;	
 
-	printf("\n---------------------- 구현부 -------------------------\n\n");
+	print_log(1, object, "\n---------------------- 구현부 -------------------------\n\n");
 	// 명령어 갯수에 맞게 2차원 pipe 배열, child pid배열, child 종료 상태 배열 저장
 	setting_pipline(object->cmd_info, &imp_stus);
 	// builtin 명령어 하나일 때 true return
 	one_builtin_flag = check_one_builtin(object, &imp_stus);
 	if (one_builtin_flag)
 	{	
-		// 명령어가 하나일 때 처리
+		// execve에 건네줄 수 있는 argv를 만든다 (리다이렉션 전까지 짜름)
+		create_execve_args(object->cmd_info);
 		input_output_setting(object, &imp_stus, one_builtin_flag);
 		execute_one_builtin(object, &imp_stus);
 		// TODO 다시 stdout, stdin으로 리다이렉션 해야함
 		free_stus(&imp_stus);
-		printf("(부모에서 실행) complete one builtin execution\n");
+		print_log(1, object, "(부모에서 실행) complete one builtin execution\n");
 		return ;
 	}
-	printf("total cmd : %d \n", imp_stus.total_c_n);
+	print_log(1, object, "total cmd : %d \n", imp_stus.total_c_n);
 	// 부모 process부분, 명령어 반복 실행 (cur_c_n은 index로 쓰이기에 0부터 시작)
 	while (imp_stus.cur_c_n < imp_stus.total_c_n)
 	{
 		// 파이프 생성 및 fork()하는 함수
 		pipe_and_fork(&imp_stus);
 		if (imp_stus.chil_pid[imp_stus.cur_c_n] != 0)
-			printf("(부모에서 출력) pid %d : create child process ok\n", imp_stus.chil_pid[imp_stus.cur_c_n]);
+			print_log(1, object, "(부모에서 출력) pid %d : create child process ok\n", imp_stus.chil_pid[imp_stus.cur_c_n]);
 		// 자식 process 실행 (실행파일 + builtin모두 처리)
 		if (imp_stus.chil_pid[imp_stus.cur_c_n] == 0)
 			child_while_process(object, &imp_stus);
@@ -72,7 +73,7 @@ static void	child_while_process(t_object *object, t_imp_stus *imp_stus)
 	signal(SIGPIPE, SIG_IGN);
 	// 실행파일 명령어라면 child_work()까지만 실행된다
 	child_work(object, imp_stus);
-	dprintf(imp_stus->stdoutFd, "(builtin %d) ok (before exit())\n", (int)getpid());
+	print_log(imp_stus->stdoutFd, object, "(builtin %d) ok (before exit())\n", (int)getpid());
 	// safety_exit()이 실행되는 상황은 builtin일 때임
 	// 자식 프로세스는 object, imp_stus 다 free하고 exit()해야 한다
 	free_stus_and_object(object, imp_stus);
@@ -114,15 +115,6 @@ static void child_work(t_object *object, t_imp_stus *imp_stus)
 		return ;
 	// execve에 건네줄 수 있는 argv를 만든다
 	create_execve_args(object->cmd_info);
-	// -------------------출력 테스트 시작 ---------------------
-	// dprintf(imp_stus->stdoutFd, "-----출력 테스트 시작 ------\n");
-	// int i = -1;
-	// dprintf(imp_stus->stdoutFd, "(child %d) argv 출력 :", (int)getpid());
-	// while (object->cmd_info->evecve_argv[++i])
-	// 	dprintf(imp_stus->stdoutFd, "(%s) ", object->cmd_info->evecve_argv[i]);
-	// dprintf(imp_stus->stdoutFd, "\n");
-	// dprintf(imp_stus->stdoutFd, "-----출력 테스트 끝 ------\n");
-	// -------------------출력 테스트 끝 -----------------------
 	// builtins check후 맞다면 builtin 실행
 	if (execute_builtins(object, imp_stus))
 	{
@@ -131,8 +123,11 @@ static void child_work(t_object *object, t_imp_stus *imp_stus)
 	// find_path로 찾은 path는 t_cmd의 cmd_path에 저장
 	// TODO : /bin/ls와 같은 절대 주소가 전달된 경우 처리
 	find_path(object->cmd_info, object->env);
-	dprintf(imp_stus->stdoutFd, "(실행파일 %d) ok (before execve)\n", (int)getpid());
+	print_log(imp_stus->stdoutFd, object, "(실행파일 %d) ok (before execve)\n", (int)getpid());
 	if (execve(object->cmd_info->cmd_path,
 			   object->cmd_info->evecve_argv, envp) == -1)
-		throw_error("FAILD EXECVE", object, imp_stus);
+	{
+		free_stus_and_object(object, imp_stus);
+		exit(2);
+	}
 }

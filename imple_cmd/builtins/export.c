@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:33:32 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/05 10:36:30 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/11 19:33:46 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	execute_export(t_object *object, t_imp_stus *imp_stus)
 	int		idx;
 	int		equals_flag;
 
-	// (void)imp_stus;
+	(void)imp_stus;
 	// export 출력 실행
 	if (!object->cmd_info->evecve_argv[1])
 	{
@@ -45,10 +45,6 @@ int	execute_export(t_object *object, t_imp_stus *imp_stus)
 		if (ft_strnstr(evecve_arg[idx], "=", ft_strlen(evecve_arg[idx])))
 			equals_flag = 1;
 		argv_equals = ft_split(evecve_arg[idx], '=');
-		int i = 0;
-		while (argv_equals[i])
-			dprintf(imp_stus->stdoutFd, "(%s) ", argv_equals[i++]);
-		dprintf(imp_stus->stdoutFd, "\n");
 		// argv_equals[0]과 동일한 key를 같는 노드가 있는지 확인해야 한다
 		// 있다면 node추가가 아니라 update해야됨
 		if (!update_node(object, argv_equals, equals_flag))
@@ -69,7 +65,6 @@ static int update_node(t_object *object, char **argv_equals, int equals_flag)
 	{
 		if (!ft_strncmp(temp->key, argv_equals[0], ft_strlen(temp->key)))
 		{
-			printf("ok\n");
 			if (temp->value)
 				free(temp->value);
 			if (argv_equals[1])

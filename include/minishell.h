@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/10 15:35:50 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/11 19:26:15 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <sys/stat.h>
 # include <sys/types.h>
 # include <dirent.h>
+# include <limits.h>
 
 # define DOLLAR_ASCII 36
 # define DOUBLE_QUOTE_ASCII 34
@@ -113,7 +114,6 @@ void		init(int length, char *input[], t_object *object, char **env);
 void		init_signal(void);
 void		init_child_signal(void);
 /* init/utils */
-void		safety_exit(t_object *object, t_imp_stus *imp_stus);
 int			is_all_space(const char *line);
 /* error */
 void		throw_error(char *message, t_object *object, t_imp_stus *imp_stus);
@@ -133,7 +133,7 @@ void		extend_env(char **line, int *dolloar_idx, t_object *object);
 /* parsing/utils */
 void		check_pipe(char **line, t_object *object);
 void		free_string_arr(char **string_arr);
-void		print_all_cmd(t_cmd_info *cmd_info);
+void		print_all_cmd(t_object *object);
 void		whitespace_convert_to_space(char **line);
 /* parsing/utils/split_with_quote */
 void		split_by_redir(char **temp, t_result_info *result_info);
@@ -182,6 +182,9 @@ int 	execute_builtins(t_object *object, t_imp_stus *imp_stus);
 void	setting_pipline(t_cmd_info *t_cmd, t_imp_stus *imp_stus);
 void	pipe_and_fork(t_imp_stus *imp_stus);
 void	init_t_imp_stus(t_imp_stus *imp_stus);
+
+/* /print_log.c */
+void print_log(int stdout_fd, t_object *object, const char *format, ...);
 
 #endif
 

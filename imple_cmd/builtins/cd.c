@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/01 13:50:45 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/05 21:55:31 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/11 17:42:12 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ int execute_cd(t_object *object, t_imp_stus *imp_stus)
 static void update_env(t_object *object, t_imp_stus *imp_stus)
 {
 	char *export_arg;
-
 	char buffer[4096];
+	
 	getcwd(buffer, sizeof(buffer) - 1);
 	export_arg = ft_strjoin("PWD=", buffer);
 	free(object->cmd_info->evecve_argv[1]);

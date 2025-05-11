@@ -5,6 +5,7 @@ CFLAGS = -Wall -Wextra -Werror -g -Iinclude
 LDFLAGS = -lreadline
 
 SRCS = minishell.c \
+print_log.c \
 error/error_handler.c \
 init/init_signal.c \
 init/init_helper.c \
@@ -23,7 +24,6 @@ imple_cmd/redirect_setting.c \
 imple_cmd/imp_utils1.c \
 imple_cmd/parent_wait_to_child.c \
 imple_cmd/cmd_path_find.c \
-imple_cmd/print_log.c \
 imple_cmd/implement.c \
 imple_cmd/imple_setting.c \
 imple_cmd/builtins/echo.c \

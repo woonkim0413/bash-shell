@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 20:07:27 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/09 16:32:37 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/11 19:41:56 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void wait_childs_process(t_object *object, t_imp_stus *imp_stus)
 			perror("waitpid error : ");
 		//시그널 종료 확인
 		if (WIFSIGNALED(object->last_exit_status))
-			printf("%d 시그널 종료\n", WTERMSIG(object->last_exit_status));
+			print_log(imp_stus->stdoutFd, object, "%d 시그널 종료\n", WTERMSIG(object->last_exit_status));
 		// 자식 프로세스가 정상 종료됐는지 확인 (exit(), return 종료)
 		if (WIFEXITED(object->last_exit_status))
 		{
@@ -39,12 +39,12 @@ void wait_childs_process(t_object *object, t_imp_stus *imp_stus)
 			code = WEXITSTATUS(object->last_exit_status);
 			if (code)
 			{
-				printf("(%d)(임시출력) EXIT number : %d\n", (int)ret, WEXITSTATUS(object->last_exit_status));
+				print_log(imp_stus->stdoutFd, object, "(%d)(임시출력) EXIT number : %d\n", (int)ret, WEXITSTATUS(object->last_exit_status));
 				error_process(object, imp_stus, ret);	
 			}
 		}
 		imp_stus->i += 1;
-		printf("(부모에서 출력) pid %d : child process exit \n", (int)ret);
+		print_log(imp_stus->stdoutFd, object, "(부모에서 출력) pid %d : child process exit \n", (int)ret);
 	}
 	// 에러 출력 후에 읽기 파이프도 닫아줌
 	close(imp_stus->stderr_pipe[0]);
@@ -68,8 +68,13 @@ static void error_process(t_object *object, t_imp_stus *imp_stus, pid_t ret)
 	// 특정 error출력 씹음
 	if (ft_strnstr(buf, "Broken pipe", sizeof(buf) - 1))
 	{
-		// printf("(%d)(임시 출력) %s\n", (int)ret ,buf);
+		print_log(imp_stus->stdoutFd, object, "(%d)(임시 출력) %s\n", (int)ret ,buf);
 		return ;
 	}
-	printf("(정상 에러 출력 : ) %s\n", buf);
+	if (ft_strnstr(buf, "write error", sizeof(buf) - 1))
+	{
+		print_log(imp_stus->stdoutFd, object, "(%d)(임시 출력) %s\n", (int)ret ,buf);
+		return ;
+	}
+	printf("(정상 에러 출력) : %s", buf);
 }
