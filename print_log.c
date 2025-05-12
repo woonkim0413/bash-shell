@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 14:53:35 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/11 19:06:57 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/12 14:07:55 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 
 static int get_log_level(t_env *env);
 
+// 해당 함수는 제출 시에는 제거해야 한다
 void print_log(int stdout_fd, t_object *object, const char *format, ...)
 {
 	int			log_level;
