@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/11 19:26:15 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/12 18:50:04 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,10 @@
 
 typedef enum e_token_type
 {
-	TOKEN_REDIR_IN, // <
-	TOKEN_REDIR_OUT, // >
-	TOKEN_HEREDOC, // <<
-	TOKEN_APPEND // >>
+	TOKEN_REDIR_IN,
+	TOKEN_REDIR_OUT,
+	TOKEN_HEREDOC,
+	TOKEN_APPEND
 }	t_token_type;
 
 typedef struct s_env
@@ -55,16 +55,12 @@ typedef struct s_redirect
 	struct s_redirect	*next;
 }	t_redirect;
 
-// heredoc_fd 이렇게 하면 안됨
-// 만약 heredoc다음에 redirect가 나온 경우 heredoc는 무시되어야 함
-// 즉, heredoc도 s_redirect node에 들어가야 한다
 typedef struct s_cmd_info
 {	
 	char				*cmd;
 	char				**evecve_argv;
 	char				*cmd_path;
 	t_redirect			*redirect;
-	int					heredoc_fd;
 	struct s_cmd_info	*prev;
 	struct s_cmd_info	*next;
 }	t_cmd_info;
@@ -117,29 +113,48 @@ void		init_child_signal(void);
 int			is_all_space(const char *line);
 /* error */
 void		throw_error(char *message, t_object *object, t_imp_stus *imp_stus);
-void		free_all(t_object *object);
-void 		free_stus(t_imp_stus *imp_stus);
+/* free/free */
+void		free_object(t_object *object);
 void		free_stus_and_object(t_object *object, t_imp_stus *imp_stus);
+/* free/free_helper */
+void		free_string_arr(char ***string_arr);
+void		free_stus(t_imp_stus *imp_stus);
+void		free_env(t_env *env);
+void		free_redirect(t_redirect *redirect);
+void		free_cmd_info(t_cmd_info *cmd_info);
 
-/* parsing */
+/* parsing/parsing_token.c */
 void		parsing(char **line_splited_pipe, t_object *object);
-/* parsing/quote */
+
+/* parsing/quote/quote_handler.c */
 void		check_quotes(char **line, t_object *object);
+int			is_have_quotes(char *line);
+/* parsing/quote/clean_up_quote.c */
 void		clean_up_quote(t_cmd_info *cmd_info);
-/* parsing/env */
+
+/* parsing/env/env_helper.c */
 char		*get_env(char *key, t_env *env);
+/* parsing/env/extend_env.c */
 char		*extract_key_in(char *src);
 void		extend_env(char **line, int *dolloar_idx, t_object *object);
-/* parsing/utils */
+
+/* parsing/redirect/redirect_parsing_handler.c */
+void		check_redirect(t_check_redir_arg *arg);
+
+/* parsing/heardoc/heardoc_handler.c */
+void		handle_heardoc(t_object *object);
+
+/* parsing/utils/parsing_utils.c */
 void		check_pipe(char **line, t_object *object);
-void		free_string_arr(char **string_arr);
 void		print_all_cmd(t_object *object);
 void		whitespace_convert_to_space(char **line);
-/* parsing/utils/split_with_quote */
+/* parsing/utils/split_by_redir_2.c */
 void		split_by_redir(char **temp, t_result_info *result_info);
+/* parsing/utils/split_by_redir.c */
 char		**split_redir_with_quote(char **temp);
-char		**split_with_quote(char *s);
-/* parsing/utils/seperate_helper */
+/* parsing/utils/split_with_quote.c */
+char		**split_by_space_with_quote(char *s);
+/* parsing/utils/seperate_helper.c */
 char		**extend_env_and_split(char **line, t_object *object);
 void		set_toggle(char c, int *in_single, int *in_double);
 

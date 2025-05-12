@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 20:07:38 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/30 15:17:28 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/12 14:34:30 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static	void	split_by_space(char ***result, char *s)
 		(*result)[word_count] = ft_substr(s, start, idx);
 }
 
-char	**split_with_quote(char *s)
+char	**split_by_space_with_quote(char *s)
 {
 	char	**result;
 	int		word_count;
