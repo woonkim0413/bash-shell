@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:53:47 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/12 18:48:20 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/12 18:50:13 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ int	main(int length, char *input[], char *env[])
 			free(line);
 			parsing(line_splited_by_pipe, &object);
 			handle_heardoc(&object);
-			// handle_empty_pipe(&object);
+			clean_up_quote(object.cmd_info);
 			print_all_cmd(object.cmd_info);
 			implement(&object);
 		}

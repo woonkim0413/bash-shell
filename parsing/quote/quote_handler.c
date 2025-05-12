@@ -6,13 +6,13 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:50:00 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/10 15:31:19 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/12 17:21:01 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static	int	is_have_quotes(char *line)
+int	is_have_quotes(char *line)
 {
 	int	idx;
 

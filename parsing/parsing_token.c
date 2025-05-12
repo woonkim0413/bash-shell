@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 20:10:44 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/12 14:35:42 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/12 17:25:11 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,5 +78,4 @@ void	parsing(char **line_splited_pipe, t_object *object)
 		}
 	}
 	free_string_arr(&line_splited_pipe);
-	clean_up_quote(object->cmd_info);
 }

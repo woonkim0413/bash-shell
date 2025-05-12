@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 15:31:13 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/12 16:16:35 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/12 17:23:28 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,10 @@ static	void	write_heardoc_in_pipe(t_object *object, t_redirect *redirect)
 			free(line);
 			break ;
 		}
-		find_dollar_location(&line, object);
+		if (is_have_quotes(redirect->file_path))
+			check_quotes(&line, object);
+		else
+			find_dollar_location(&line, object);
 		write(pipe_fd[1], line, ft_strlen(line));
 		write(pipe_fd[1], "\n", 1);
 		free(line);

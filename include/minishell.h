@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/12 18:49:17 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/12 18:50:04 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,10 @@
 
 typedef enum e_token_type
 {
-	TOKEN_REDIR_IN, // <
-	TOKEN_REDIR_OUT, // >
-	TOKEN_HEREDOC, // <<
-	TOKEN_APPEND // >>
+	TOKEN_REDIR_IN,
+	TOKEN_REDIR_OUT,
+	TOKEN_HEREDOC,
+	TOKEN_APPEND
 }	t_token_type;
 
 typedef struct s_env
@@ -128,6 +128,7 @@ void		parsing(char **line_splited_pipe, t_object *object);
 
 /* parsing/quote/quote_handler.c */
 void		check_quotes(char **line, t_object *object);
+int			is_have_quotes(char *line);
 /* parsing/quote/clean_up_quote.c */
 void		clean_up_quote(t_cmd_info *cmd_info);
 
@@ -145,7 +146,6 @@ void		handle_heardoc(t_object *object);
 
 /* parsing/utils/parsing_utils.c */
 void		check_pipe(char **line, t_object *object);
-void		free_string_arr(char **string_arr);
 void		print_all_cmd(t_object *object);
 void		whitespace_convert_to_space(char **line);
 /* parsing/utils/split_by_redir_2.c */
