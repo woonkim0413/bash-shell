@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:53:47 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/29 20:39:31 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/11 19:26:46 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	main(int length, char *input[], char *env[])
 			check_quotes(&line, &object);
 			line_splited_by_pipe = extend_env_and_split(&line, &object);
 			parsing(line_splited_by_pipe, &object);
-			print_all_cmd(object.cmd_info);
+			print_all_cmd(&object); // woonkim 수정함 object.cmd_info -> &object
 			implement(&object);
 		}
 	}

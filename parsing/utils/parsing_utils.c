@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:18:01 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/10 15:34:05 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/11 19:25:28 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,36 +25,39 @@ void	free_string_arr(char **string_arr)
 	free(string_arr);
 }
 
-static	void	print_cmd(t_cmd_info *cmd_info)
+static	void	print_cmd(t_object *object, t_cmd_info *cmd_info)
 {
 	int			idx;
 	t_redirect	*redirect;
 
 	redirect = cmd_info->redirect;
-	printf("=========================\n");
-	printf("cmd : %s\n", cmd_info->cmd);
+	print_log(1, object, "=========================\n");
+	print_log(1, object, "cmd : %s\n", cmd_info->cmd);
 	idx = 0;
 	while (cmd_info->evecve_argv[idx])
 	{
-		printf("evecve_argv : %s\n", cmd_info->evecve_argv[idx]);
+		print_log(1, object, "evecve_argv : %s\n", cmd_info->evecve_argv[idx]);
 		idx++;
 	}
-	printf("cmd_path : %s\n", cmd_info->cmd_path);
+	print_log(1, object, "cmd_path : %s\n", cmd_info->cmd_path);
 	while (redirect)
 	{
-		printf("redirect_type : %u\n", redirect->type);
-		printf("redirect_file_path : %s\n", redirect->file_path);
+		print_log(1, object, "redirect_type : %u\n", redirect->type);
+		print_log(1, object, "redirect_file_path : %s\n", redirect->file_path);
 		redirect = redirect->next;
 	}
-	printf("=========================\n");
+	print_log(1, object, "=========================\n");
 }
 
-void	print_all_cmd(t_cmd_info *cmd_info)
+void	print_all_cmd(t_object *object)
 {
-	while (cmd_info)
+	t_cmd_info	*temp;
+	
+	temp = object->cmd_info;
+	while (temp)
 	{
-		print_cmd(cmd_info);
-		cmd_info = cmd_info->next;
+		print_cmd(object, temp);
+		temp = temp->next;
 	}
 }
 
