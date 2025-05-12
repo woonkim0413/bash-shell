@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 19:32:26 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/10 17:51:16 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/12 14:33:19 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,6 @@ static	void	process_seperate_line(char ***result, char **line, \
 		end++;
 	}
 	(*result)[result_idx] = ft_substr(*line, start, ft_strlen(*line) - start);
-	free(*line);
 }
 
 char	**extend_env_and_split(char **line, t_object *object)

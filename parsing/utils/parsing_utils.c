@@ -6,12 +6,17 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:18:01 by rakim             #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/05/11 19:25:28 by woonkim          ###   ########.fr       */
+=======
+/*   Updated: 2025/05/12 14:31:07 by rakim            ###   ########.fr       */
+>>>>>>> 186cdea (heardoc)
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+<<<<<<< HEAD
 void	free_string_arr(char **string_arr)
 {
 	int	idx;
@@ -26,6 +31,9 @@ void	free_string_arr(char **string_arr)
 }
 
 static	void	print_cmd(t_object *object, t_cmd_info *cmd_info)
+=======
+static	void	print_cmd(t_cmd_info *cmd_info)
+>>>>>>> 186cdea (heardoc)
 {
 	int			idx;
 	t_redirect	*redirect;
@@ -82,7 +90,10 @@ void	check_pipe(char **line, t_object *object)
 	idx = 0;
 	before_pipe = 0;
 	if ((*line)[idx] == '|')
+	{
+		free((*line));
 		throw_error("argv error", object, NULL);
+	}
 	while ((*line)[idx])
 	{
 		if (before_pipe && (*line)[idx] == '|')
