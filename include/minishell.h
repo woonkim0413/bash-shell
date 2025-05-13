@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/14 11:44:19 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/14 15:52:28 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,14 +44,14 @@ typedef struct s_env
 {
 	char			*key;
 	char			*value;
-	struct	s_env	*next;
+	struct s_env	*next;
 }	t_env;
 
 typedef struct s_redirect
 {
 	t_token_type		type;
 	char				*file_path;
-	int					heredoc_fd; // pipe 읽기 fd여야 함
+	int					heredoc_fd;
 	struct s_redirect	*next;
 }	t_redirect;
 
@@ -78,6 +78,7 @@ typedef struct s_result_info
 {
 	char	**result;
 	int		result_idx;
+	int		add_value;
 }	t_result_info;
 
 typedef struct s_check_redir_arg
@@ -103,7 +104,7 @@ typedef struct s_imp_stus
 	int		stderr_pipe[2];
 	pid_t	*chil_pid;
 	int		**pipeFd; // 명령어 갯수에 따른 pipe용 int배열 저장
-} t_imp_stus;
+}	t_imp_stus;
 
 /* init */
 void		init(int length, char *input[], t_object *object, char **env);
@@ -119,31 +120,25 @@ void		free_stus_and_object(t_object *object, t_imp_stus *imp_stus);
 /* free/free_helper */
 void		free_string_arr(char ***string_arr);
 void		free_stus(t_imp_stus *imp_stus);
-void		free_env(t_env *env);
-void		free_redirect(t_redirect *redirect);
-void		free_cmd_info(t_cmd_info *cmd_info);
-
+void		free_env(t_env **env);
+void		free_redirect(t_redirect **redirect);
+void		free_cmd_info(t_cmd_info **cmd_info);
 /* parsing/parsing_token.c */
 void		parsing(char **line_splited_pipe, t_object *object);
-
 /* parsing/quote/quote_handler.c */
 void		check_quotes(char **line, t_object *object);
 int			is_have_quotes(char *line);
 /* parsing/quote/clean_up_quote.c */
 void		clean_up_quote(t_cmd_info *cmd_info);
-
 /* parsing/env/env_helper.c */
 char		*get_env(char *key, t_env *env);
 /* parsing/env/extend_env.c */
 char		*extract_key_in(char *src);
 void		extend_env(char **line, int *dolloar_idx, t_object *object);
-
 /* parsing/redirect/redirect_parsing_handler.c */
 void		check_redirect(t_check_redir_arg *arg);
-
 /* parsing/heardoc/heardoc_handler.c */
 void		handle_heardoc(t_object *object);
-
 /* parsing/utils/parsing_utils.c */
 void		check_pipe(char **line, t_object *object);
 void		print_all_cmd(t_object *object);
@@ -161,42 +156,43 @@ void		set_toggle(char c, int *in_single, int *in_double);
 /*---------------------- 구현부 함수 ----------------------*/
 
 /* /imple_cmd/builtin */
-int		execute_echo(t_object *object, t_imp_stus *imp_stus);
-int		execute_env(t_object *object, t_imp_stus *imp_stus);
-int		execute_exit(t_object *object, t_imp_stus *imp_stus);
-int		execute_export(t_object *object, t_imp_stus *imp_stus);
-int		execute_pwd(t_object *object, t_imp_stus *imp_stus, int prev_cwd_fd);
-int		execute_unset(t_object *object, t_imp_stus *imp_stus);
-int		execute_cd(t_object *object, t_imp_stus *imp_stus);
+int			execute_echo(t_object *object, t_imp_stus *imp_stus);
+int			execute_env(t_object *object, t_imp_stus *imp_stus);
+int			execute_exit(t_object *object, t_imp_stus *imp_stus);
+int			execute_export(t_object *object, t_imp_stus *imp_stus);
+int			execute_pwd(t_object *object, \
+	t_imp_stus *imp_stus, int prev_cwd_fd);
+int			execute_unset(t_object *object, t_imp_stus *imp_stus);
+int			execute_cd(t_object *object, t_imp_stus *imp_stus);
 
 /* /imple_cmd/implement.c*/
-void	implement(t_object *object);
+void		implement(t_object *object);
 
 /* /imple_cmd/cmd_path_find.c*/
-void	find_path(t_cmd_info *t_cmd, t_env *env);
+void		find_path(t_cmd_info *t_cmd, t_env *env);
 
 /* /imple_cmd/redirect_setting.c */
-void	input_output_setting(t_object *object, t_imp_stus *imp_stus, \
+void		input_output_setting(t_object *object, t_imp_stus *imp_stus, \
 		int one_builtin_flag);
 
 /* /imple_cmd/imp_utils.c */
-void	create_execve_args(t_cmd_info *cmd_info);
-char	**env_to_char(t_env *env);
-void	free_doublechar(char **argv);
-int		cmd_null_check(t_object *object,t_imp_stus *imp_stus);
+void		create_execve_args(t_cmd_info *cmd_info);
+char		**env_to_char(t_env *env);
+void		free_doublechar(char **argv);
+int			cmd_null_check(t_object *object, t_imp_stus *imp_stus);
 
 /* /imple_cmd/parent_wait_to_child.c */
-void 	wait_childs_process(t_object *object, t_imp_stus *imp_stus);
+void		wait_childs_process(t_object *object, t_imp_stus *imp_stus);
 
 /* /imple_cmd/builtins/builtin_utils1.c */
-void	execute_one_builtin(t_object *object, t_imp_stus *imp_stus);
-int		check_one_builtin(t_object *object, t_imp_stus *imp_stus);
-int 	execute_builtins(t_object *object, t_imp_stus *imp_stus);
+void		execute_one_builtin(t_object *object, t_imp_stus *imp_stus);
+int			check_one_builtin(t_object *object, t_imp_stus *imp_stus);
+int			execute_builtins(t_object *object, t_imp_stus *imp_stus);
 
 /* /imple_cmd/imple_setting */
-void	setting_pipline(t_cmd_info *t_cmd, t_imp_stus *imp_stus);
-void	pipe_and_fork(t_imp_stus *imp_stus);
-void	init_t_imp_stus(t_imp_stus *imp_stus);
+void		setting_pipline(t_cmd_info *t_cmd, t_imp_stus *imp_stus);
+void		pipe_and_fork(t_imp_stus *imp_stus);
+void		init_t_imp_stus(t_imp_stus *imp_stus);
 
 /* /print_log.c */
 void	print_log(int stdout_fd, t_object *object, const char *format, ...);

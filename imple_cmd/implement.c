@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   implement.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/14 10:55:03 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/14 15:51:29 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,17 +82,20 @@ static void	child_while_process(t_object *object, t_imp_stus *imp_stus)
 // fork후 부모 프로세스를 처리하는 함수
 static void	parent_while_process(t_object *object, t_imp_stus *imp_stus)
 {
+	t_cmd_info	*cmd_info;
+
+	cmd_info = object->cmd_info;
 	// 부모 proecess는 쓰기 close
 	close(imp_stus->pipeFd[imp_stus->cur_c_n][1]);
 	// 이전 파이프 buffer 읽기 fd 닫기 (fork한 후 생성한 자식이 유지하고 있음)
 	// 마지막 명령어에선 이전 buufer 파이프 읽기 fd 닫기
-	if (object->cmd_info->prev != NULL)
+	if (cmd_info->prev != NULL)
 		close(imp_stus->pipeFd[imp_stus->cur_c_n - 1][0]);
-	if (object->cmd_info->next == NULL)
+	if (cmd_info->next == NULL)
 		close(imp_stus->pipeFd[imp_stus->cur_c_n][0]);
 	// 명령어 index 및 node 이동
 	imp_stus->cur_c_n += 1;
-	object->cmd_info = object->cmd_info->next;
+	cmd_info = cmd_info->next;
 }
 
 // 자식 process를 명령어에 맞게 execve하여 동작하게 함

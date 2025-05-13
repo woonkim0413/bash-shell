@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 13:58:34 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/12 16:04:55 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/13 14:15:57 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,59 +51,55 @@ void	free_string_arr(char ***string_arr)
 	(*string_arr) = NULL;
 }
 
-void	free_env(t_env *env)
+void	free_env(t_env **env)
 {
 	t_env	*temp;
 
-	while (env)
+	while ((*env))
 	{
-		temp = env->next;
-		if (!temp)
-			break ;
-		if (env->key)
-			free(env->key);
-		if (env->value)
-			free(env->value);
-		free(env);
-		env = temp->next;
+		temp = (*env)->next;
+		if ((*env)->key)
+			free((*env)->key);
+		if ((*env)->value)
+			free((*env)->value);
+		free((*env));
+		(*env) = temp;
 	}
-	env = NULL;
+	(*env) = NULL;
 }
 
-void	free_redirect(t_redirect *redirect)
+void	free_redirect(t_redirect **redirect)
 {
 	t_redirect	*temp;
 
-	while (redirect)
+	while ((*redirect))
 	{
-		temp = redirect->next;
-		if (!temp)
-			break ;
-		if (redirect->file_path)
-			free(redirect->file_path);
-		redirect = temp;
+		temp = (*redirect)->next;
+		if ((*redirect)->file_path)
+			free((*redirect)->file_path);
+		free(*redirect);
+		(*redirect) = temp;
 	}
-	redirect = NULL;
+	(*redirect) = NULL;
 }
 
-void	free_cmd_info(t_cmd_info *cmd_info)
+void	free_cmd_info(t_cmd_info **cmd_info)
 {
 	t_cmd_info	*temp;
 
-	while (cmd_info)
+	while ((*cmd_info))
 	{
-		temp = cmd_info->next;
-		if (!temp)
-			break ;
-		if (cmd_info->cmd)
-			free(cmd_info->cmd);
-		if (cmd_info->evecve_argv)
-			free_string_arr(&(cmd_info->evecve_argv));
-		if (cmd_info->cmd_path)
-			free(cmd_info->cmd_path);
-		if (cmd_info->redirect)
-			free_redirect(cmd_info->redirect);
-		cmd_info = temp;
+		temp = (*cmd_info)->next;
+		if ((*cmd_info)->cmd)
+			free((*cmd_info)->cmd);
+		if ((*cmd_info)->evecve_argv)
+			free_string_arr(&((*cmd_info)->evecve_argv));
+		if ((*cmd_info)->cmd_path)
+			free((*cmd_info)->cmd_path);
+		if ((*cmd_info)->redirect)
+			free_redirect(&((*cmd_info)->redirect));
+		free(*cmd_info);
+		(*cmd_info) = temp;
 	}
-	cmd_info = NULL;
+	(*cmd_info) = NULL;
 }
