@@ -1,12 +1,47 @@
 NAME = minishell
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror -g -Iinclude
 LDFLAGS = -lreadline
 
-SRCS = minishell.c error_handler.c signal_handler.c init_helper.c untils.c
+SRCS = minishell.c \
+print_log.c \
+error/error_handler.c \
+init/init_signal.c \
+init/init_helper.c \
+init/init_utils.c \
+free/free.c \
+free/free_helper.c \
+parsing/parsing_token.c \
+parsing/utils/seperate_helper.c \
+parsing/utils/parsing_utils.c \
+parsing/utils/split_by_space_with_quote.c \
+parsing/utils/split_by_redir.c \
+parsing/utils/split_by_redir_2.c \
+parsing/heardoc/heardoc_handler.c \
+parsing/env/extend_env.c \
+parsing/env/env_helper.c \
+parsing/quote/quote_handler.c \
+parsing/quote/clean_up_quote.c \
+parsing/redirect/redirect_parsing_handler.c \
+imple_cmd/redirect_setting.c \
+imple_cmd/imp_utils1.c \
+imple_cmd/parent_wait_to_child.c \
+imple_cmd/cmd_path_find.c \
+imple_cmd/implement.c \
+imple_cmd/imple_setting.c \
+imple_cmd/builtins/echo.c \
+imple_cmd/builtins/env.c \
+imple_cmd/builtins/exit.c \
+imple_cmd/builtins/export.c \
+imple_cmd/builtins/pwd.c \
+imple_cmd/builtins/unset.c \
+imple_cmd/builtins/cd.c \
+imple_cmd/builtins/builtin_utils.c \
+
+
 OBJS = $(SRCS:.c=.o)
-HEADER = minishell.h
+HEADER = include/minishell.h
 
 LIBFT_DIR = libft
 LIBFT_NAME = libft.a

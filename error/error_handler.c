@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   error_handler.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/02 13:45:36 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 14:47:59 by rakim            ###   ########.fr       */
+/*   Created: 2025/04/19 16:00:12 by rakim             #+#    #+#             */
+/*   Updated: 2025/05/12 14:17:03 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-size_t	ft_strlen(const char *s)
+void	throw_error(char *message, t_object *object, t_imp_stus *imp_stus)
 {
-	size_t	length;
-
-	length = 0;
-	while (s[length] != '\0')
-		length++;
-	return (length);
+	if (object)
+		free_object(object);
+	if (imp_stus)
+		free_stus(imp_stus);
+	printf("Error : %s\n", message);
+	exit(1);
 }

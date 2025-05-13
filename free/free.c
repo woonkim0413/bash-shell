@@ -1,34 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signal_handler.c                                   :+:      :+:    :+:   */
+/*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/19 16:43:10 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/20 13:27:48 by rakim            ###   ########.fr       */
+/*   Created: 2025/05/12 14:14:29 by rakim             #+#    #+#             */
+/*   Updated: 2025/05/12 14:16:05 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static	void	sigint_handler(int signal)
+void	free_object(t_object *object)
 {
-	(void)signal;
-	rl_on_new_line();
-	write(1, "\n", 1);
-	rl_replace_line("", 0);
-	rl_redisplay();
+	t_env		*env;
+	t_cmd_info	*cmd_info;
+
+	env = object->env;
+	cmd_info = object->cmd_info;
+	free_env(env);
+	free_cmd_info(cmd_info);
 }
 
-void	init_signal(void)
+void	free_stus_and_object(t_object *object, t_imp_stus *imp_stus)
 {
-	signal(SIGQUIT, SIG_IGN);
-	signal(SIGINT, sigint_handler);
-}
-
-void	init_child_signal(void)
-{
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
+	if (object)
+		free_object(object);
+	if (imp_stus)
+		free_stus(imp_stus);
 }

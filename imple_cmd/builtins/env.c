@@ -1,35 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error_handler.c                                    :+:      :+:    :+:   */
+/*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/19 16:00:12 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/20 15:58:29 by rakim            ###   ########.fr       */
+/*   Created: 2025/04/28 12:30:20 by woonkim           #+#    #+#             */
+/*   Updated: 2025/05/02 23:35:09 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static	void	free_all(t_env *head)
+int execute_env(t_object *object, t_imp_stus *imp_stus)
 {
-	t_env	*temp;
+	t_env *temp;
 
-	while (head)
+	(void)imp_stus;
+	temp = object->env;
+	while (temp)
 	{
-		temp = head->next;
-		free(head->key);
-		free(head->value);
-		free(head);
-		head = temp;
+		if (temp->key && temp->value)
+			printf("%s=%s\n", temp->key, temp->value);
+		temp = temp->next;
 	}
-}
-
-void	throw_error(char *message, t_env *head)
-{
-	if (head)
-		free_all(head);
-	printf("%s\n", message);
-	exit(1);
+	return (1);
 }

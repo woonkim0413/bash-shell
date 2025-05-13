@@ -1,23 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   init_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/02 13:45:36 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 14:47:59 by rakim            ###   ########.fr       */
+/*   Created: 2025/04/20 16:04:33 by rakim             #+#    #+#             */
+/*   Updated: 2025/04/21 15:46:39 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-size_t	ft_strlen(const char *s)
+int	is_all_space(const char *line)
 {
-	size_t	length;
+	int	idx;
 
-	length = 0;
-	while (s[length] != '\0')
-		length++;
-	return (length);
+	idx = 0;
+	while (line[idx])
+	{
+		if (line[idx] != 32 && !(line[idx] >= 9 && line[idx] <= 13))
+			return (0);
+		idx++;
+	}
+	return (1);
 }

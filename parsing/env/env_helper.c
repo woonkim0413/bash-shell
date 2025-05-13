@@ -1,23 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   env_helper.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/02 13:45:36 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 14:47:59 by rakim            ###   ########.fr       */
+/*   Created: 2025/04/26 19:41:16 by rakim             #+#    #+#             */
+/*   Updated: 2025/04/26 19:41:37 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-size_t	ft_strlen(const char *s)
+char	*get_env(char *key, t_env *env)
 {
-	size_t	length;
+	char	*key_name;
 
-	length = 0;
-	while (s[length] != '\0')
-		length++;
-	return (length);
+	key_name = key + 1;
+	while (env)
+	{
+		if (ft_strlen(env->key) == ft_strlen(key_name) && \
+		ft_strncmp(env->key, key_name, ft_strlen(key_name)) == 0)
+			return (ft_strdup(env->value));
+		env = env->next;
+	}
+	return (ft_strdup(""));
 }
