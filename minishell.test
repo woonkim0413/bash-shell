@@ -44,7 +44,7 @@ ls >> output.txt
 echo world >> output.txt
 
 # 9. 리다이렉션 (입력 <)
-cat < input.txt
+cat < input.txt // 동작이상
 wc -l < input.txt
 
 # 10. 여기 도큐먼트 (<<) - delimiter 뒤에 입력 받을 때까지 기다려야 함 (파싱 단계에서 delimiter 확인)
@@ -97,7 +97,7 @@ $ # $ 기호만 있을 때 (minishell 요구사항 확인)
 $$ # $$ 기호 (minishell 요구사항 확인 - 보통 현재 셸의 PID)
 
 # 16. 따옴표 안의 리다이렉션/파이프 기호
-echo ">"
+c
 echo '<'
 echo "hello | world"
 echo 'hello > world'
@@ -109,16 +109,6 @@ cat /etc/passwd
 ls ./
 ls ../
 
-# 18. 세미콜론 (;) - minishell에서 지원 안 함 (에러 처리 확인)
-ls ; cat file.txt
-
-# 19. 백슬래시 (\) - 인용되지 않은 백슬래시는 다음 문자를 이스케이프 (minishell 요구사항 확인)
-echo hello\ world # 공백 이스케이프
-echo hello\\world # 백슬래시 자체 이스케이프
-echo \>
-echo \<
-echo \|
-
 # 20. 명령어 이름에 따옴표 포함 (minishell 요구사항 확인)
 "ls" -l
 'cat' file.txt
@@ -129,7 +119,7 @@ echo $NA-ME # 변수 이름 규칙 확인
 
 # 22. 연속된 파이프 또는 리다이렉션 (문법 에러)
 ls || cat
-ls >> > output.txt
+ls >> > output.txt  // >> >인 경우 에러처리 안 됨
 
 # 23. 따옴표가 닫히지 않은 경우 (문법 에러)
 echo "hello

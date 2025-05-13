@@ -3,37 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:18:01 by rakim             #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2025/05/11 19:25:28 by woonkim          ###   ########.fr       */
-=======
-/*   Updated: 2025/05/12 14:31:07 by rakim            ###   ########.fr       */
->>>>>>> 186cdea (heardoc)
+/*   Updated: 2025/05/12 18:55:24 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-<<<<<<< HEAD
-void	free_string_arr(char **string_arr)
-{
-	int	idx;
-
-	idx = 0;
-	while (string_arr[idx])
-	{
-		free(string_arr[idx]);
-		idx++;
-	}
-	free(string_arr);
-}
-
 static	void	print_cmd(t_object *object, t_cmd_info *cmd_info)
-=======
-static	void	print_cmd(t_cmd_info *cmd_info)
->>>>>>> 186cdea (heardoc)
 {
 	int			idx;
 	t_redirect	*redirect;
@@ -60,7 +39,7 @@ static	void	print_cmd(t_cmd_info *cmd_info)
 void	print_all_cmd(t_object *object)
 {
 	t_cmd_info	*temp;
-	
+
 	temp = object->cmd_info;
 	while (temp)
 	{
