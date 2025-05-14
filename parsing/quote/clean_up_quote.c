@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/27 14:41:03 by rakim             #+#    #+#             */
-/*   Updated: 2025/04/27 14:45:41 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/13 16:20:26 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@ static	char	*remove_outer_quote(char **str)
 	str_idx = 0;
 	result_idx = 0;
 	result = ft_calloc(ft_strlen(*str) + 1, sizeof(char));
-	if (!result)
-		return (NULL);
 	while ((*str)[str_idx])
 	{
 		if ((*str)[str_idx] == '\'' && !in_double)
@@ -59,6 +57,8 @@ void	clean_up_quote(t_cmd_info *cmd_info)
 	t_cmd_info	*crr_cmd;
 	int			idx;
 
+	if (!cmd_info)
+		return ;
 	crr_cmd = cmd_info;
 	while (crr_cmd)
 	{

@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:50:00 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/12 17:21:01 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/13 15:47:05 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,13 +51,15 @@ static	void	is_quote_close(char **line, t_object *object)
 	}
 	if (in_single || in_duoble)
 	{
-		free((*line));
-		throw_error("quote is not close", object, NULL);
+		throw_error("quote is not close", object, NULL, line);
+		return ;
 	}
 }
 
 void	check_quotes(char **line, t_object *object)
 {
+	if (!(*line))
+		return ;
 	if (is_have_quotes(*line))
 		is_quote_close(line, object);
 }

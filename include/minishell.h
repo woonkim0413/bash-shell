@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/14 15:52:28 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/14 15:52:55 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,10 +113,13 @@ void		init_child_signal(void);
 /* init/utils */
 int			is_all_space(const char *line);
 /* error */
-void		throw_error(char *message, t_object *object, t_imp_stus *imp_stus);
+void		throw_error(char *message, t_object *object, \
+	t_imp_stus *imp_stus, char **line);
 /* free/free */
 void		free_object(t_object *object);
 void		free_stus_and_object(t_object *object, t_imp_stus *imp_stus);
+void		free_string(char **line);
+void		free_arg(t_check_redir_arg *arg);
 /* free/free_helper */
 void		free_string_arr(char ***string_arr);
 void		free_stus(t_imp_stus *imp_stus);

@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:21:30 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/13 15:32:52 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/13 15:49:02 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,9 +85,8 @@ void	extend_env(char **line, int *dollar_idx, t_object *object)
 		env_key = extract_key_in(dollar_location);
 		if (env_key == NULL)
 		{
-			free(*line);
-			(*line) = NULL;
-			throw_error("syntax error", object, NULL);
+			throw_error("syntax error", object, NULL, line);
+			return ;
 		}
 		set_env_value_and_key(&env_value, &env_key, object, &key_len);
 	}

@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:53:47 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/13 13:25:33 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/13 20:03:37 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ static	void	process_minishell(t_object *object, char **line)
 	handle_heardoc(object);
 	clean_up_quote(object->cmd_info);
 	print_all_cmd(object);
-	implement(object);
+	if (object->cmd_info)
+		implement(object);
 }
 
 int	main(int length, char *input[], char *env[])

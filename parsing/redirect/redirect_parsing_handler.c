@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 13:53:11 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/12 13:53:54 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/13 21:08:01 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,7 @@ static	void	set_redirect(t_token_type token_type, char *file_path, \
 
 	new_node = ft_calloc(sizeof(t_redirect), 1);
 	if (!new_node)
-		throw_error("malloc error", object, NULL);
-	if (!file_path)
-		throw_error("there is no file_path", object, NULL);
+		throw_error("malloc error", object, NULL, NULL);
 	new_node->type = token_type;
 	new_node->file_path = ft_strdup(file_path);
 	if (!(*redirect))
@@ -46,10 +44,15 @@ static	void	handle_redirect(t_check_redir_arg *arg, \
 		next_idx++;
 	if (token == TOKEN_APPEND || token == TOKEN_HEREDOC)
 		next_idx += 2;
+	if (!(arg->src[arg->current_src + 1]))
+	{
+		throw_error("there is no file_path", arg->object, NULL, NULL);
+		return ;
+	}
 	if (arg->src[arg->current_src][next_idx])
 	{
-		set_redirect(token, arg->src[arg->current_src] + (next_idx), \
-		&(arg->redirect), arg->object);
+		set_redirect(token, arg->src[arg->current_src] + next_idx, \
+			&(arg->redirect), arg->object);
 		*idx += next_idx - 1;
 	}
 	else
@@ -84,6 +87,8 @@ void	check_redirect(t_check_redir_arg *arg)
 				handle_redirect(arg, &idx, TOKEN_REDIR_OUT);
 			else if (arg->src[arg->current_src][idx] == '<')
 				handle_redirect(arg, &idx, TOKEN_REDIR_IN);
+			if (!(arg->src) && !(arg->cmd) && !(arg->redirect))
+				return ;
 		}
 	}
 }

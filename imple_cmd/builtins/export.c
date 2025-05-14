@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:33:32 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/11 19:33:46 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/14 15:43:28 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ int	execute_export(t_object *object, t_imp_stus *imp_stus)
 		free_doublechar(argv_equals);
 	}
 	free_doublechar(evecve_arg);
+	object->cmd_info->evecve_argv = NULL;
 	return (1);
 }
 

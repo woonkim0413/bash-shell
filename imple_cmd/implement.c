@@ -6,7 +6,11 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/05/14 15:51:29 by rakim            ###   ########.fr       */
+=======
+/*   Updated: 2025/05/13 20:26:25 by rakim            ###   ########.fr       */
+>>>>>>> 8a14b84 (valgrind)
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +28,9 @@ void implement(t_object *object)
 {
 	t_imp_stus	imp_stus;
 	int			one_builtin_flag;	
+	t_cmd_info	*existing_cmd_info;
 
+	existing_cmd_info = object->cmd_info;
 	print_log(1, object, "\n---------------------- 구현부 -------------------------\n\n");
 	// 명령어 갯수에 맞게 2차원 pipe 배열, child pid배열, child 종료 상태 배열 저장
 	setting_pipline(object->cmd_info, &imp_stus);
@@ -61,6 +67,7 @@ void implement(t_object *object)
 	wait_childs_process(object, &imp_stus);
 	// imp_stus 초기화 (부모 프로세스라 exit()실행하면 안됨)
 	free_stus(&imp_stus);
+	object->cmd_info = existing_cmd_info;
 	return ;
 }
 
@@ -82,20 +89,17 @@ static void	child_while_process(t_object *object, t_imp_stus *imp_stus)
 // fork후 부모 프로세스를 처리하는 함수
 static void	parent_while_process(t_object *object, t_imp_stus *imp_stus)
 {
-	t_cmd_info	*cmd_info;
-
-	cmd_info = object->cmd_info;
 	// 부모 proecess는 쓰기 close
 	close(imp_stus->pipeFd[imp_stus->cur_c_n][1]);
 	// 이전 파이프 buffer 읽기 fd 닫기 (fork한 후 생성한 자식이 유지하고 있음)
 	// 마지막 명령어에선 이전 buufer 파이프 읽기 fd 닫기
-	if (cmd_info->prev != NULL)
+	if (object->cmd_info->prev != NULL)
 		close(imp_stus->pipeFd[imp_stus->cur_c_n - 1][0]);
-	if (cmd_info->next == NULL)
+	if (object->cmd_info->next == NULL)
 		close(imp_stus->pipeFd[imp_stus->cur_c_n][0]);
 	// 명령어 index 및 node 이동
 	imp_stus->cur_c_n += 1;
-	cmd_info = cmd_info->next;
+	object->cmd_info = object->cmd_info->next;
 }
 
 // 자식 process를 명령어에 맞게 execve하여 동작하게 함

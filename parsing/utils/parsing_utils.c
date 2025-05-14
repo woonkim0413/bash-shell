@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:18:01 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/12 18:55:24 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/13 20:30:23 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ void	print_all_cmd(t_object *object)
 	t_cmd_info	*temp;
 
 	temp = object->cmd_info;
+	if (!temp)
+		return ;
 	while (temp)
 	{
 		print_cmd(object, temp);
@@ -70,15 +72,15 @@ void	check_pipe(char **line, t_object *object)
 	before_pipe = 0;
 	if ((*line)[idx] == '|')
 	{
-		free((*line));
-		throw_error("argv error", object, NULL);
+		throw_error("argv error", object, NULL, line);
+		return ;
 	}
 	while ((*line)[idx])
 	{
 		if (before_pipe && (*line)[idx] == '|')
 		{
-			free((*line));
-			throw_error("argv error", object, NULL);
+			throw_error("argv error", object, NULL, line);
+			return ;
 		}
 		if ((*line)[idx] == '|')
 			before_pipe = 1;
@@ -86,4 +88,12 @@ void	check_pipe(char **line, t_object *object)
 			before_pipe = 0;
 		idx++;
 	}
+}
+
+void	set_toggle(char c, int *in_single, int *in_double)
+{
+	if (c == SINGLE_QUOTE_ASCII && !(*in_double))
+		*in_single = !(*in_single);
+	if (c == DOUBLE_QUOTE_ASCII && !(*in_single))
+		*in_double = !(*in_double);
 }

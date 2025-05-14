@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 19:32:26 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/13 15:21:13 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/13 20:35:10 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,15 +38,19 @@ static	int	count_pipe_not_in_quote(char *line)
 	return (count);
 }
 
-void	set_toggle(char c, int *in_single, int *in_double)
+static	int	check_dollar(char **line, int *end, int in_single, t_object *object)
 {
-	if (c == SINGLE_QUOTE_ASCII && !(*in_double))
-		*in_single = !(*in_single);
-	if (c == DOUBLE_QUOTE_ASCII && !(*in_single))
-		*in_double = !(*in_double);
+	if ((*line)[*end] == '$' && !in_single && (*line)[*end + 1] \
+	&& (*line)[*end + 1] != '"')
+	{
+		extend_env(line, end, object);
+		if (!(*line))
+			return (0);
+	}
+	return (1);
 }
 
-static	void	process_seperate_line(char ***result, char **line, \
+static	int	process_seperate_line(char ***result, char **line, \
 	t_object *object, int result_idx)
 {
 	int		in_single;
@@ -68,24 +72,27 @@ static	void	process_seperate_line(char ***result, char **line, \
 			start = ++end;
 			continue ;
 		}
-		if ((*line)[end] == '$' && !in_single && (*line)[end + 1] \
-		&& (*line)[end + 1] != '"')
-			extend_env(line, &end, object);
+		if (!check_dollar(line, &end, in_single, object))
+			return (0);
 		end++;
 	}
 	(*result)[result_idx] = ft_substr(*line, start, ft_strlen(*line) - start);
+	return (1);
 }
 
 char	**extend_env_and_split(char **line, t_object *object)
 {
 	char	**result;
 
+	if (!(*line))
+		return (NULL);
 	result = ft_calloc(sizeof(char *), count_pipe_not_in_quote(*line) + 1);
 	if (!result)
 	{
-		free(*line);
-		throw_error("malloc_error", object, NULL);
+		throw_error("malloc_error", object, NULL, line);
+		return (NULL);
 	}
-	process_seperate_line(&result, line, object, 0);
+	if (!process_seperate_line(&result, line, object, 0))
+		free_string_arr(&result);
 	return (result);
 }
