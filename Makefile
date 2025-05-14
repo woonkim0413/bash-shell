@@ -38,6 +38,7 @@ imple_cmd/builtins/pwd.c \
 imple_cmd/builtins/unset.c \
 imple_cmd/builtins/cd.c \
 imple_cmd/builtins/builtin_utils.c \
+imple_cmd/help_except_case.c \
 
 
 OBJS = $(SRCS:.c=.o)

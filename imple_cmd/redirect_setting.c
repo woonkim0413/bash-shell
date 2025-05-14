@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   imp_utils1.c                                       :+:      :+:    :+:   */
+/*   redirect_setting.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:02:03 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/09 16:14:40 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/14 11:34:50 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,15 @@ static void redirect_process(t_object *object, t_imp_stus *imp_stus)
 	redirect = object->cmd_info->redirect;
 	while (redirect)
 	{
+		// 히어독이 아니면서 리다이렉션 대상 파일이 없는 경우
+		if (redirect->type != TOKEN_HEREDOC && \
+			access(redirect->file_path, F_OK) != 0)
+		{
+			write(2, redirect->file_path, ft_strlen(redirect->file_path));
+			write(2, ": No such file or directitory\n", 31);
+			free_stus_and_object(object, imp_stus);
+			exit(1);	
+		}
 		redirect_process2(imp_stus, redirect);
 		// >> redirection이 있는 경우
 		if (redirect->type == TOKEN_APPEND)

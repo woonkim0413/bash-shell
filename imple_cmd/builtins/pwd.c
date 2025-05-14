@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/27 15:37:59 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/12 18:47:11 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/14 00:13:57 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ int execute_pwd(t_object *object, t_imp_stus *imp_stus, int prev_cwd_fd)
 	
 	(void)object;
 	(void)prev_cwd_fd;
+	(void)imp_stus;
 	getcwd(buffer, sizeof(buffer) - 1);
-	write(imp_stus->stdoutFd, buffer, ft_strlen(buffer));
-	write(imp_stus->stdoutFd, "\n", 1);
+	printf("%s\n", buffer);
 	return (1);
 }

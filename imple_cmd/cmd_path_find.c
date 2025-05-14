@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 22:13:19 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/01 00:59:20 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/14 09:29:55 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ void find_path(t_cmd_info* t_cmd, t_env* env)
 	char **paths;
 
 	temp = env;
+	// 절대주소가 전달된 경우 체크
 	if (access(t_cmd->cmd, F_OK) == 0)
 	{
 		t_cmd->cmd_path = t_cmd->cmd;
