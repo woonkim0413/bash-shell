@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 15:47:06 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/12 19:30:00 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/14 09:06:25 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,9 @@ int	check_one_builtin(t_object *object, t_imp_stus *imp_stus)
 	if (object->cmd_info->prev == NULL && object->cmd_info->next == NULL)
 	{
 		cmd = object->cmd_info->cmd;
-		if (!ft_strncmp("echo", cmd, ft_strlen(cmd)))
+		if (!cmd || ft_strlen(cmd) == 0)
+			flag = 0;
+		else if (!ft_strncmp("echo", cmd, ft_strlen(cmd)))
 			flag = 1;
 		else if (!ft_strncmp("pwd", cmd, ft_strlen(cmd)))
 			flag = 1;
@@ -49,7 +51,9 @@ int	execute_builtins(t_object *object, t_imp_stus *imp_stus)
 
 	flag = 0;
 	cmd = object->cmd_info->cmd;
-	if (!ft_strncmp("echo", cmd, ft_strlen(cmd)))
+	if (!cmd || ft_strlen(cmd) == 0)
+		flag = 0;
+	else if (!ft_strncmp("echo", cmd, ft_strlen(cmd)))
 		flag = execute_echo(object, imp_stus);
 	else if (!ft_strncmp("pwd", cmd, ft_strlen(cmd)))
 		flag = execute_pwd(object, imp_stus, -1);
@@ -86,7 +90,7 @@ void	execute_one_builtin(t_object *object, t_imp_stus *imp_stus)
 		execute_exit(object, imp_stus);
 	else if (!ft_strncmp("cd", cmd, ft_strlen(cmd)))
 		execute_cd(object, imp_stus);
-	// fd 연결 재설정
+	// fd 연결 재설정 (부모 프로세스 stdin, stdout을 건들였기에)
 	dup2(imp_stus->stdoutFd, STDOUT_FILENO);
 	dup2(imp_stus->stdinFd, STDIN_FILENO);
 }

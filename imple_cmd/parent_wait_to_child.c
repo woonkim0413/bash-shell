@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 20:07:27 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/11 19:41:56 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/14 15:06:18 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,30 +18,32 @@ static void error_process(t_object *object, t_imp_stus *imp_stus, pid_t ret);
 // 비정상 종료하는 경우 여기서 error메세지를 terminal로 출력
 void wait_childs_process(t_object *object, t_imp_stus *imp_stus)
 {
-	pid_t ret;
-	int code;
+	pid_t	ret;
+	int		raw_exit_stus;
 
+	raw_exit_stus = 0;
 	while (imp_stus->i < imp_stus->total_c_n)
 	{
-		// printf("%d번 명령어 : before waitpid()\n", imp_stus->i);
 		// 특정 자식 process가 종료될 때까지 대기, 비정상 종료시 flag저장
-		ret = waitpid(-1, &(object->last_exit_status), 0);
-		// printf("%d번 명령어 : after waitpid()\n", imp_stus->i);
+		ret = waitpid(-1, &raw_exit_stus, 0);
+		// 에러 출력
+		error_process(object, imp_stus, ret);	
 		if (ret < 0)
 			perror("waitpid error : ");
 		//시그널 종료 확인
-		if (WIFSIGNALED(object->last_exit_status))
-			print_log(imp_stus->stdoutFd, object, "%d 시그널 종료\n", WTERMSIG(object->last_exit_status));
+		if (WIFSIGNALED(raw_exit_stus))
+		{
+			// < file1.txt와 같은 시그널 종료시 정상 상태 넣어주기기 
+			object->last_exit_status = 0;
+			print_log(imp_stus->stdoutFd, object, "%d 시그널 종료\n", object->last_exit_status);
+		}
 		// 자식 프로세스가 정상 종료됐는지 확인 (exit(), return 종료)
-		if (WIFEXITED(object->last_exit_status))
+		if (WIFEXITED(raw_exit_stus))
 		{
 			// 종료 상태 값 확인
-			code = WEXITSTATUS(object->last_exit_status);
-			if (code)
-			{
-				print_log(imp_stus->stdoutFd, object, "(%d)(임시출력) EXIT number : %d\n", (int)ret, WEXITSTATUS(object->last_exit_status));
-				error_process(object, imp_stus, ret);	
-			}
+			object->last_exit_status = WEXITSTATUS(raw_exit_stus);
+			if (object->last_exit_status)
+				print_log(imp_stus->stdoutFd, object, "(%d)(임시출력) Error EXIT number : %d\n", (int)ret, object->last_exit_status);
 		}
 		imp_stus->i += 1;
 		print_log(imp_stus->stdoutFd, object, "(부모에서 출력) pid %d : child process exit \n", (int)ret);
@@ -62,7 +64,6 @@ static void error_process(t_object *object, t_imp_stus *imp_stus, pid_t ret)
 	flag = read(imp_stus->stderr_pipe[0], buf, sizeof(buf) - 1);
 	if (flag == 0)
 	{
-		printf("(읽어올 에러 문자 없음)\n");
 		return ;
 	}
 	// 특정 error출력 씹음

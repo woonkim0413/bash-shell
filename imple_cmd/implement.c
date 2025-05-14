@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/11 19:38:28 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/14 10:55:03 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ void implement(t_object *object)
 		create_execve_args(object->cmd_info);
 		input_output_setting(object, &imp_stus, one_builtin_flag);
 		execute_one_builtin(object, &imp_stus);
-		// TODO 다시 stdout, stdin으로 리다이렉션 해야함
 		free_stus(&imp_stus);
 		print_log(1, object, "(부모에서 실행) complete one builtin execution\n");
 		return ;
@@ -103,25 +102,24 @@ static void	parent_while_process(t_object *object, t_imp_stus *imp_stus)
 static void child_work(t_object *object, t_imp_stus *imp_stus)
 {
 	char	**envp;
-	int		flag;
+	// int		flag;
 
 	// env 링크드리스크 -> 2차원 배열 전환
 	envp = env_to_char(object->env);
 	// input, output을 재설정 해야 한다면 재설정
 	input_output_setting(object, imp_stus, 0);
 	// cmd가 널인 경우 check
-	flag = cmd_null_check(object, imp_stus);
-	if (flag)
-		return ;
+	// flag = cmd_null_check(object, imp_stus);
+	// if (flag)
+	// 	return ;
 	// execve에 건네줄 수 있는 argv를 만든다
 	create_execve_args(object->cmd_info);
 	// builtins check후 맞다면 builtin 실행
 	if (execute_builtins(object, imp_stus))
-	{
 		return ;
-	}
+	// "", ''처리
+	single_duuble_quates_check(object);
 	// find_path로 찾은 path는 t_cmd의 cmd_path에 저장
-	// TODO : /bin/ls와 같은 절대 주소가 전달된 경우 처리
 	find_path(object->cmd_info, object->env);
 	print_log(imp_stus->stdoutFd, object, "(실행파일 %d) ok (before execve)\n", (int)getpid());
 	if (execve(object->cmd_info->cmd_path,

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/12 18:50:04 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/14 11:44:19 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,7 +199,10 @@ void	pipe_and_fork(t_imp_stus *imp_stus);
 void	init_t_imp_stus(t_imp_stus *imp_stus);
 
 /* /print_log.c */
-void print_log(int stdout_fd, t_object *object, const char *format, ...);
+void	print_log(int stdout_fd, t_object *object, const char *format, ...);
+
+/* imple_cmd/help_except_case.c */
+void	single_duuble_quates_check(t_object *object);
 
 #endif
 
