@@ -6,7 +6,7 @@ echo hello
 # 2. 인자가 있는 명령어
 ls -l
 echo hello world
-cat file.txt
+cat file.txt  // file.txt가 없는 상황에서 leak 에러 남
 
 # 3. 따옴표 처리 (싱글 쿼트) - 변수 확장 안 됨
 echo '$HOME'
@@ -30,7 +30,7 @@ echo "hello\$WORLD" # $가 이스케이프되면 변수 확장 안 됨
 echo "hello \$ WORLD" # $ 뒤에 공백이 있으면 변수 확장 안 됨
 
 # 6. 파이프 (|)
-ls | cat
+ls | cat // 아무값도 안 뜸 원래 ls 값 떠야 함
 echo hello | wc -c
 ls -l | grep .txt | wc -l
 
@@ -44,6 +44,7 @@ ls >> output.txt
 echo world >> output.txt
 
 # 9. 리다이렉션 (입력 <)
+echo < // 동작이상 segfault
 cat < input.txt // 동작이상
 wc -l < input.txt
 
@@ -97,7 +98,6 @@ $ # $ 기호만 있을 때 (minishell 요구사항 확인)
 $$ # $$ 기호 (minishell 요구사항 확인 - 보통 현재 셸의 PID)
 
 # 16. 따옴표 안의 리다이렉션/파이프 기호
-c
 echo '<'
 echo "hello | world"
 echo 'hello > world'
@@ -136,7 +136,7 @@ ls      -l
 echo        hello         world
 
 # 26. 숫자가 붙은 리다이렉션 (예: 2>) - minishell 요구사항 확인
-ls 2> error.log
+ls 2> error.log  // leak에서 에러 남
 
 # 27. $ 뒤에 다른 기호
 echo $?a

@@ -5,7 +5,7 @@ CFLAGS = -Wall -Wextra -Werror -g -Iinclude
 LDFLAGS = -lreadline
 
 SRCS = minishell.c \
-print_log.c \
+etc/print_log.c \
 error/error_handler.c \
 init/init_signal.c \
 init/init_helper.c \

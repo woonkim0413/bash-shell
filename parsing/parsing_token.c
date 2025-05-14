@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 20:10:44 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/12 17:25:11 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/13 17:35:39 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ t_object *object)
 		arg.object = object;
 		arg.cmd = (node->cmd);
 		check_redirect(&arg);
+		if (!(arg.src) && !(arg.cmd) && !(arg.redirect))
+			return ;
 		if (!(node->cmd) && \
 		(*(src[arg.current_src]) != '>' && *(src[arg.current_src]) != '<') && \
 		!is_file_path(src[arg.current_src], &arg))
@@ -52,6 +54,13 @@ t_object *object)
 	node->redirect = arg.redirect;
 }
 
+static	void	set_next_node(t_cmd_info **current_node)
+{
+	(*current_node)->next = ft_calloc(sizeof(t_cmd_info), 1);
+	(*current_node)->next->prev = (*current_node);
+	(*current_node) = (*current_node)->next;
+}
+
 void	parsing(char **line_splited_pipe, t_object *object)
 {
 	int			idx;
@@ -59,23 +68,23 @@ void	parsing(char **line_splited_pipe, t_object *object)
 	t_cmd_info	*current_node;
 	char		**line_splited_space;
 
+	if (!line_splited_pipe)
+		return ;
 	idx = 0;
 	head = ft_calloc(sizeof(t_cmd_info), 1);
 	if (!head)
-		throw_error("malloc error", object, NULL);
+		throw_error("malloc error", object, NULL, NULL);
 	object->cmd_info = head;
 	current_node = head;
 	while (line_splited_pipe[idx])
 	{
 		line_splited_space = split_by_space_with_quote(line_splited_pipe[idx]);
 		seperate_element(line_splited_space, current_node, object);
+		if (!line_splited_pipe && !current_node)
+			return ;
 		idx++;
 		if (line_splited_pipe[idx])
-		{
-			current_node->next = ft_calloc(sizeof(t_cmd_info), 1);
-			current_node->next->prev = current_node;
-			current_node = current_node->next;
-		}
+			set_next_node(&current_node);
 	}
 	free_string_arr(&line_splited_pipe);
 }

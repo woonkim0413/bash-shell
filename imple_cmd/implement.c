@@ -3,10 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   implement.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/14 10:55:03 by woonkim          ###   ########.fr       */
+<<<<<<< HEAD
+/*   Updated: 2025/05/14 15:51:29 by rakim            ###   ########.fr       */
+=======
+/*   Updated: 2025/05/13 20:26:25 by rakim            ###   ########.fr       */
+>>>>>>> 8a14b84 (valgrind)
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +28,9 @@ void implement(t_object *object)
 {
 	t_imp_stus	imp_stus;
 	int			one_builtin_flag;	
+	t_cmd_info	*existing_cmd_info;
 
+	existing_cmd_info = object->cmd_info;
 	print_log(1, object, "\n---------------------- 구현부 -------------------------\n\n");
 	// 명령어 갯수에 맞게 2차원 pipe 배열, child pid배열, child 종료 상태 배열 저장
 	setting_pipline(object->cmd_info, &imp_stus);
@@ -61,6 +67,7 @@ void implement(t_object *object)
 	wait_childs_process(object, &imp_stus);
 	// imp_stus 초기화 (부모 프로세스라 exit()실행하면 안됨)
 	free_stus(&imp_stus);
+	object->cmd_info = existing_cmd_info;
 	return ;
 }
 
