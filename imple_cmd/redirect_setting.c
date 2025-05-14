@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirect_setting.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:02:03 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/14 11:34:50 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/14 16:07:09 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@ static void redirect_process(t_object *object, t_imp_stus *imp_stus)
 	while (redirect)
 	{
 		// 히어독이 아니면서 리다이렉션 대상 파일이 없는 경우
-		if (redirect->type != TOKEN_HEREDOC && \
+		if ((redirect->type != TOKEN_HEREDOC && \
+			redirect->type != TOKEN_REDIR_OUT) && \
 			access(redirect->file_path, F_OK) != 0)
 		{
 			write(2, redirect->file_path, ft_strlen(redirect->file_path));
