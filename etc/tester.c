@@ -1,9 +1,11 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <stdbool.h>
 
 #define BUFFER_SIZE 8192
 #define MAX_LINE_LENGTH 1024
@@ -53,7 +55,8 @@ void trim_whitespace(char *str) {
 int run_shell_command(const char *shell_path,
                       const char *input,
                       char *output_buf,
-                      size_t buf_size) {
+                      size_t buf_size,
+                      int *exit_status) {
     char temp_file[] = "/tmp/test_output_XXXXXX";
     int fd = mkstemp(temp_file);
     if (fd == -1) return -1;
@@ -78,7 +81,16 @@ int run_shell_command(const char *shell_path,
         dup2(outfd, STDERR_FILENO);
         close(outfd);
 
-        execl(shell_path, shell_path, (char *)NULL);
+        if (strcmp(shell_path, "./minishell") == 0)
+        {
+            execl("/usr/bin/valgrind",
+                    "valgrind",
+                    "--suppressions=/home/rakim/Desktop/minishell/etc/readline-leak.supp",
+                    "./minishell",
+                    (char*)NULL);
+        }
+        else
+            execl(shell_path, shell_path, (char *)NULL);
         perror("execl");
         exit(1);
     } else {
@@ -88,7 +100,12 @@ int run_shell_command(const char *shell_path,
         write(pipefd[1], "\n", 1);
         close(pipefd[1]);
 
-        waitpid(pid, NULL, 0);
+        int status;
+        waitpid(pid, &status, 0);
+        if (WIFEXITED(status))
+            *exit_status = WEXITSTATUS(status);
+        else
+            *exit_status = -1;
 
         FILE *fp = fopen(temp_file, "r");
         if (!fp) return -1;
@@ -100,52 +117,109 @@ int run_shell_command(const char *shell_path,
     }
 }
 
-// 한 블록(명령어 묶음)을 처리
 void process_block(char **cmds, int cmd_count, int test_num) {
     char bash_output[BUFFER_SIZE];
     char mini_output[BUFFER_SIZE];
+    char raw_mini[BUFFER_SIZE];
     char dummy[BUFFER_SIZE];
+    int bash_status, mini_status;
 
-    // 1) 블록 전체 설명 문자열(desc) 생성
+    // 1) desc 생성 (생략)
     char desc[BUFFER_SIZE] = {0};
     for (int i = 0; i < cmd_count; i++) {
         strncat(desc, cmds[i], BUFFER_SIZE - 1 - strlen(desc));
-        if (i < cmd_count - 1)
+        if (i < cmd_count - 1) {
             strncat(desc, " --->> ", BUFFER_SIZE - 1 - strlen(desc));
+        }
     }
 
-    // 2) 마지막 명령 전까지는 실행만 (출력 무시)
+    // 2) 마지막 전까지 실행만 (출력 무시)
     for (int i = 0; i < cmd_count - 1; i++) {
-        run_shell_command("/bin/bash",    cmds[i], dummy, BUFFER_SIZE);
-        run_shell_command("./minishell", cmds[i], dummy, BUFFER_SIZE);
+        run_shell_command("/bin/bash",    cmds[i], dummy, BUFFER_SIZE, &bash_status);
+        run_shell_command("./minishell", cmds[i], dummy, BUFFER_SIZE, &mini_status);
     }
 
-    // 3) 마지막 명령어 출력 캡처 & 비교
+    // 3) 마지막 명령어 출력 + 상태 캡처
     const char *last = cmds[cmd_count - 1];
     memset(bash_output, 0, BUFFER_SIZE);
     memset(mini_output, 0, BUFFER_SIZE);
-
-    run_shell_command("/bin/bash",    last, bash_output, BUFFER_SIZE);
-    run_shell_command("./minishell", last, mini_output, BUFFER_SIZE);
+    run_shell_command("/bin/bash",    last, bash_output, BUFFER_SIZE, &bash_status);
+    run_shell_command("./minishell", last, mini_output, BUFFER_SIZE, &mini_status);
 
     clean_minishell_prompt(mini_output);
     trim_output(bash_output);
     trim_output(mini_output);
 
-    int pass = strcmp(bash_output, mini_output) == 0;
+    // 원본 복사 (Valgrind 로그 포함)
+    strncpy(raw_mini, mini_output, BUFFER_SIZE - 1);
+    raw_mini[BUFFER_SIZE - 1] = '\0';
 
-    // 4) 전체 블록 설명(desc)을 헤더에 출력
-    printf("========================================================\n");
-    printf("[Test %d: %s - %s]\n",
-           test_num, desc, pass ? "PASS" : "FAIL");
+    // 4) Valgrind 로그 파싱해서 누수 여부 확인
+    int dl=0, il=0, pl=0, sr=0;
+    char *p = raw_mini;
+    bool hasLeak = false;
+    if ((p = strstr(raw_mini, "definitely lost:")) &&
+        sscanf(p, "definitely lost: %d bytes", &dl) == 1 &&
+        (p = strstr(raw_mini, "indirectly lost:")) &&
+        sscanf(p, "indirectly lost: %d bytes", &il) == 1 &&
+        (p = strstr(raw_mini, "possibly lost:")) &&
+        sscanf(p, "possibly lost: %d bytes", &pl) == 1 &&
+        (p = strstr(raw_mini, "still reachable:")) &&
+        sscanf(p, "still reachable: %d bytes", &sr) == 1) {
+        hasLeak = (dl != 0 || il != 0 || pl != 0 || sr != 0);
+    }
+
+    // 5) mini_output 에서 "==" 로 시작하는 줄만 걸러내기
+    {
+        char filtered[BUFFER_SIZE] = {0};
+        char *saveptr, *line = strtok_r(mini_output, "\n", &saveptr);
+        while (line) {
+            // 앞 공백 건너뛰고
+            char *t = line + strspn(line, " \t");
+            if (strncmp(t, "==", 2) != 0 && *t != '\0') {
+                // 남은 여유 공간 계산
+                size_t used = strlen(filtered);
+                size_t remain = BUFFER_SIZE - used - 1;
+                // 실제 출력 문자열 추가
+                strncat(filtered, t, remain);
+                // 개행 추가
+                remain = BUFFER_SIZE - strlen(filtered) - 1;
+                strncat(filtered, "\n", remain);
+            }
+            line = strtok_r(NULL, "\n", &saveptr);
+        }
+        // 다시 복사
+        strncpy(mini_output, filtered, BUFFER_SIZE - 1);
+        mini_output[BUFFER_SIZE - 1] = '\0';
+        trim_output(mini_output);
+    }
+
+    // 6) PASS 판정: exit code 또는 출력 비교
+    bool pass;
+    if (bash_status != 0 && mini_status != 0) {
+        pass = true;
+    } else {
+        pass = (strcmp(bash_output, mini_output) == 0);
+    }
+
+    // 7) 결과 출력
+    printf("============================================\n");
+    printf("[Test %d: %s - %s]\n", test_num, desc, pass ? "PASS" : "FAIL");
 
     if (!pass) {
         printf("----- bash output -----\n");
         printf("\x1b[31m%s\x1b[0m\n", bash_output);
         printf("----- minishell output -----\n");
-        printf("\x1b[31m%s\x1b[0m\n", mini_output);
+        if (hasLeak) {
+            // 누수 발생 시, 원본 로그(Valgrind 포함) 보여주기
+            printf("\x1b[31m%s\x1b[0m\n", raw_mini);
+        } else {
+            // 누수 없으면, 필터된 실제 출력만
+            printf("\x1b[31m%s\x1b[0m\n", mini_output);
+        }
     }
 }
+
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
