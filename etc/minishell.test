@@ -31,7 +31,7 @@ echo "hello \$ WORLD" # $ 뒤에 공백이 있으면 변수 확장 안 됨
 
 # 6. 파이프 (|)
 ls | cat // 아무값도 안 뜸 원래 ls 값 떠야 함
-echo hello | wc -c
+echo hello | wc -c    // leak 뜸
 ls -l | grep .txt | wc -l
 
 # 7. 리다이렉션 (출력 >)
@@ -44,8 +44,8 @@ ls >> output.txt
 echo world >> output.txt
 
 # 9. 리다이렉션 (입력 <)
-echo < // 동작이상 segfault
-cat < input.txt // 동작이상
+echo < 
+cat < input.txt
 wc -l < input.txt
 
 # 10. 여기 도큐먼트 (<<) - delimiter 뒤에 입력 받을 때까지 기다려야 함 (파싱 단계에서 delimiter 확인)

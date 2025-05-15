@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:02:03 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/14 16:07:09 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/14 16:33:04 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ static void redirect_process(t_object *object, t_imp_stus *imp_stus)
 			write(2, redirect->file_path, ft_strlen(redirect->file_path));
 			write(2, ": No such file or directitory\n", 31);
 			free_stus_and_object(object, imp_stus);
-			exit(1);	
+			exit(1);
 		}
 		redirect_process2(imp_stus, redirect);
 		// >> redirection이 있는 경우
