@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/17 13:04:01 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/17 13:09:53 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ typedef struct s_result_info
 	char	**result;
 	int		result_idx;
 	int		add_value;
+	int		file_path_flag;
 }	t_result_info;
 
 typedef struct s_check_redir_arg
@@ -86,6 +87,7 @@ typedef struct s_check_redir_arg
 	char		**src;
 	int			current_src;
 	char		*cmd;
+	int			file_path_flag;
 	t_redirect	*redirect;
 	t_object	*object;
 }	t_check_redir_arg;
