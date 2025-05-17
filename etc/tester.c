@@ -135,7 +135,7 @@ void process_block(char **cmds, int cmd_count, int test_num) {
     int pass = strcmp(bash_output, mini_output) == 0;
 
     // 4) 전체 블록 설명(desc)을 헤더에 출력
-    printf("============================================\n");
+    printf("========================================================\n");
     printf("[Test %d: %s - %s]\n",
            test_num, desc, pass ? "PASS" : "FAIL");
 
@@ -162,7 +162,7 @@ int main(int argc, char *argv[]) {
     char line[MAX_LINE_LENGTH];
     char *cmds[MAX_CMDS_PER_BLOCK];
     int cmd_count = 0, test_num = 1;
-    printf("============================================\n");
+    printf("========================================================\n");
     printf("비교 환경 : bash -c (프롬프트 없는 단순화 된 출력 bash)\n\n");
     printf("명령어 읽는 방식 : enter을 기준으로 명령어 블록 인식, 3개의 명령어로 되어 있는 명령어 블록인 경우 마지막 명령어의 출력만 비교하고 나머지는 실행만 한다.\n\n");
     printf("처리 하지 못하는 명령어 종류 : 커스텀 에러 메세지, <<, >> \n");
@@ -187,7 +187,7 @@ int main(int argc, char *argv[]) {
         for (int i = 0; i < cmd_count; i++) free(cmds[i]);
     }
 
-    printf("============================================\n");
+    printf("========================================================\n");
     fclose(fp);
     return 0;
 }
