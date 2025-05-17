@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 20:07:27 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/14 15:06:18 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/17 12:37:37 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void wait_childs_process(t_object *object, t_imp_stus *imp_stus)
 		{
 			// < file1.txt와 같은 시그널 종료시 정상 상태 넣어주기기 
 			object->last_exit_status = 0;
-			print_log(imp_stus->stdoutFd, object, "%d 시그널 종료\n", object->last_exit_status);
+			print_log(imp_stus->stdoutFd, object, "%d (signal exit)\n", object->last_exit_status);
 		}
 		// 자식 프로세스가 정상 종료됐는지 확인 (exit(), return 종료)
 		if (WIFEXITED(raw_exit_stus))
@@ -43,7 +43,7 @@ void wait_childs_process(t_object *object, t_imp_stus *imp_stus)
 			// 종료 상태 값 확인
 			object->last_exit_status = WEXITSTATUS(raw_exit_stus);
 			if (object->last_exit_status)
-				print_log(imp_stus->stdoutFd, object, "(%d)(임시출력) Error EXIT number : %d\n", (int)ret, object->last_exit_status);
+				print_log(imp_stus->stdoutFd, object, "(%d)(임시 출력) Error EXIT number : %d\n", (int)ret, object->last_exit_status);
 		}
 		imp_stus->i += 1;
 		print_log(imp_stus->stdoutFd, object, "(부모에서 출력) pid %d : child process exit \n", (int)ret);
@@ -77,5 +77,5 @@ static void error_process(t_object *object, t_imp_stus *imp_stus, pid_t ret)
 		print_log(imp_stus->stdoutFd, object, "(%d)(임시 출력) %s\n", (int)ret ,buf);
 		return ;
 	}
-	printf("(정상 에러 출력) : %s", buf);
+	printf("Error : %s", buf);
 }

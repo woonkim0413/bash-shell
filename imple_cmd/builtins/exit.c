@@ -6,12 +6,13 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:32:46 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/11 18:13:55 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/16 12:06:14 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+static void exit_extend(t_object *object, t_imp_stus *imp_stus, char **argv);
 static int is_valid_numeric(const char *str, long long *num);
 static int is_digit_char(char c);
 
@@ -19,12 +20,8 @@ static int is_digit_char(char c);
 int execute_exit(t_object *object, t_imp_stus *imp_stus)
 {
 	char 		**argv;
-	char		*temp;
-	char		*error_message;
-	long long 	num;
 
 	argv = object->cmd_info->evecve_argv;
-	num = 0;
 	if (argv[1])
 	{
 		if (argv[2])
@@ -32,25 +29,36 @@ int execute_exit(t_object *object, t_imp_stus *imp_stus)
 			write(imp_stus->stdoutFd, "bash: exit: too many arguments\n", 32);
 			return (1);
 		}
-		if (is_valid_numeric(argv[1], &num))
-		{
-			write(imp_stus->stdoutFd, "exit\n", 5);
-			free_stus_and_object(object, imp_stus);
-			object->last_exit_status = 0;
-			exit((unsigned char)num);
-		}
-		// argv[1]에 숫자 외의 문자가 있거나 long long 범위를 넘어갈 때
-		temp = ft_strjoin("bash: exit: ", argv[1]);
-		error_message = ft_strjoin(temp, ": numeric argumnet required\n");
-		free(temp);
-		write(imp_stus->stdoutFd, error_message, ft_strlen(error_message));
-		free(error_message);
-		free_stus_and_object(object, imp_stus);
-		exit(255);
+		// norm을 위한 확장 함수
+		exit_extend(object, imp_stus, argv);
 	}
 	write(imp_stus->stdoutFd, "exit\n", 5);
 	free_stus_and_object(object, imp_stus);
 	exit(0);
+}
+
+static void exit_extend(t_object *object, t_imp_stus *imp_stus, char **argv)
+{
+	char 		*temp;
+	char		*error_message;
+	long long 	num;
+
+	num = 0;
+	if (is_valid_numeric(argv[1], &num))
+	{
+		write(imp_stus->stdoutFd, "exit\n", 5);
+		free_stus_and_object(object, imp_stus);
+		object->last_exit_status = 0;
+		exit((unsigned char)num);
+	}
+	// argv[1]에 숫자 외의 문자가 있거나 long long 범위를 넘어갈 때
+	temp = ft_strjoin("bash: exit: ", argv[1]);
+	error_message = ft_strjoin(temp, ": numeric argumnet required\n");
+	free(temp);
+	write(imp_stus->stdoutFd, error_message, ft_strlen(error_message));
+	free(error_message);
+	free_stus_and_object(object, imp_stus);
+	exit(255);
 }
 
 // argv[1]의 값이 long long type 범위를 넘어가는지를 판단

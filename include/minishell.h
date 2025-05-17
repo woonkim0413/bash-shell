@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/14 15:52:55 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/16 20:48:42 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,7 +172,7 @@ int			execute_cd(t_object *object, t_imp_stus *imp_stus);
 void		implement(t_object *object);
 
 /* /imple_cmd/cmd_path_find.c*/
-void		find_path(t_cmd_info *t_cmd, t_env *env);
+int			find_path(t_cmd_info *t_cmd, t_env *env);
 
 /* /imple_cmd/redirect_setting.c */
 void		input_output_setting(t_object *object, t_imp_stus *imp_stus, \
@@ -180,7 +180,7 @@ void		input_output_setting(t_object *object, t_imp_stus *imp_stus, \
 
 /* /imple_cmd/imp_utils.c */
 void		create_execve_args(t_cmd_info *cmd_info);
-char		**env_to_char(t_env *env);
+char		**env_to_char(t_env *env, int i);
 void		free_doublechar(char **argv);
 int			cmd_null_check(t_object *object, t_imp_stus *imp_stus);
 
