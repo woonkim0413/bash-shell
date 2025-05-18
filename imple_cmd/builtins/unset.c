@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:34:55 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/02 00:48:33 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/18 17:51:13 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,20 @@ static void env_remove(t_env *env)
 
 static void remove_env(char *remove_target, t_env *pre, t_env *cur)
 {
+	t_env	*next;
+
 	while (cur)
 	{
+		next = cur->next;
 		if (!ft_strncmp(remove_target, cur->key, ft_strlen(cur->key)))
 		{
 			pre->next = cur->next;
 			env_remove(cur);
+			cur = next;
+			continue ;
 		}
-		cur = cur->next;
-		pre = pre->next;
+		pre = cur;
+		cur = next;
 	}
 }
 
