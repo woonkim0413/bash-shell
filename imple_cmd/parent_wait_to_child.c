@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 20:07:27 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/17 12:37:37 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/18 16:55:57 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,10 +62,11 @@ static void error_process(t_object *object, t_imp_stus *imp_stus, pid_t ret)
 	(void)ret;
 	// 자식 프로세스가 0아닌 EXIT으로 종료해도 error 메세지는 없을 수 있음
 	flag = read(imp_stus->stderr_pipe[0], buf, sizeof(buf) - 1);
-	if (flag == 0)
+	if (flag <= 0)
 	{
 		return ;
 	}
+	buf[flag] = '\0'; 
 	// 특정 error출력 씹음
 	if (ft_strnstr(buf, "Broken pipe", sizeof(buf) - 1))
 	{

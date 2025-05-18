@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:06:37 by woonkim           #+#    #+#             */
-/*   Updated: 2025/04/30 09:16:23 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/18 16:43:31 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,5 +38,6 @@ int execute_echo(t_object *object, t_imp_stus *imp_stus)
 	}
 	if (!flag)
 		write(1, "\n", 1);
+	object->last_exit_status = 0;
 	return (1);
 }

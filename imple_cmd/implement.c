@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   implement.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/17 13:01:40 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/18 18:36:28 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,7 @@ void implement(t_object *object)
 {
 	t_imp_stus	imp_stus;
 	int			one_builtin_flag;	
-	t_cmd_info	*existing_cmd_info;
 
-	existing_cmd_info = object->cmd_info;
 	print_log(1, object, "\n---------------------- 구현부 -------------------------\n\n");
 	// 명령어 갯수에 맞게 2차원 pipe 배열, child pid배열, child 종료 상태 배열 저장
 	setting_pipline(object->cmd_info, &imp_stus);
@@ -49,7 +47,7 @@ void implement(t_object *object)
 	implement2(object, &imp_stus);
 	// 자식 프로세스 종료 대기 (비정상 종료시 상태 저장)
 	wait_childs_process(object, &imp_stus);
-	object->cmd_info = existing_cmd_info;
+	object->cmd_info = imp_stus.existing_cmd_info;
 	// free_stus_and_object(object, &imp_stus);
 	free_stus(&imp_stus);
 	return ;
@@ -127,6 +125,11 @@ static void child_work(t_object *object, t_imp_stus *imp_stus)
 	// 실행할 수 있는 명령어를 못 찾은 경우 0반환
 	flag = find_path(object->cmd_info, object->env);
 	create_execve_args(object->cmd_info);
+	// ----------------------------------------
+	int i = -1;
+	while (object->cmd_info->evecve_argv[++i])
+		print_log(imp_stus->stdoutFd, object, "[%s] ", object->cmd_info->evecve_argv[i]);
+	// ----------------------------------------
 	envp = env_to_char(object->env, imp_stus->i);
 	print_log(imp_stus->stdoutFd, object, "(실행파일 %d) ok (before execve)\n", (int)getpid());
 	if (!flag || execve(object->cmd_info->cmd_path,
