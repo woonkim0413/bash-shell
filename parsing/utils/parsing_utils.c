@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:18:01 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/17 14:39:25 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/18 15:24:06 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ void	check_pipe(char **line, t_object *object)
 	before_pipe = 0;
 	if ((*line)[idx] == '|')
 	{
+		object->last_exit_status = 2;
 		throw_error("argv error", object, NULL, line);
 		return ;
 	}

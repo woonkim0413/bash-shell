@@ -6,10 +6,12 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 #define BUFFER_SIZE 8192
 #define MAX_LINE_LENGTH 1024
 #define MAX_CMDS_PER_BLOCK 1000
+
 
 void trim_output(char *buf) {
     char *start = buf + strspn(buf, " \t\r\n");
@@ -195,15 +197,18 @@ void process_block(char **cmds, int cmd_count, int test_num) {
     }
 
     // 6) PASS 판정: exit code 또는 출력 비교
-    bool pass;
-    if (bash_status != 0 && mini_status != 0) {
-        pass = true;
+    bool pass = false;
+
+    printf("[Debug] bash_status = %d, mini_status = %d\n", bash_status, mini_status);
+    if (bash_status != 0) {
+        pass = (strstr(mini_output, "Error") != NULL);
     } else {
         pass = (strcmp(bash_output, mini_output) == 0);
     }
+    
 
     // 7) 결과 출력
-    printf("============================================\n");
+    printf("========================================================================\n");
     printf("[Test %d: %s - %s]\n", test_num, desc, pass ? "PASS" : "FAIL");
 
     if (!pass) {
@@ -218,6 +223,7 @@ void process_block(char **cmds, int cmd_count, int test_num) {
             printf("\x1b[31m%s\x1b[0m\n", mini_output);
         }
     }
+    printf("========================================================================\n");
 }
 
 
