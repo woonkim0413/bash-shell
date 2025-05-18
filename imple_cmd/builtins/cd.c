@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/01 13:50:45 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/17 12:17:00 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/17 15:31:33 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ int execute_cd(t_object *object, t_imp_stus *imp_stus)
 	// path가 -나 ~인 경우 전환해주는 함수
 	change_wave_a_dash(&path, object);
 	flag = chdir(path);
-	free(path);
 	if (flag == -1)
 	{
 		write(imp_stus->stdoutFd, "bash: cd: ", 10);
@@ -40,6 +39,7 @@ int execute_cd(t_object *object, t_imp_stus *imp_stus)
 		update_oldpwd(object, imp_stus);
 		update_pwd(object, imp_stus);
 	}
+	free(path);
 	return (1);
 }
 

@@ -26,9 +26,6 @@ static	void	process_minishell(t_object *object, char **line)
 	print_all_cmd(object);
 	if (object->cmd_info)
 		implement(object);
-	free(*line);
-	(*line) = NULL;
-	free_cmd_info(&(object->cmd_info));
 }
 
 int	main(int length, char *input[], char *env[])
@@ -55,7 +52,9 @@ int	main(int length, char *input[], char *env[])
 		if (*line != '\0')
 			add_history(line);
 		if (*line != '\0' && !is_all_space(line))
-			process_minishell(&object, &line);
+			process_minishell(&object, &line);	
+		free(line);
+		free_cmd_info(&(object.cmd_info));
 	}
 	return (0);
 }
