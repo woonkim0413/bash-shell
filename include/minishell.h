@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/18 13:59:11 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/18 18:32:21 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ typedef struct s_imp_stus
 	int		stderr_pipe[2];
 	pid_t	*chil_pid;
 	int		**pipeFd; // 명령어 갯수에 따른 pipe용 int배열 저장
+	t_cmd_info *existing_cmd_info;
 }	t_imp_stus;
 
 /* init */
@@ -183,11 +184,12 @@ int			find_path(t_cmd_info *t_cmd, t_env *env);
 void		input_output_setting(t_object *object, t_imp_stus *imp_stus, \
 		int one_builtin_flag);
 
-/* /imple_cmd/imp_utils.c */
+/* /imple_cmd/imp_utils1.c */
 void		create_execve_args(t_cmd_info *cmd_info);
 char		**env_to_char(t_env *env, int i);
+
+/* /imple_cmd/imp_utils2.c */
 void		free_doublechar(char **argv);
-int			cmd_null_check(t_object *object, t_imp_stus *imp_stus);
 
 /* /imple_cmd/parent_wait_to_child.c */
 void		wait_childs_process(t_object *object, t_imp_stus *imp_stus);

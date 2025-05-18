@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 15:55:16 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/17 19:22:50 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/18 18:34:10 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ void setting_pipline(t_cmd_info *t_cmd, t_imp_stus *imp_stus)
 
 	// imp_stus 초기화
 	init_t_imp_stus(imp_stus);
+	// 처음 값 저장
+	imp_stus->existing_cmd_info = t_cmd;
 	num = 0;
 	imp_stus->stdoutFd = dup(STDOUT_FILENO);
 	imp_stus->stdinFd = dup(STDIN_FILENO);
@@ -58,6 +60,7 @@ void	init_t_imp_stus(t_imp_stus *imp_stus)
 	imp_stus->total_c_n = 0;
 	imp_stus->input_fd = -1;
 	imp_stus->output_fd = -1;
+	imp_stus->existing_cmd_info = NULL;
 	imp_stus->pipeFd = NULL;
 	imp_stus->chil_pid = NULL;
 	// 1이 카리키는 buffer(출력 buffer)을 가리키는 새로운 fd생성 

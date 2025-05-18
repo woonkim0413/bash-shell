@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 14:14:29 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/18 13:40:28 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/18 18:36:26 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ void	free_object(t_object *object)
 
 void	free_stus_and_object(t_object *object, t_imp_stus *imp_stus)
 {
+	if (imp_stus->existing_cmd_info)
+		object->cmd_info = imp_stus->existing_cmd_info;
 	if (object)
 		free_object(object);
 	if (imp_stus)
