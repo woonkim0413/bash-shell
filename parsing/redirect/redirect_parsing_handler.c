@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 13:53:11 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/15 19:45:26 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/18 15:25:15 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,11 @@ static	void	handle_redirect(t_check_redir_arg *arg, \
 		next_idx += 2;
 	if (!(arg->src[arg->current_src + 1]))
 	{
+		arg->object->last_exit_status = 2;
 		throw_error("there is no file_path", arg->object, NULL, NULL);
+		arg->cmd = NULL;
+		free_arg(&arg);
+		arg->end_flag = 1;
 		return ;
 	}
 	if (arg->src[arg->current_src][next_idx])
@@ -82,13 +86,13 @@ void	check_redirect(t_check_redir_arg *arg)
 	idx = -1;
 	in_single = 0;
 	in_double = 0;
-	while (arg->src[arg->current_src][++idx])
+	while (arg->src && arg->src[arg->current_src][++idx])
 	{
 		set_toggle(arg->src[arg->current_src][idx], &in_single, &in_double);
 		if (!in_single && !in_double)
 		{
 			process_check_redirect(arg, &idx);
-			if (!(arg->src) && !(arg->cmd) && !(arg->redirect))
+			if (arg->end_flag)
 				return ;
 		}
 	}

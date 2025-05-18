@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:18:01 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/13 20:30:23 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/18 15:24:06 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,14 @@ static	void	print_cmd(t_object *object, t_cmd_info *cmd_info)
 	print_log(1, object, "cmd_path : %s\n", cmd_info->cmd_path);
 	while (redirect)
 	{
-		print_log(1, object, "redirect_type : %u\n", redirect->type);
+		if (redirect->type == TOKEN_APPEND)
+			print_log(1, object, "redirect_type : %s\n", ">>");
+		if (redirect->type == TOKEN_HEREDOC)
+			print_log(1, object, "redirect_type : %s\n", "<<");
+		if (redirect->type == TOKEN_REDIR_IN)
+			print_log(1, object, "redirect_type : %s\n", "<");
+		if (redirect->type == TOKEN_REDIR_OUT)
+			print_log(1, object, "redirect_type : %s\n", ">");
 		print_log(1, object, "redirect_file_path : %s\n", redirect->file_path);
 		redirect = redirect->next;
 	}
@@ -72,6 +79,7 @@ void	check_pipe(char **line, t_object *object)
 	before_pipe = 0;
 	if ((*line)[idx] == '|')
 	{
+		object->last_exit_status = 2;
 		throw_error("argv error", object, NULL, line);
 		return ;
 	}

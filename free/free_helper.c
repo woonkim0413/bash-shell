@@ -91,7 +91,7 @@ void	free_cmd_info(t_cmd_info **cmd_info)
 	{
 		temp = (*cmd_info)->next;
 		if ((*cmd_info)->cmd)
-			free((*cmd_info)->cmd);
+			free_string(&(*cmd_info)->cmd);
 		if ((*cmd_info)->evecve_argv)
 			free_string_arr(&((*cmd_info)->evecve_argv));
 		if ((*cmd_info)->cmd_path)

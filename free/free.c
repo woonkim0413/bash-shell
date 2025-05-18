@@ -32,12 +32,13 @@ void	free_string(char **line)
 	(*line) = NULL;
 }
 
-void	free_arg(t_check_redir_arg *arg)
+void	free_arg(t_check_redir_arg **arg)
 {
-	if (arg->src)
-		free_string_arr(&(arg->src));
-	if (arg->cmd)
-		free_string(&(arg->cmd));
-	if (arg->redirect)
-		free_redirect(&(arg->redirect));
+	if (*arg)
+	{
+		if ((*arg)->cmd)
+			free_string(&((*arg)->cmd));
+		if ((*arg)->redirect)
+			free_redirect(&((*arg)->redirect));
+	}
 }

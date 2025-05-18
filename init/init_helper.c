@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 15:47:27 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/15 19:38:21 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/17 17:21:12 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ void	init(int length, char *input[], t_object *object, char **env)
 	object->cmd_info = NULL;
 	object->env = 0;
 	object->last_exit_status = 0;
+	object->heredoc_interrupted = 0;
 	check_input(length, input);
 	init_signal();
 	env_string_arr_to_env_list(env, object);
