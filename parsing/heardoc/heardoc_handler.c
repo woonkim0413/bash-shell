@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 15:31:13 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/12 17:23:28 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/13 16:19:13 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static	void	write_heardoc_in_pipe(t_object *object, t_redirect *redirect)
 	char	*line;
 
 	if (pipe(pipe_fd) == -1)
-		throw_error("pipe_error", object, NULL);
+		throw_error("pipe_error", object, NULL, NULL);
 	while (1)
 	{
 		line = readline("> ");
@@ -46,6 +46,8 @@ static	void	write_heardoc_in_pipe(t_object *object, t_redirect *redirect)
 			check_quotes(&line, object);
 		else
 			find_dollar_location(&line, object);
+		if (!line)
+			return ;
 		write(pipe_fd[1], line, ft_strlen(line));
 		write(pipe_fd[1], "\n", 1);
 		free(line);
@@ -59,6 +61,8 @@ void	handle_heardoc(t_object *object)
 	t_cmd_info	*cmd_info;
 	t_redirect	*redirect;
 
+	if (!object->cmd_info)
+		return ;
 	cmd_info = object->cmd_info;
 	while (cmd_info)
 	{
@@ -67,6 +71,8 @@ void	handle_heardoc(t_object *object)
 		{
 			if (redirect->type == TOKEN_HEREDOC)
 				write_heardoc_in_pipe(object, redirect);
+			if (!redirect)
+				return ;
 			redirect = redirect->next;
 		}
 		cmd_info = cmd_info->next;

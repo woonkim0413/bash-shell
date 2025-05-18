@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 13:53:11 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/12 13:53:54 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/15 19:45:26 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,7 @@ static	void	set_redirect(t_token_type token_type, char *file_path, \
 
 	new_node = ft_calloc(sizeof(t_redirect), 1);
 	if (!new_node)
-		throw_error("malloc error", object, NULL);
-	if (!file_path)
-		throw_error("there is no file_path", object, NULL);
+		throw_error("malloc error", object, NULL, NULL);
 	new_node->type = token_type;
 	new_node->file_path = ft_strdup(file_path);
 	if (!(*redirect))
@@ -39,25 +37,40 @@ static	void	set_redirect(t_token_type token_type, char *file_path, \
 static	void	handle_redirect(t_check_redir_arg *arg, \
 	int *idx, t_token_type token)
 {
-	int	next_idx;
+	int		next_idx;
+	char	*file_path;
 
 	next_idx = *idx;
 	if (token == TOKEN_REDIR_IN || token == TOKEN_REDIR_OUT)
 		next_idx++;
 	if (token == TOKEN_APPEND || token == TOKEN_HEREDOC)
 		next_idx += 2;
+	if (!(arg->src[arg->current_src + 1]))
+	{
+		throw_error("there is no file_path", arg->object, NULL, NULL);
+		return ;
+	}
 	if (arg->src[arg->current_src][next_idx])
-	{
-		set_redirect(token, arg->src[arg->current_src] + (next_idx), \
-		&(arg->redirect), arg->object);
-		*idx += next_idx - 1;
-	}
+		file_path = arg->src[arg->current_src] + next_idx;
 	else
-	{
-		set_redirect(token, arg->src[arg->current_src + 1], \
-			&(arg->redirect), arg->object);
-		*idx += next_idx - 1;
-	}
+		file_path = arg->src[arg->current_src + 1];
+	set_redirect(token, file_path, &(arg->redirect), arg->object);
+	arg->file_path_flag = 1;
+	*idx += next_idx - 1;
+}
+
+static	void	process_check_redirect(t_check_redir_arg *arg, int *idx)
+{
+	if (arg->src[arg->current_src][*idx] == '<' && \
+		arg->src[arg->current_src][*idx + 1] == '<')
+		handle_redirect(arg, idx, TOKEN_HEREDOC);
+	else if (arg->src[arg->current_src][*idx] == '>' \
+		&& arg->src[arg->current_src][*idx + 1] == '>')
+		handle_redirect(arg, idx, TOKEN_APPEND);
+	else if (arg->src[arg->current_src][*idx] == '>')
+		handle_redirect(arg, idx, TOKEN_REDIR_OUT);
+	else if (arg->src[arg->current_src][*idx] == '<')
+		handle_redirect(arg, idx, TOKEN_REDIR_IN);
 }
 
 void	check_redirect(t_check_redir_arg *arg)
@@ -74,16 +87,9 @@ void	check_redirect(t_check_redir_arg *arg)
 		set_toggle(arg->src[arg->current_src][idx], &in_single, &in_double);
 		if (!in_single && !in_double)
 		{
-			if (arg->src[arg->current_src][idx] == '<' && \
-				arg->src[arg->current_src][idx + 1] == '<')
-				handle_redirect(arg, &idx, TOKEN_HEREDOC);
-			else if (arg->src[arg->current_src][idx] == '>' \
-				&& arg->src[arg->current_src][idx + 1] == '>')
-				handle_redirect(arg, &idx, TOKEN_APPEND);
-			else if (arg->src[arg->current_src][idx] == '>')
-				handle_redirect(arg, &idx, TOKEN_REDIR_OUT);
-			else if (arg->src[arg->current_src][idx] == '<')
-				handle_redirect(arg, &idx, TOKEN_REDIR_IN);
+			process_check_redirect(arg, &idx);
+			if (!(arg->src) && !(arg->cmd) && !(arg->redirect))
+				return ;
 		}
 	}
 }

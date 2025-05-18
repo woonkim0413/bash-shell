@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   split_with_quote.c                                 :+:      :+:    :+:   */
+/*   split_by_space_with_quote.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/26 20:07:38 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/12 14:34:30 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/13 12:58:35 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,5 +81,6 @@ char	**split_by_space_with_quote(char *s)
 	temp = ft_calloc(word_count + 1, sizeof(char *));
 	split_by_space(&temp, s);
 	result = split_redir_with_quote(temp);
+	free_string_arr(&temp);
 	return (result);
 }

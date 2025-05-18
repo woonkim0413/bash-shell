@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 22:13:19 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/01 00:59:20 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/16 20:46:00 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,16 +71,17 @@ static char *check_and_return_path(char **paths)
 	return (NULL);
 }
 
-void find_path(t_cmd_info* t_cmd, t_env* env)
+int find_path(t_cmd_info* t_cmd, t_env* env)
 {
 	t_env *temp;
 	char **paths;
 
 	temp = env;
-	if (access(t_cmd->cmd, F_OK) == 0)
+	// 절대주소가 전달된 경우 체크 + 실행 파일인 경우만 체크
+	if (access(t_cmd->cmd, X_OK) == 0)
 	{
 		t_cmd->cmd_path = t_cmd->cmd;
-		return ;
+		return (1);
 	}
 	// env의 몇 번째 노드에 PATH 환경변수가 들어 있는지 확인
 	while (temp)
@@ -92,10 +93,13 @@ void find_path(t_cmd_info* t_cmd, t_env* env)
 			paths = ft_split(temp->value, ':');
 			paths = make_path(paths, t_cmd->cmd);
 			t_cmd->cmd_path = check_and_return_path(paths);
-			return ;
+			if (t_cmd->cmd_path == NULL)
+				return (0);
+			return (1);
 		}
 		temp = temp->next;
 	}
 	// 명령어가 존재하지 않으면 null담음
 	t_cmd->cmd_path = NULL;
+	return (0);
 }

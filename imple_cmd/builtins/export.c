@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:33:32 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/11 19:33:46 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/16 19:06:09 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,13 @@ static int update_node(t_object *object, char **argv_equals, int equals_flag);
 // a=t가 등록된 상태에서 export a=ttt를 사용하면 update되어야 한다
 // export aaa=bbb kkk= ttt 이렇게 사용하는 경우,
 // 3개의 인자가 모두 반영되어야 한다
+// export aa+=add라면 aa에 add가 추가되어야 한다
 int	execute_export(t_object *object, t_imp_stus *imp_stus)
 {
 	char 	**evecve_arg;
 	char 	**argv_equals;
-	int		idx;
 	int		equals_flag;
 
-	(void)imp_stus;
 	// export 출력 실행
 	if (!object->cmd_info->evecve_argv[1])
 	{
@@ -37,21 +36,24 @@ int	execute_export(t_object *object, t_imp_stus *imp_stus)
 	}
 	// env node 추가
 	evecve_arg = object->cmd_info->evecve_argv;
-	idx = 0;
 	equals_flag = 0;
-	while (evecve_arg[++idx])
+	imp_stus->i = 0;
+	while (evecve_arg[++(imp_stus->i)])
 	{
 		// kkk=이런 경우엔 =으로 쪼개면 kkk와 같아지니 equals_flag를 두어 구분한다
-		if (ft_strnstr(evecve_arg[idx], "=", ft_strlen(evecve_arg[idx])))
+		if (ft_strnstr(evecve_arg[imp_stus->i], "=", \
+			ft_strlen(evecve_arg[imp_stus->i])))
 			equals_flag = 1;
-		argv_equals = ft_split(evecve_arg[idx], '=');
+		argv_equals = ft_split(evecve_arg[imp_stus->i], '=');
 		// argv_equals[0]과 동일한 key를 같는 노드가 있는지 확인해야 한다
 		// 있다면 node추가가 아니라 update해야됨
 		if (!update_node(object, argv_equals, equals_flag))
 			insert_node(object, argv_equals, equals_flag);
 		free_doublechar(argv_equals);
 	}
-	free_doublechar(evecve_arg);
+	// 아래 free가 꼭 필요한가? object에서 꺼낸 값이니 implemnet 밖에서 해제해줄 것 같음
+	// free_doublechar(evecve_arg);
+	// object->cmd_info->evecve_argv = NULL;
 	return (1);
 }
 
@@ -60,10 +62,13 @@ int	execute_export(t_object *object, t_imp_stus *imp_stus)
 static int update_node(t_object *object, char **argv_equals, int equals_flag)
 {
 	t_env	*temp;
+	int		strlen;
+
 	temp = object->env;
 	while (temp)
 	{
-		if (!ft_strncmp(temp->key, argv_equals[0], ft_strlen(temp->key)))
+		strlen = ft_strlen(temp->key);
+		if (!ft_strncmp(temp->key, argv_equals[0], strlen))
 		{
 			if (temp->value)
 				free(temp->value);

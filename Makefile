@@ -5,7 +5,7 @@ CFLAGS = -Wall -Wextra -Werror -g -Iinclude
 LDFLAGS = -lreadline
 
 SRCS = minishell.c \
-print_log.c \
+etc/print_log.c \
 error/error_handler.c \
 init/init_signal.c \
 init/init_helper.c \
@@ -38,6 +38,7 @@ imple_cmd/builtins/pwd.c \
 imple_cmd/builtins/unset.c \
 imple_cmd/builtins/cd.c \
 imple_cmd/builtins/builtin_utils.c \
+imple_cmd/help_except_case.c \
 
 
 OBJS = $(SRCS:.c=.o)
