@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:53:47 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/17 13:04:12 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/18 13:41:00 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int	main(int length, char *input[], char *env[])
 		if (*line != '\0')
 			add_history(line);
 		if (*line != '\0' && !is_all_space(line))
-			process_minishell(&object, &line);
+			process_minishell(&object, &line);	
 		free(line);
 		free_cmd_info(&(object.cmd_info));
 	}

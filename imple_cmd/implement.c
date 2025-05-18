@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   implement.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/17 13:01:40 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/18 13:35:50 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ static void	child_work(t_object *object, t_imp_stus *imp_stus);
 static void	parent_while_process(t_object *object, t_imp_stus *imp_stus);
 static void	child_while_process(t_object *object, t_imp_stus *imp_stus);
 static void implement2(t_object *object, t_imp_stus *imp_stus);
-
 
 // 명령어와 환경 병수 링크드 리스크로 받음
 // t_cmd : 명령어에 대한 meta data를 저장하고 있는 node
@@ -40,13 +39,19 @@ void implement(t_object *object)
 		create_execve_args(object->cmd_info);
 		input_output_setting(object, &imp_stus, one_builtin_flag);
 		execute_one_builtin(object, &imp_stus);
-		free_stus(&imp_stus);
+		// one builtin에서 해당 함수만 호출하면 object의 값이 남아서 에러뜸
+		// 아래 명령어도 수정해야 할 것 같다 종료하고 다시 프롬프트가 실행될 때 해제가 제대로 안 되는 것 같음
+		free_stus(&imp_stus); 
 		print_log(1, object, "(부모에서 실행) complete one builtin execution\n");
 		return ;
 	}
 	print_log(1, object, "total cmd : %d \n", imp_stus.total_c_n);
 	implement2(object, &imp_stus);
+	// 자식 프로세스 종료 대기 (비정상 종료시 상태 저장)
+	wait_childs_process(object, &imp_stus);
 	object->cmd_info = existing_cmd_info;
+	// free_stus_and_object(object, &imp_stus);
+	free_stus(&imp_stus);
 	return ;
 }
 
@@ -69,10 +74,6 @@ static void implement2(t_object *object, t_imp_stus *imp_stus)
 	}
 	// 자식 프로세스를 모두 생성한 후에 에러 출력 파이프 닫아줌
 	close(imp_stus->stderr_pipe[1]);
-	// 자식 프로세스 종료 대기 (비정상 종료시 상태 저장)
-	wait_childs_process(object, imp_stus);
-	// imp_stus 초기화 (부모 프로세스라 exit()실행하면 안됨)
-	free_stus(imp_stus);
 }
 
 // fork후 자식 프로세스를 처리하는 함수
@@ -116,22 +117,22 @@ static void child_work(t_object *object, t_imp_stus *imp_stus)
 	int 	flag;
 
 	// input, output을 재설정 해야 한다면 재설정
-	input_output_setting(object, imp_stus, 0);
+	input_output_setting(object, imp_stus, MULTI_PIPLINE);
 	// builtins check후 맞다면 builtin 실행
 	if (execute_builtins(object, imp_stus))
 		return ;
 	// "", ''처리
 	single_duuble_quates_check(object);
 	// find_path로 찾은 path는 t_cmd의 cmd_path에 저장
+	// 실행할 수 있는 명령어를 못 찾은 경우 0반환
 	flag = find_path(object->cmd_info, object->env);
-	// execve에 건네줄 수 있는 argv를 만든다
 	create_execve_args(object->cmd_info);
-	// env 링크드리스크 -> 2차원 배열 전환
 	envp = env_to_char(object->env, imp_stus->i);
 	print_log(imp_stus->stdoutFd, object, "(실행파일 %d) ok (before execve)\n", (int)getpid());
 	if (!flag || execve(object->cmd_info->cmd_path,
 			   object->cmd_info->evecve_argv, envp) == -1)
 	{
+		close(STDIN_FILENO);
 		free_stus_and_object(object, imp_stus);
 		free_doublechar(envp);
 		exit(2);

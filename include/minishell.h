@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/17 13:09:53 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/17 20:02:40 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 # define DOUBLE_QUOTE_ASCII 34
 # define SINGLE_QUOTE_ASCII 39
 
+# define MULTI_PIPLINE 0
 
 typedef enum e_token_type
 {
@@ -97,8 +98,9 @@ typedef struct s_check_redir_arg
 typedef struct s_imp_stus
 {
 	int		i;
-	int		input_fd;
-	int		output_fd;
+	int		all_path; // 이후의 함수 실행 안 하고 끝내야 할 때 사용
+	int		input_fd; // 리다이렉션 할 때 사용
+	int		output_fd; // 리다이렉션 할 때 사용
 	int		stdoutFd; // stdout buffer에 연결된 fd보존
 	int		stdinFd;
 	int		cur_c_n; // curent_command_number
