@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 13:58:34 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/13 20:51:58 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/17 20:16:30 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ void	free_cmd_info(t_cmd_info **cmd_info)
 	{
 		temp = (*cmd_info)->next;
 		if ((*cmd_info)->cmd)
-			free((*cmd_info)->cmd);
+			free_string(&(*cmd_info)->cmd);
 		if ((*cmd_info)->evecve_argv)
 			free_string_arr(&((*cmd_info)->evecve_argv));
 		if ((*cmd_info)->cmd_path)

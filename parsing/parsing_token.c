@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 20:10:44 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/15 19:37:48 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/18 14:59:11 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ static	void	set_next_node(t_cmd_info **current_node)
 static	void	set_file_path_flag_and_cmd(t_cmd_info *node, char **src, \
 	t_check_redir_arg *arg)
 {
+	if (arg->end_flag)
+		return ;
 	if (!(node->cmd) && \
 	(*(src[(*arg).current_src]) != '>' && *(src[(*arg).current_src]) != '<'))
 	{
@@ -38,24 +40,27 @@ static	void	set_file_path_flag_and_cmd(t_cmd_info *node, char **src, \
 static	void	seperate_element(char **src, t_cmd_info *node, \
 t_object *object)
 {
-	t_check_redir_arg	arg;
+	t_check_redir_arg	*arg;
 
-	arg.current_src = 0;
-	arg.redirect = NULL;
-	arg.file_path_flag = 0;
-	while (src[arg.current_src])
+	arg = ft_calloc(1, sizeof(t_check_redir_arg));
+	while (src && src[arg->current_src])
 	{
-		arg.src = src;
-		arg.object = object;
-		arg.cmd = (node->cmd);
-		check_redirect(&arg);
-		if (!(arg.src) && !(arg.cmd) && !(arg.redirect))
+		arg->src = src;
+		arg->object = object;
+		arg->cmd = (node->cmd);
+		check_redirect(arg);
+		if (arg->end_flag)
+		{
+			free_string_arr(&src);
+			free(arg);
 			return ;
-		set_file_path_flag_and_cmd(node, src, &arg);
-		(arg.current_src)++;
+		}
+		set_file_path_flag_and_cmd(node, src, arg);
+		(arg->current_src)++;
 	}
 	node->evecve_argv = src;
-	node->redirect = arg.redirect;
+	node->redirect = arg->redirect;
+	free(arg);
 }
 
 void	parsing(char **line_splited_pipe, t_object *object)
@@ -77,8 +82,8 @@ void	parsing(char **line_splited_pipe, t_object *object)
 	{
 		line_splited_space = split_by_space_with_quote(line_splited_pipe[idx]);
 		seperate_element(line_splited_space, current_node, object);
-		if (!line_splited_pipe && !current_node)
-			return ;
+		if (!current_node && !object->cmd_info)
+			break ;
 		idx++;
 		if (line_splited_pipe[idx])
 			set_next_node(&current_node);

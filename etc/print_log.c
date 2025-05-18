@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   print_log.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 14:53:35 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/16 16:29:17 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/17 14:38:21 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ static void handler(va_list args, char spec, char *buf, int *pos)
         buf_put_int((long long)va_arg(args, int), buf, pos);
     else if (spec == 's')
         buf_put_str(va_arg(args, char *), buf, pos);
-    else
+    else if (spec == 'u')
     {
         buf[(*pos)++] = '%';
         buf[(*pos)++] = spec;

@@ -6,13 +6,13 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 14:39:33 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/15 14:36:59 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/18 14:42:19 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static	int	set_result(char *s, int *s_idx, \
+static	void	set_result(char *s, int *s_idx, \
 	t_result_info *result_info, int *start)
 {
 	char	*file_path;
@@ -33,24 +33,20 @@ static	int	set_result(char *s, int *s_idx, \
 	(*start) = -1;
 	(*s_idx) += result_info->add_value;
 	result_info->file_path_flag = 1;
-	return (1);
 }
 
-static	int	split_when_redir(char *s, int *s_idx, \
+static	void	split_when_redir(char *s, int *s_idx, \
 	t_result_info *result_info, int *start)
 {
-	if ((s[*s_idx] == '>' && s[(*s_idx) + 1] == '>') || \
-	(s[*s_idx] == '<' && s[(*s_idx) + 1] == '<'))
+	if (s[*s_idx] == '>' || s[*s_idx] == '<')
 	{
-		result_info->add_value = 1;
-		return (set_result(s, s_idx, result_info, start));
+		if ((s[*s_idx] == '>' && s[(*s_idx) + 1] == '>') || \
+		(s[*s_idx] == '<' && s[(*s_idx) + 1] == '<'))
+			result_info->add_value = 1;
+		else
+			result_info->add_value = 0;
+		set_result(s, s_idx, result_info, start);
 	}
-	else if (s[*s_idx] == '>' || s[*s_idx] == '<')
-	{
-		result_info->add_value = 0;
-		return (set_result(s, s_idx, result_info, start));
-	}
-	return (0);
 }
 
 static	void	process_split_by_redir(char *s, t_result_info *result_info)

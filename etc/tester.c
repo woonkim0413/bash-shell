@@ -242,8 +242,15 @@ int main(int argc, char *argv[]) {
     printf("처리 하지 못하는 명령어 종류 : 커스텀 에러 메세지, <<, >> \n");
     while (fgets(line, sizeof(line), fp)) {
         trim_whitespace(line);
+        // #이면 출력만
+        if (line[0] == '#')
+        {
+            printf("\n");
+            printf("\x1b[33m%s\x1b[0m\n", line);
+            printf("\n");
+        }
         // 빈 줄이면 현재 블록 처리
-        if (line[0] == '\0') {
+        else if (line[0] == '\0') {
             if (cmd_count > 0) {
                 process_block(cmds, cmd_count, test_num++);
                 for (int i = 0; i < cmd_count; i++) free(cmds[i]);

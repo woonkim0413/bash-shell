@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/17 13:09:53 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/18 13:59:11 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@
 # define DOLLAR_ASCII 36
 # define DOUBLE_QUOTE_ASCII 34
 # define SINGLE_QUOTE_ASCII 39
-
 
 typedef enum e_token_type
 {
@@ -71,6 +70,7 @@ typedef struct s_object
 	t_cmd_info	*cmd_info;
 	t_env		*env;
 	int			last_exit_status;
+	int			heredoc_interrupted;
 }	t_object;
 
 /* parsing에서 구분자로 split 하기 위한 구조체 */
@@ -88,6 +88,7 @@ typedef struct s_check_redir_arg
 	int			current_src;
 	char		*cmd;
 	int			file_path_flag;
+	int			end_flag;
 	t_redirect	*redirect;
 	t_object	*object;
 }	t_check_redir_arg;
@@ -121,7 +122,7 @@ void		throw_error(char *message, t_object *object, \
 void		free_object(t_object *object);
 void		free_stus_and_object(t_object *object, t_imp_stus *imp_stus);
 void		free_string(char **line);
-void		free_arg(t_check_redir_arg *arg);
+void		free_arg(t_check_redir_arg **arg);
 /* free/free_helper */
 void		free_string_arr(char ***string_arr);
 void		free_stus(t_imp_stus *imp_stus);
@@ -200,9 +201,9 @@ void		pipe_and_fork(t_imp_stus *imp_stus);
 void		init_t_imp_stus(t_imp_stus *imp_stus);
 
 /* /print_log.c */
-void	print_log(int stdout_fd, t_object *object, const char *format, ...);
+void		print_log(int stdout_fd, t_object *object, const char *format, ...);
 
 /* imple_cmd/help_except_case.c */
-void	single_duuble_quates_check(t_object *object);
+void		single_duuble_quates_check(t_object *object);
 
 #endif
