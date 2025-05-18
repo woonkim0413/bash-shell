@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   redirect_setting.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:02:03 by woonkim           #+#    #+#             */
 /*   Updated: 2025/05/14 16:33:04 by rakim            ###   ########.fr       */
@@ -13,7 +13,7 @@
 #include "minishell.h"
 
 static void redirect_process2(t_imp_stus *imp_stus, t_redirect *redirect);
-static void redirect_process(t_object *object, t_imp_stus *imp_stus);
+static void redirect_process(t_object *object, t_imp_stus *imp_stus, int one_builtin_flag);
 
 // 이전 명령어 유무 check 
 // - 이전 명령어가 있다면 파이프라인으로 input이 들어옴
@@ -42,10 +42,11 @@ void	input_output_setting(t_object *object, t_imp_stus *imp_stus, \
 			dup2(imp_stus->pipeFd[imp_stus->cur_c_n][1], STDOUT_FILENO);
 		close(imp_stus->pipeFd[imp_stus->cur_c_n][1]);
 	}
-	redirect_process(object, imp_stus);
+	redirect_process(object, imp_stus, one_builtin_flag);
 }
 
-static void redirect_process(t_object *object, t_imp_stus *imp_stus)
+static void redirect_process(t_object *object, t_imp_stus *imp_stus, \
+	int one_builtin_flag)
 {
 	t_redirect *redirect;
 
@@ -59,6 +60,11 @@ static void redirect_process(t_object *object, t_imp_stus *imp_stus)
 		{
 			write(2, redirect->file_path, ft_strlen(redirect->file_path));
 			write(2, ": No such file or directitory\n", 31);
+			if (one_builtin_flag)
+			{
+				imp_stus->all_path = 1;
+				return;
+			}
 			free_stus_and_object(object, imp_stus);
 			exit(1);
 		}

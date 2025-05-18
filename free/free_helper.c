@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free_helper.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 13:58:34 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/13 20:51:58 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/18 00:07:36 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	free_stus(t_imp_stus *imp_stus)
 	{
 		// 파이프 안 만들고 close하면 pipeFd[i][0]에 담긴 쓰레기 값이
 		// close된다 이때, 쓰레기 값은 컴파일러가 0으로 넣어줄 확률이 크기에 
-		// STDIN이 닫혀서 main.c의 readline에 EOF가 전달되어 종료된 것이었다 
+		// STDIN이 닫혀서 main.c의 readline에 EOF가 전달되어 프로그램이 종료될 수 있다 
 		free(imp_stus->pipeFd[i]);
 		i ++;
 	}

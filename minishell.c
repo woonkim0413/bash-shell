@@ -47,7 +47,7 @@ int	main(int length, char *input[], char *env[])
 		if (*line != '\0')
 			add_history(line);
 		if (*line != '\0' && !is_all_space(line))
-			process_minishell(&object, &line);
+			process_minishell(&object, &line);	
 		free(line);
 		free_cmd_info(&(object.cmd_info));
 	}

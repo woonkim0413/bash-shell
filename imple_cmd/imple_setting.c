@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 15:55:16 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/16 12:07:10 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/17 19:22:50 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void	pipe_and_fork(t_imp_stus *imp_stus)
 void	init_t_imp_stus(t_imp_stus *imp_stus)
 {
 	imp_stus->i = 0;
+	imp_stus->all_path = 0;
 	imp_stus->cur_c_n = 0;
 	imp_stus->total_c_n = 0;
 	imp_stus->input_fd = -1;

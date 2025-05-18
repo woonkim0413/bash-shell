@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 15:47:06 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/16 11:57:22 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/17 19:38:26 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,19 +25,19 @@ int	check_one_builtin(t_object *object, t_imp_stus *imp_stus)
 		cmd = object->cmd_info->cmd;
 		if (!cmd || ft_strlen(cmd) == 0)
 			flag = 0;
-		else if (!ft_strncmp("echo", cmd, ft_strlen(cmd)))
+		else if (!ft_strncmp("echo", cmd, 4) && ft_strlen("echo") == ft_strlen(cmd))
 			flag = 1;
-		else if (!ft_strncmp("pwd", cmd, ft_strlen(cmd)))
+		else if (!ft_strncmp("pwd", cmd, 3) && ft_strlen("pwd") == ft_strlen(cmd))
 			flag = 1;
-		else if (!ft_strncmp("unset", cmd, ft_strlen(cmd)))
+		else if (!ft_strncmp("unset", cmd, 5) && ft_strlen("unset") == ft_strlen(cmd))
 			flag = 1;
-		else if (!ft_strncmp("export", cmd, ft_strlen(cmd)))
+		else if (!ft_strncmp("export", cmd, 6) && ft_strlen("export") == ft_strlen(cmd))
 			flag = 1;
-		else if (!ft_strncmp("env", cmd, ft_strlen(cmd)))
+		else if (!ft_strncmp("env", cmd, 3) && ft_strlen("env") == ft_strlen(cmd))
 			flag = 1;
-		else if (!ft_strncmp("exit", cmd, ft_strlen(cmd)))
+		else if (!ft_strncmp("exit", cmd, 4) && ft_strlen("exit") == ft_strlen(cmd))
 			flag = 1;
-		else if (!ft_strncmp("cd", cmd, ft_strlen(cmd)))
+		else if (!ft_strncmp("cd", cmd, 2) && ft_strlen("cd") == ft_strlen(cmd))
 			flag = 1;
 	}
 	return (flag);
@@ -53,19 +53,19 @@ int	execute_builtins(t_object *object, t_imp_stus *imp_stus)
 	cmd = object->cmd_info->cmd;
 	if (!cmd || ft_strlen(cmd) == 0)
 		flag = 0;
-	else if (!ft_strncmp("echo", cmd, ft_strlen(cmd)))
+	else if (!ft_strncmp("echo", cmd, 4) && ft_strlen("echo") == ft_strlen(cmd))
 		flag = execute_echo(object, imp_stus);
-	else if (!ft_strncmp("pwd", cmd, ft_strlen(cmd)))
+	else if (!ft_strncmp("pwd", cmd, 3) && ft_strlen("pwd") == ft_strlen(cmd))
 		flag = execute_pwd(object, imp_stus, -1);
-	else if (!ft_strncmp("unset", cmd, ft_strlen(cmd)))
+	else if (!ft_strncmp("unset", cmd, 5) && ft_strlen("unset") == ft_strlen(cmd))
 		flag = execute_unset(object, imp_stus);
-	else if (!ft_strncmp("export", cmd, ft_strlen(cmd)))
+	else if (!ft_strncmp("export", cmd, 6) && ft_strlen("export") == ft_strlen(cmd))
 		flag = execute_export(object, imp_stus);
-	else if (!ft_strncmp("env", cmd, ft_strlen(cmd)))
+	else if (!ft_strncmp("env", cmd, 3) && ft_strlen("env") == ft_strlen(cmd))
 		flag = execute_env(object, imp_stus);
-	else if (!ft_strncmp("exit", cmd, ft_strlen(cmd)))
+	else if (!ft_strncmp("exit", cmd, 4) && ft_strlen("exit") == ft_strlen(cmd))
 		flag = execute_exit(object, imp_stus);
-	else if (!ft_strncmp("cd", cmd, ft_strlen(cmd)))
+	else if (!ft_strncmp("cd", cmd, 2) && ft_strlen("cd") == ft_strlen(cmd))
 		flag = execute_cd(object, imp_stus);
 	return (flag);
 }
@@ -75,21 +75,24 @@ void	execute_one_builtin(t_object *object, t_imp_stus *imp_stus)
 {
 	char *cmd;
 
-	cmd = object->cmd_info->cmd;
-	if (!ft_strncmp("echo", cmd, ft_strlen(cmd)))
-		execute_echo(object, imp_stus);
-	else if (!ft_strncmp("pwd", cmd, ft_strlen(cmd)))
-		 execute_pwd(object, imp_stus, -1);
-	else if (!ft_strncmp("unset", cmd, ft_strlen(cmd)))
-		execute_unset(object, imp_stus);
-	else if (!ft_strncmp("export", cmd, ft_strlen(cmd)))
-		execute_export(object, imp_stus);
-	else if (!ft_strncmp("env", cmd, ft_strlen(cmd)))
-		execute_env(object, imp_stus);
-	else if (!ft_strncmp("exit", cmd, ft_strlen(cmd)))
-		execute_exit(object, imp_stus);
-	else if (!ft_strncmp("cd", cmd, ft_strlen(cmd)))
-		execute_cd(object, imp_stus);
+	if (!imp_stus->all_path)
+	{
+		cmd = object->cmd_info->cmd;
+		if (!ft_strncmp("echo", cmd, ft_strlen(cmd)))
+			execute_echo(object, imp_stus);
+		else if (!ft_strncmp("pwd", cmd, ft_strlen(cmd)))
+			execute_pwd(object, imp_stus, -1);
+		else if (!ft_strncmp("unset", cmd, ft_strlen(cmd)))
+			execute_unset(object, imp_stus);
+		else if (!ft_strncmp("export", cmd, ft_strlen(cmd)))
+			execute_export(object, imp_stus);
+		else if (!ft_strncmp("env", cmd, ft_strlen(cmd)))
+			execute_env(object, imp_stus);
+		else if (!ft_strncmp("exit", cmd, ft_strlen(cmd)))
+			execute_exit(object, imp_stus);
+		else if (!ft_strncmp("cd", cmd, ft_strlen(cmd)))
+			execute_cd(object, imp_stus);
+	}
 	// fd 연결 재설정 (부모 프로세스 stdin, stdout을 건들였기에)
 	dup2(imp_stus->stdoutFd, STDOUT_FILENO);
 	dup2(imp_stus->stdinFd, STDIN_FILENO);

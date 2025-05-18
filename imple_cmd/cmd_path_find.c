@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 22:13:19 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/16 20:46:00 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/17 17:26:22 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,16 +52,17 @@ static char *check_and_return_path(char **paths)
 	char *cmd_path;
 
 	i = 0;
-	while (paths[i]) // 4번 반복
+	while (paths[i])
 	{
 		// 해당 위치에 명령어가 존재하는지 확인
-		if (access(paths[i], F_OK) == 0)
+		if (access(paths[i], X_OK) == 0)
 		{
+			if (!ft_strncmp(paths[i], "/mnt/c/WINDOWS/temp", \
+				ft_strlen(paths[i])))
+				break ;
 			cmd_path = ft_strdup(paths[i]);
 			i = 0;
-			while (paths[i])
-				free(paths[i++]);
-			free(paths);
+			memory_free(paths);
 			return (cmd_path);
 		}
 		i++;
