@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 14:39:33 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/18 14:42:19 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/18 17:33:01 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,9 @@ static	void	split_when_redir(char *s, int *s_idx, \
 			result_info->add_value = 1;
 		else
 			result_info->add_value = 0;
+		if (!result_info->file_path_flag && *start != -1 && *start < *s_idx)
+			result_info->result[result_info->result_idx++] = \
+			ft_substr(s, *start, *s_idx - *start);
 		set_result(s, s_idx, result_info, start);
 	}
 }

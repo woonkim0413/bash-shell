@@ -199,7 +199,6 @@ void process_block(char **cmds, int cmd_count, int test_num) {
     // 6) PASS 판정: exit code 또는 출력 비교
     bool pass = false;
 
-    printf("[Debug] bash_status = %d, mini_status = %d\n", bash_status, mini_status);
     if (bash_status != 0) {
         pass = (strstr(mini_output, "Error") != NULL);
     } else {
