@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:53:47 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/17 19:22:31 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/18 18:15:56 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,16 @@ static	void	process_minishell(t_object *object, char **line)
 		implement(object);
 }
 
+static	int	check_heredoc_interrupt(t_object *object)
+{
+	if (object->heredoc_interrupted)
+	{
+		object->heredoc_interrupted = 0;
+		return (1);
+	}
+	return (0);
+}
+
 int	main(int length, char *input[], char *env[])
 {
 	char		*line;
@@ -36,11 +46,8 @@ int	main(int length, char *input[], char *env[])
 	init(length, input, &object, env);
 	while (1)
 	{
-		if (object.heredoc_interrupted)
-		{
-			object.heredoc_interrupted = 0;
+		if (check_heredoc_interrupt(&object))
 			continue ;
-		}
 		line = readline("minishell $ : ");
 		if (!line)
 		{
