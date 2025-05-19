@@ -6,55 +6,48 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 22:13:19 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 02:25:29 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 10:24:42 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void memory_free(char** argv)
+static void	memory_free(char **argv)
 {
 	int	i;
 
 	i = 0;
-	while(argv[i])
+	while (argv[i])
 		free(argv[i++]);
 	free(argv);
 }
 
-static char **make_path(char **paths, char *command)
+static char	**make_path(char **paths, char *command)
 {
-	int i;
-	char *temp;
+	int		i;
+	char	*temp;
 
 	i = -1;
 	while (paths[++i])
 	{
-		// path + command를 합침 (join의 반환값은 malloc)
-		// split의 반환값은 free해줬음
-		// left, right에 둘 다 같은 변수를 쓰면 ++이 안 써짐
 		temp = ft_strjoin(paths[i], "/");
-		// split으로 생성된 malloc을 free함
 		free(paths[i]);
 		paths[i] = temp;
 		temp = ft_strjoin(paths[i], command);
-		// 첫 번째 join으로 생성된 malloc을 free함
 		free(paths[i]);
-		// 두 번째 join으로 완성된 "절대 주소 + / + 명령어" path
 		paths[i] = temp;
 	}
 	return (paths);
 }
 
-static char *check_and_return_path(char **paths)
+static char	*check_and_return_path(char **paths)
 {
-	int	i;
-	char *cmd_path;
+	int		i;
+	char	*cmd_path;
 
 	i = 0;
 	while (paths[i])
 	{
-		// 해당 위치에 명령어가 존재하는지 확인
 		if (access(paths[i], X_OK) == 0)
 		{
 			if (!ft_strncmp(paths[i], "/mnt/c/WINDOWS/temp", \
@@ -72,25 +65,21 @@ static char *check_and_return_path(char **paths)
 	return (NULL);
 }
 
-int find_path(t_cmd_info* t_cmd, t_env* env)
+int	find_path(t_cmd_info *t_cmd, t_env *env)
 {
-	t_env *temp;
-	char **paths;
+	t_env	*temp;
+	char	**paths;
 
 	temp = env;
-	// 절대주소가 전달된 경우 체크 + 실행 파일인 경우만 체크
 	if (t_cmd->cmd && access(t_cmd->cmd, X_OK) == 0)
 	{
 		t_cmd->cmd_path = t_cmd->cmd;
 		return (1);
 	}
-	// env의 몇 번째 노드에 PATH 환경변수가 들어 있는지 확인
 	while (temp)
 	{
 		if (ft_strncmp(temp->key, "PATH", 4) == 0)
 		{
-			// 하나의 string에 담겨져 있는 path들을 :을 기준으로 쪼갬
-			// 다 malloc으로 생성하기에 free해줘야 함
 			paths = ft_split(temp->value, ':');
 			paths = make_path(paths, t_cmd->cmd);
 			t_cmd->cmd_path = check_and_return_path(paths);
@@ -100,7 +89,6 @@ int find_path(t_cmd_info* t_cmd, t_env* env)
 		}
 		temp = temp->next;
 	}
-	// 명령어가 존재하지 않으면 null담음
 	t_cmd->cmd_path = NULL;
 	return (0);
 }

@@ -6,13 +6,13 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:34:55 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/18 23:28:51 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 11:18:12 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void env_remove(t_env *env)
+static void	env_remove(t_env *env)
 {
 	free(env->key);
 	free(env->value);
@@ -20,7 +20,7 @@ static void env_remove(t_env *env)
 	free(env);
 }
 
-static void remove_env(char *remove_target, t_env *pre, t_env *cur)
+static void	remove_env(char *remove_target, t_env *pre, t_env *cur)
 {
 	t_env	*next;
 
@@ -39,10 +39,10 @@ static void remove_env(char *remove_target, t_env *pre, t_env *cur)
 	}
 }
 
-int execute_unset(t_object *object, t_imp_stus *imp_stus)
+int	execute_unset(t_object *object, t_imp_stus *imp_stus)
 {
-	t_env 	*pre;
-	t_env 	*cur;
+	t_env	*pre;
+	t_env	*cur;
 	char	*remove_target;
 
 	(void)imp_stus;

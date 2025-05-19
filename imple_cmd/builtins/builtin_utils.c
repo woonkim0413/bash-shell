@@ -6,17 +6,18 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 15:47:06 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/17 19:38:26 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 11:16:53 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// 하나의 명령어만 사용 + 하나의 명령어가 builtin인 경우 실행
+static void	check_extend(t_object *object, int *flag);
+
 int	check_one_builtin(t_object *object, t_imp_stus *imp_stus)
 {
-	char *cmd;
-	int flag;
+	char	*cmd;
+	int		flag;
 
 	(void)imp_stus;
 	flag = 0;
@@ -25,29 +26,44 @@ int	check_one_builtin(t_object *object, t_imp_stus *imp_stus)
 		cmd = object->cmd_info->cmd;
 		if (!cmd || ft_strlen(cmd) == 0)
 			flag = 0;
-		else if (!ft_strncmp("echo", cmd, 4) && ft_strlen("echo") == ft_strlen(cmd))
+		else if (!ft_strncmp("echo", cmd, 4) && \
+			ft_strlen("echo") == ft_strlen(cmd))
 			flag = 1;
-		else if (!ft_strncmp("pwd", cmd, 3) && ft_strlen("pwd") == ft_strlen(cmd))
+		else if (!ft_strncmp("pwd", cmd, 3) && \
+			ft_strlen("pwd") == ft_strlen(cmd))
 			flag = 1;
-		else if (!ft_strncmp("unset", cmd, 5) && ft_strlen("unset") == ft_strlen(cmd))
-			flag = 1;
-		else if (!ft_strncmp("export", cmd, 6) && ft_strlen("export") == ft_strlen(cmd))
-			flag = 1;
-		else if (!ft_strncmp("env", cmd, 3) && ft_strlen("env") == ft_strlen(cmd))
-			flag = 1;
-		else if (!ft_strncmp("exit", cmd, 4) && ft_strlen("exit") == ft_strlen(cmd))
-			flag = 1;
-		else if (!ft_strncmp("cd", cmd, 2) && ft_strlen("cd") == ft_strlen(cmd))
-			flag = 1;
+		check_extend(object, &flag);
 	}
 	return (flag);
+}
+
+static void	check_extend(t_object *object, int *flag)
+{
+	char	*cmd;
+
+	cmd = object->cmd_info->cmd;
+	if (!ft_strncmp("unset", cmd, 5) && \
+		ft_strlen("unset") == ft_strlen(cmd))
+		*flag = 1;
+	else if (!ft_strncmp("export", cmd, 6) && \
+		ft_strlen("export") == ft_strlen(cmd))
+		*flag = 1;
+	else if (!ft_strncmp("env", cmd, 3) && \
+		ft_strlen("env") == ft_strlen(cmd))
+		*flag = 1;
+	else if (!ft_strncmp("exit", cmd, 4) && \
+		ft_strlen("exit") == ft_strlen(cmd))
+		*flag = 1;
+	else if (!ft_strncmp("cd", cmd, 2) && \
+		ft_strlen("cd") == ft_strlen(cmd))
+		*flag = 1;
 }
 
 //  파이프라인에서 builtin을 사용할 때 실행됨 ; fork()후 자식 프로세스에서 실행됨
 int	execute_builtins(t_object *object, t_imp_stus *imp_stus)
 {
-	int flag;
-	char *cmd;
+	int		flag;
+	char	*cmd;
 
 	flag = 0;
 	cmd = object->cmd_info->cmd;
@@ -57,9 +73,11 @@ int	execute_builtins(t_object *object, t_imp_stus *imp_stus)
 		flag = execute_echo(object, imp_stus);
 	else if (!ft_strncmp("pwd", cmd, 3) && ft_strlen("pwd") == ft_strlen(cmd))
 		flag = execute_pwd(object, imp_stus, -1);
-	else if (!ft_strncmp("unset", cmd, 5) && ft_strlen("unset") == ft_strlen(cmd))
+	else if (!ft_strncmp("unset", cmd, 5) && \
+		ft_strlen("unset") == ft_strlen(cmd))
 		flag = execute_unset(object, imp_stus);
-	else if (!ft_strncmp("export", cmd, 6) && ft_strlen("export") == ft_strlen(cmd))
+	else if (!ft_strncmp("export", cmd, 6) && \
+		ft_strlen("export") == ft_strlen(cmd))
 		flag = execute_export(object, imp_stus);
 	else if (!ft_strncmp("env", cmd, 3) && ft_strlen("env") == ft_strlen(cmd))
 		flag = execute_env(object, imp_stus);
@@ -73,7 +91,7 @@ int	execute_builtins(t_object *object, t_imp_stus *imp_stus)
 // * builtin 단독 사용시 실행됨 ; 부모 프로세스에서 실행됨
 void	execute_one_builtin(t_object *object, t_imp_stus *imp_stus)
 {
-	char *cmd;
+	char	*cmd;
 
 	if (!imp_stus->all_path)
 	{
@@ -93,7 +111,22 @@ void	execute_one_builtin(t_object *object, t_imp_stus *imp_stus)
 		else if (!ft_strncmp("cd", cmd, ft_strlen(cmd)))
 			execute_cd(object, imp_stus);
 	}
-	// fd 연결 재설정 (부모 프로세스 stdin, stdout을 건들였기에)
 	dup2(imp_stus->stdoutFd, STDOUT_FILENO);
 	dup2(imp_stus->stdinFd, STDIN_FILENO);
+}
+
+void	printf_env(t_object *object)
+{
+	t_env	*temp;
+
+	temp = object->env;
+	while (temp)
+	{
+		printf("declare -x %s", temp->key);
+		if (temp->value)
+			printf("=\"%s\"", temp->value);
+		printf("\n");
+		temp = temp->next;
+	}
+	return ;
 }
