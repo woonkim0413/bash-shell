@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:07:00 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 15:14:22 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 15:31:27 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ void handle_flag(t_imp_stus *imp_stus, t_object *object, int flag, char *path)
 {
 	if (flag == -1)
 	{
-		write(imp_stus->stdoutFd, "Error: cd: ", 10);
-		write(imp_stus->stdoutFd, path, ft_strlen(path));
-		write(imp_stus->stdoutFd, ": No Such file or directory\n", 29);
+		write(imp_stus->stdout_fd, "Error: cd: ", 10);
+		write(imp_stus->stdout_fd, path, ft_strlen(path));
+		write(imp_stus->stdout_fd, ": No Such file or directory\n", 29);
 		object->last_exit_status = 1;
 	}
 	else

@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/01 13:50:45 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 15:25:00 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 15:28:36 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@ int	execute_cd(t_object *object, t_imp_stus *imp_stus)
 	argv = object->cmd_info->evecve_argv;
 	if (argv[1] && argv[2])
 	{
-		write(imp_stus->stdoutFd, "Error: cd: ", 10);
-		write(imp_stus->stdoutFd,": Too many arguments\n", 22);
+		write(imp_stus->stdout_fd, "Error: cd: ", 10);
+		write(imp_stus->stdout_fd,": Too many arguments\n", 22);
 		object->last_exit_status = 1;
 		return (1);
 	}
