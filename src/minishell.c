@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:53:47 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/18 18:15:56 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/19 14:52:01 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ static	void	process_minishell(t_object *object, char **line)
 	parsing(line_splited_by_pipe, object);
 	handle_heardoc(object);
 	clean_up_quote(object->cmd_info);
-	print_all_cmd(object);
 	if (object->cmd_info)
 		implement(object);
 }
@@ -59,7 +58,7 @@ int	main(int length, char *input[], char *env[])
 		if (*line != '\0')
 			add_history(line);
 		if (*line != '\0' && !is_all_space(line))
-			process_minishell(&object, &line);	
+			process_minishell(&object, &line);
 		free(line);
 		free_cmd_info(&(object.cmd_info));
 	}

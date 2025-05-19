@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/19 11:16:49 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 14:52:00 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ typedef struct s_cmd_info
 	struct s_cmd_info	*next;
 }	t_cmd_info;
 
-// parsing부에서 전달 받은 정보 저장
 typedef struct s_object
 {
 	t_cmd_info	*cmd_info;
@@ -74,7 +73,6 @@ typedef struct s_object
 	int			heredoc_interrupted;
 }	t_object;
 
-/* parsing에서 구분자로 split 하기 위한 구조체 */
 typedef struct s_result_info
 {
 	char	**result;
@@ -94,22 +92,20 @@ typedef struct s_check_redir_arg
 	t_object	*object;
 }	t_check_redir_arg;
 
-// imple에서 사용할 정보 저장
-// 구현부에서 사용할 정보 저장 (나중에 error handler로 free할 수 있게 코드 변경)
 typedef struct s_imp_stus
 {
-	int		i;
-	int		all_path; // 이후의 함수 실행 안 하고 끝내야 할 때 사용
-	int		input_fd; // 리다이렉션 할 때 사용
-	int		output_fd; // 리다이렉션 할 때 사용
-	int		stdoutFd; // stdout buffer에 연결된 fd보존
-	int		stdinFd;
-	int		cur_c_n; // curent_command_number
-	int		total_c_n; // total_cmmand_number
-	int		stderr_pipe[2];
-	pid_t	*chil_pid;
-	int		**pipeFd; // 명령어 갯수에 따른 pipe용 int배열 저장
-	t_cmd_info *existing_cmd_info;
+	int			i;
+	int			all_path;
+	int			input_fd;
+	int			output_fd;
+	int			stdout_fd;
+	int			stdin_fd;
+	int			cur_c_n;
+	int			total_c_n;
+	int			stderr_pipe[2];
+	pid_t		*chil_pid;
+	int			**pipe_fd;
+	t_cmd_info	*existing_cmd_info;
 }	t_imp_stus;
 
 /* init */
@@ -148,9 +144,9 @@ void		extend_env(char **line, int *dolloar_idx, t_object *object);
 void		check_redirect(t_check_redir_arg *arg);
 /* parsing/heardoc/heardoc_handler.c */
 void		handle_heardoc(t_object *object);
+void		write_heardoc_in_pipe(t_object *object, t_redirect *redirect);
 /* parsing/utils/parsing_utils.c */
 void		check_pipe(char **line, t_object *object);
-void		print_all_cmd(t_object *object);
 void		whitespace_convert_to_space(char **line);
 /* parsing/utils/split_by_redir_2.c */
 void		split_by_redir(char **temp, t_result_info *result_info);

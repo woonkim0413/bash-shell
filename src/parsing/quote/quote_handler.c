@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:50:00 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/13 15:47:05 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/19 14:37:30 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,5 +63,3 @@ void	check_quotes(char **line, t_object *object)
 	if (is_have_quotes(*line))
 		is_quote_close(line, object);
 }
-
-// cat "$HOME/Desktop/minishell/minishell.c" | wc -al | echo '"$HOME" is my home' | echo "'$HOME'"

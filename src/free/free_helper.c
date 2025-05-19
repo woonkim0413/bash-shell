@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free_helper.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 13:58:34 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/18 18:36:24 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 14:24:26 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,22 +17,15 @@ void	free_stus(t_imp_stus *imp_stus)
 	int	i;
 
 	free(imp_stus->chil_pid);
-	// 왜 close(imp_stus->stdoutFd);에서 segment fault가 뜨는거지?
-	// -> stdoutFd를 close하여 이후엔 dprintf가 실행되지 못하는 것이지 여기서 error가 뜨는게 아님
-	close(imp_stus->stdoutFd);
-	close(imp_stus->stdinFd);
-	// 
+	close(imp_stus->stdout_fd);
+	close(imp_stus->stdin_fd);
 	i = 0;
-	// 일기 파이프 fd close해준 뒤 free
 	while (i < imp_stus->total_c_n)
 	{
-		// 파이프 안 만들고 close하면 pipeFd[i][0]에 담긴 쓰레기 값이
-		// close된다 이때, 쓰레기 값은 컴파일러가 0으로 넣어줄 확률이 크기에 
-		// STDIN이 닫혀서 main.c의 readline에 EOF가 전달되어 프로그램이 종료될 수 있다 
-		free(imp_stus->pipeFd[i]);
+		free(imp_stus->pipe_fd[i]);
 		i ++;
 	}
-	free(imp_stus->pipeFd);
+	free(imp_stus->pipe_fd);
 }
 
 void	free_string_arr(char ***string_arr)

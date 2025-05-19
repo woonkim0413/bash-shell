@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/01 13:50:45 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 10:51:27 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 14:23:59 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,9 @@ int	execute_cd(t_object *object, t_imp_stus *imp_stus)
 	flag = chdir(path);
 	if (flag == -1)
 	{
-		write(imp_stus->stdoutFd, "Error: cd: ", 10);
-		write(imp_stus->stdoutFd, path, ft_strlen(path));
-		write(imp_stus->stdoutFd,": No Such file or directory\n", 29);
+		write(imp_stus->stdout_fd, "Error: cd: ", 10);
+		write(imp_stus->stdout_fd, path, ft_strlen(path));
+		write(imp_stus->stdout_fd, ": No Such file or directory\n", 29);
 		object->last_exit_status = 1;
 	}
 	else
@@ -116,4 +116,3 @@ static void	update_pwd(t_object *object, t_imp_stus *imp_stus)
 	object->cmd_info->evecve_argv[1] = export_arg;
 	execute_export(object, imp_stus);
 }
-

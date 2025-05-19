@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   heardoc_handler.c                                  :+:      :+:    :+:   */
+/*   handle_heredoc_utils.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/12 15:31:13 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/17 19:18:55 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/19 15:00:03 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static	volatile sig_atomic_t sigint_flag = 0;
+static volatile sig_atomic_t	g_sigint_flag = 0;
 
 static	void	find_dollar_location(char **line, t_object *object)
 {
@@ -32,8 +32,19 @@ static	void	find_dollar_location(char **line, t_object *object)
 static	void	sigint_handler_in_child(int signal)
 {
 	(void)signal;
-	sigint_flag = 1;
+	g_sigint_flag = 1;
 	rl_done = 1;
+}
+
+static	int	check_condition(char **line, char *file_path)
+{
+	if (g_sigint_flag || !(*line) || \
+	!ft_strncmp(*line, file_path, ft_strlen(*line)))
+	{
+		free((*line));
+		return (0);
+	}
+	return (1);
 }
 
 static	void	child_process(t_object *object, t_redirect *redirect, \
@@ -47,16 +58,8 @@ static	void	child_process(t_object *object, t_redirect *redirect, \
 	while (1)
 	{
 		line = readline("> ");
-		if (sigint_flag || !line)
-		{
-			free(line);
+		if (!check_condition(&line, redirect->file_path))
 			break ;
-		}
-		if (!ft_strncmp(line, redirect->file_path, ft_strlen(line)))
-		{
-			free(line);
-			break ;
-		}
 		if (is_have_quotes(redirect->file_path))
 			check_quotes(&line, object);
 		else
@@ -67,13 +70,13 @@ static	void	child_process(t_object *object, t_redirect *redirect, \
 	}
 	close(pipe_fd[1]);
 	free_object(object);
-	if (sigint_flag)
+	if (g_sigint_flag)
 		exit(130);
 	else
 		exit(0);
 }
 
-static	void	write_heardoc_in_pipe(t_object *object, t_redirect *redirect)
+void	write_heardoc_in_pipe(t_object *object, t_redirect *redirect)
 {
 	int		pipe_fd[2];
 	int		pid;
@@ -97,28 +100,5 @@ static	void	write_heardoc_in_pipe(t_object *object, t_redirect *redirect)
 			free_cmd_info(&(object->cmd_info));
 			return ;
 		}
-	}
-}
-
-void	handle_heardoc(t_object *object)
-{
-	t_cmd_info	*cmd_info;
-	t_redirect	*redirect;
-
-	if (!object->cmd_info)
-		return ;
-	cmd_info = object->cmd_info;
-	while (cmd_info)
-	{
-		redirect = cmd_info->redirect;
-		while (redirect)
-		{
-			if (redirect->type == TOKEN_HEREDOC)
-				write_heardoc_in_pipe(object, redirect);
-			if (!object->cmd_info)
-				return ;
-			redirect = redirect->next;
-		}
-		cmd_info = cmd_info->next;
 	}
 }

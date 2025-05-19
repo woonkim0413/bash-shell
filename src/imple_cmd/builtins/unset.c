@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:34:55 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 11:18:12 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 14:21:38 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,4 +60,3 @@ int	execute_unset(t_object *object, t_imp_stus *imp_stus)
 	remove_env(remove_target, pre, cur);
 	return (1);
 }
-
