@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 15:18:01 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/18 15:24:06 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/18 20:33:26 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,13 @@ void	check_pipe(char **line, t_object *object)
 {
 	int	idx;
 	int	before_pipe;
+	int	in_single;
+	int	in_double;
 
 	idx = 0;
 	before_pipe = 0;
+	in_single = 0;
+	in_double = 0;
 	if ((*line)[idx] == '|')
 	{
 		object->last_exit_status = 2;
@@ -85,15 +89,19 @@ void	check_pipe(char **line, t_object *object)
 	}
 	while ((*line)[idx])
 	{
-		if (before_pipe && (*line)[idx] == '|')
+		set_toggle((*line)[idx], &in_single, &in_double);
+		if (!in_single && !in_double)
 		{
-			throw_error("argv error", object, NULL, line);
-			return ;
+			if (before_pipe && (*line)[idx] == '|')
+			{
+				throw_error("argv error", object, NULL, line);
+				return ;
+			}
+			if ((*line)[idx] == '|')
+				before_pipe = 1;
+			else
+				before_pipe = 0;
 		}
-		if ((*line)[idx] == '|')
-			before_pipe = 1;
-		else
-			before_pipe = 0;
 		idx++;
 	}
 }

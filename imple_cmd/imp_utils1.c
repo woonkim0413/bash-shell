@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   imp_utils1.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:19:05 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/18 18:17:32 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/18 20:24:09 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,6 @@ static int argv_end_check(char *argv, t_cmd_info *cmd_info)
 	flag = 1;
 	if (argv == NULL)
 		return (0);
-	if (cmd_info->redirect)
-		printf("yes");
 	if (!ft_strncmp(argv, "<", ft_strlen(argv)) && cmd_info->redirect)
 		flag = 0;
 	if (!ft_strncmp(argv, "<<", ft_strlen(argv)) && cmd_info->redirect)
