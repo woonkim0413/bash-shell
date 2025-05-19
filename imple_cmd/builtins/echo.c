@@ -6,33 +6,30 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:06:37 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/18 16:43:31 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 10:56:38 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int execute_echo(t_object *object, t_imp_stus *imp_stus)
+void	check_dash_flag(char **argv, int *flag, int i);
+
+int	execute_echo(t_object *object, t_imp_stus *imp_stus)
 {
-	char ** argv;
+	char	**argv;
 	int		i;
 	int		flag;
 
-	// dprintf(imp_stus->stdoutFd, "(자식에서 출력) execute echo\n");
 	(void)imp_stus;
 	argv = object->cmd_info->evecve_argv;
 	flag = 0;
-	if (argv[1] && !ft_strncmp(argv[1], "-n", ft_strlen(argv[1])))
-			flag = 1;
 	i = 0;
+	check_dash_flag(argv, &flag, i);
 	while (argv[++i])
 	{
 		if (i == 1 && flag == 1)
 			continue ;
-		// 여기서 pipe broken error가 뜬다 
-		// 이미 부모 프로세스에서 pipe 읽기 fd를 close()해서다
-		// child가 시작할 때 slgnal함수로 pipe broken을 무시하도록 했다
-		write(STDOUT_FILENO, argv[i], ft_strlen(argv[i]));	
+		write(STDOUT_FILENO, argv[i], ft_strlen(argv[i]));
 		if (argv[i + 1] != NULL)
 			write(1, " ", 1);	
 	}
@@ -40,4 +37,25 @@ int execute_echo(t_object *object, t_imp_stus *imp_stus)
 		write(1, "\n", 1);
 	object->last_exit_status = 0;
 	return (1);
+}
+
+void	check_dash_flag(char **argv, int *flag, int i)
+{
+	i = 0;
+	if (argv[1] && argv[1][0] == '-')
+	{
+		while (argv[1][++i])
+		{
+			if (argv[1][i] == 'n')
+			{
+				*flag = 1;
+				continue ;
+			}
+			else
+			{
+				*flag = 0;
+				break ;
+			}
+		}
+	}
 }

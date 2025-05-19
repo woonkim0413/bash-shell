@@ -3,24 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   imp_utils1.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:19:05 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/18 20:24:09 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/19 13:07:35 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	check_option(char **evecve_argv, int index);
-char **create_new_argv(t_cmd_info *cmd_info, int i, int j, int option_index);
+int		check_option(char **evecve_argv, int index);
+char	**create_new_argv(t_cmd_info *cmd_info, int i, int j, int option_index);
 
-char **env_to_char(t_env *env, int i)
+char	**env_to_char(t_env *env, int i)
 {
-	int env_num;
-	char *str_temp;
-	char **str;
-	t_env *temp;
+	int		env_num;
+	char	*str_temp;
+	char	**str;
+	t_env	*temp;
 
 	temp = env;
 	env_num = 0;
@@ -42,9 +42,9 @@ char **env_to_char(t_env *env, int i)
 	return (str);
 }
 
-static int argv_end_check(char *argv, t_cmd_info *cmd_info)
+static int	argv_end_check(char *argv, t_cmd_info *cmd_info)
 {
-	int flag;
+	int	flag;
 
 	flag = 1;
 	if (argv == NULL)
@@ -65,39 +65,37 @@ static int argv_end_check(char *argv, t_cmd_info *cmd_info)
 // 단어 더 파싱할 수 있는지 고민해보기 ls > file1.txt -la
 void create_execve_args(t_cmd_info *cmd_info)
 {
-	char **argv;
-	int i;
-	int j;
-	int option_index;
+	char	**argv;
+	int		i;
+	int		j;
+	int		option_index;
 
 	i = -1;
 	while (cmd_info->evecve_argv[++i])
 	{
-		if (!ft_strncmp(cmd_info->cmd, cmd_info->evecve_argv[i], \
-			ft_strlen(cmd_info->cmd)))
+		if (cmd_info->cmd && !ft_strncmp(cmd_info->cmd, \
+			cmd_info->evecve_argv[i], ft_strlen(cmd_info->cmd)))
 		{
 			j = i;
 			while (argv_end_check(cmd_info->evecve_argv[j], cmd_info))
 				j++;
-			// J 다음에 evecve_argv에 -옵션이 있는지 확인함 있다면 해당 index반환, 없다면 0
 			option_index = check_option(cmd_info->evecve_argv, j);
 			argv = create_new_argv(cmd_info, i, j, option_index);
 			free_doublechar(cmd_info->evecve_argv);
 			cmd_info->evecve_argv = argv;
-			return;
+			return ;
 		}
 	}
 }
 
-char **create_new_argv(t_cmd_info *cmd_info, int i, int j, int option_index)
+char	**create_new_argv(t_cmd_info *cmd_info, int i, int j, int option_index)
 {
 	int		k;
-	int 	end_index;
+	int		end_index;
 	char 	**argv;
 
 	k = 0;
 	end_index = j;
-	// 플레그 넣을 공간 확장
 	if (option_index)
 		j++;
 	argv = (char **)malloc(sizeof(char *) * (j - i + 1));
@@ -113,7 +111,7 @@ int	check_option(char **evecve_argv, int index)
 {
 	if (evecve_argv[index] == NULL)
 		return (0);
-	while (evecve_argv[index]) 
+	while (evecve_argv[index])
 	{
 		if (evecve_argv[index][0] == '-')
 			return (index);

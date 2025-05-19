@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/18 18:32:21 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 11:16:49 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,6 +198,7 @@ void		wait_childs_process(t_object *object, t_imp_stus *imp_stus);
 void		execute_one_builtin(t_object *object, t_imp_stus *imp_stus);
 int			check_one_builtin(t_object *object, t_imp_stus *imp_stus);
 int			execute_builtins(t_object *object, t_imp_stus *imp_stus);
+void		printf_env(t_object *object);
 
 /* /imple_cmd/imple_setting */
 void		setting_pipline(t_cmd_info *t_cmd, t_imp_stus *imp_stus);
