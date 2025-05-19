@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/19 14:52:00 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/19 15:27:41 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,6 +169,8 @@ int			execute_pwd(t_object *object, \
 	t_imp_stus *imp_stus, int prev_cwd_fd);
 int			execute_unset(t_object *object, t_imp_stus *imp_stus);
 int			execute_cd(t_object *object, t_imp_stus *imp_stus);
+void		handle_flag(t_imp_stus *imp_stus, t_object *object, \
+			int flag, char *path);
 
 /* /imple_cmd/implement.c*/
 void		implement(t_object *object);

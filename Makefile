@@ -39,9 +39,9 @@ src/imple_cmd/builtins/export.c \
 src/imple_cmd/builtins/pwd.c \
 src/imple_cmd/builtins/unset.c \
 src/imple_cmd/builtins/cd.c \
+src/imple_cmd/builtins/cd_utils.c \
 src/imple_cmd/builtins/builtin_utils.c \
 src/imple_cmd/help_except_case.c \
-
 
 OBJS = $(SRCS:.c=.o)
 HEADER = src/include/minishell.h
