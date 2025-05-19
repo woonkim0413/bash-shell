@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 15:47:06 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 14:24:12 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/19 15:24:00 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,12 @@ int	check_one_builtin(t_object *object, t_imp_stus *imp_stus)
 	if (object->cmd_info->prev == NULL && object->cmd_info->next == NULL)
 	{
 		cmd = object->cmd_info->cmd;
-		if (!cmd || ft_strlen(cmd) == 0)
+		if (!cmd)
+		{
+			flag = 1;
+			imp_stus->all_path = 1;
+		}
+		else if (!cmd || ft_strlen(cmd) == 0)
 			flag = 0;
 		else if (!ft_strncmp("echo", cmd, 4) && \
 			ft_strlen("echo") == ft_strlen(cmd))
@@ -42,7 +47,9 @@ static void	check_extend(t_object *object, int *flag)
 	char	*cmd;
 
 	cmd = object->cmd_info->cmd;
-	if (!ft_strncmp("unset", cmd, 5) && \
+	if (*flag)
+		return ;
+	else if (!ft_strncmp("unset", cmd, 5) && \
 		ft_strlen("unset") == ft_strlen(cmd))
 		*flag = 1;
 	else if (!ft_strncmp("export", cmd, 6) && \

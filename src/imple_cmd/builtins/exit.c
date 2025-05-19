@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:32:46 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 14:23:59 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/19 15:26:01 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ int	execute_exit(t_object *object, t_imp_stus *imp_stus)
 		if (argv[2])
 		{
 			write(imp_stus->stdout_fd, "bash: exit: too many arguments\n", 32);
+			object->last_exit_status = 1;
 			return (1);
 		}
 		exit_extend(object, imp_stus, argv);
