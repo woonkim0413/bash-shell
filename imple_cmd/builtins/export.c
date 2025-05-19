@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:33:32 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/18 20:57:02 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/19 13:05:39 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,17 @@ int	execute_export(t_object *object, t_imp_stus *imp_stus)
 	}
 	// env node 추가
 	evecve_arg = object->cmd_info->evecve_argv;
-	equals_flag = 0;
 	imp_stus->i = 0;
 	while (evecve_arg[++(imp_stus->i)])
 	{
+		equals_flag = 0;
+		if (evecve_arg[(imp_stus->i)][0] == '=')
+		{
+			write(imp_stus->stdoutFd, "Error : export: '=': ", 21); 
+			write(imp_stus->stdoutFd, "not a valiid identifler\n", 25);
+			object->last_exit_status = 1;
+			continue ;
+		}
 		// kkk=이런 경우엔 =으로 쪼개면 kkk와 같아지니 equals_flag를 두어 구분한다
 		if (ft_strnstr(evecve_arg[imp_stus->i], "=", \
 			ft_strlen(evecve_arg[imp_stus->i])))
@@ -62,13 +69,16 @@ int	execute_export(t_object *object, t_imp_stus *imp_stus)
 static int update_node(t_object *object, char **argv_equals, int equals_flag)
 {
 	t_env	*temp;
-	int		strlen;
+	int		temp_len;
+	int		argv_len;
 
 	temp = object->env;
+	argv_len = ft_strlen(argv_equals[0]);
 	while (temp)
 	{
-		strlen = ft_strlen(temp->key);
-		if (!ft_strncmp(temp->key, argv_equals[0], strlen))
+		temp_len = ft_strlen(temp->key);
+		if (!ft_strncmp(temp->key, argv_equals[0], temp_len) && \
+			(temp_len == argv_len))
 		{
 			if (temp->value)
 				free(temp->value);
@@ -105,8 +115,8 @@ static void insert_node(t_object *object, char **argv, int equals_flag)
 	// 환경변수 value는 없지만 =는 있는 경우 NULL char*할당 
 	else if (equals_flag)
 	{
-		temp->value = (char *)malloc(sizeof(char));
-		temp->value[0] = '\0';
+		env->value = (char *)malloc(sizeof(char));
+		env->value[0] = '\0';
 	}
 	else
 		env->value = NULL;

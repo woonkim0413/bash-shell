@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:57:12 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/18 18:36:28 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 02:21:28 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,14 +55,16 @@ void implement(t_object *object)
 
 static void implement2(t_object *object, t_imp_stus *imp_stus)
 {
+	char *buf;
+
+	buf = "(부모에서 출력) pid %d : create child process ok\n";
 	// 부모 process부분, 명령어 반복 실행 (cur_c_n은 index로 쓰이기에 0부터 시작)
 	while (imp_stus->cur_c_n < imp_stus->total_c_n)
 	{
 		// 파이프 생성 및 fork()하는 함수
 		pipe_and_fork(imp_stus);
 		if (imp_stus->chil_pid[imp_stus->cur_c_n] != 0)
-			print_log(1, object, \
-			"(부모에서 출력) pid %d : create child process ok\n", imp_stus->chil_pid[imp_stus->cur_c_n]);
+			print_log(1, object, buf, imp_stus->chil_pid[imp_stus->cur_c_n]);
 		// 자식 process 실행 (실행파일 + builtin모두 처리)
 		if (imp_stus->chil_pid[imp_stus->cur_c_n] == 0)
 			child_while_process(object, imp_stus);
@@ -77,16 +79,20 @@ static void implement2(t_object *object, t_imp_stus *imp_stus)
 // fork후 자식 프로세스를 처리하는 함수
 static void	child_while_process(t_object *object, t_imp_stus *imp_stus)
 {
+	int last_exit_num;
+
+	last_exit_num = 0;
 	// 자식 프로세스 시그널 처리
 	init_child_signal();
 	signal(SIGPIPE, SIG_IGN);
 	// 실행파일 명령어라면 child_work()까지만 실행된다
 	child_work(object, imp_stus);
 	print_log(imp_stus->stdoutFd, object, "(builtin %d) ok (before exit())\n", (int)getpid());
+	last_exit_num = object->last_exit_status;
 	// safety_exit()이 실행되는 상황은 builtin일 때임
 	// 자식 프로세스는 object, imp_stus 다 free하고 exit()해야 한다
 	free_stus_and_object(object, imp_stus);
-	exit(0);
+	exit(last_exit_num);
 }
 
 // fork후 부모 프로세스를 처리하는 함수
@@ -126,9 +132,9 @@ static void child_work(t_object *object, t_imp_stus *imp_stus)
 	flag = find_path(object->cmd_info, object->env);
 	create_execve_args(object->cmd_info);
 	// ----------------------------------------
-	int i = -1;
-	while (object->cmd_info->evecve_argv[++i])
-		print_log(imp_stus->stdoutFd, object, "[%s] ", object->cmd_info->evecve_argv[i]);
+	// int i = -1;
+	// while (object->cmd_info->evecve_argv[++i])
+	// 	print_log(imp_stus->stdoutFd, object, "[%s] ", object->cmd_info->evecve_argv[i]);
 	// ----------------------------------------
 	envp = env_to_char(object->env, imp_stus->i);
 	print_log(imp_stus->stdoutFd, object, "(실행파일 %d) ok (before execve)\n", (int)getpid());
@@ -138,6 +144,6 @@ static void child_work(t_object *object, t_imp_stus *imp_stus)
 		close(STDIN_FILENO);
 		free_stus_and_object(object, imp_stus);
 		free_doublechar(envp);
-		exit(2);
+		exit(127);
 	}
 }

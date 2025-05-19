@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 22:13:19 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/17 17:26:22 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 02:25:29 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ int find_path(t_cmd_info* t_cmd, t_env* env)
 
 	temp = env;
 	// 절대주소가 전달된 경우 체크 + 실행 파일인 경우만 체크
-	if (access(t_cmd->cmd, X_OK) == 0)
+	if (t_cmd->cmd && access(t_cmd->cmd, X_OK) == 0)
 	{
 		t_cmd->cmd_path = t_cmd->cmd;
 		return (1);

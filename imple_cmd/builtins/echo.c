@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:06:37 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/18 16:43:31 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 00:51:21 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,21 @@ int execute_echo(t_object *object, t_imp_stus *imp_stus)
 	(void)imp_stus;
 	argv = object->cmd_info->evecve_argv;
 	flag = 0;
-	if (argv[1] && !ft_strncmp(argv[1], "-n", ft_strlen(argv[1])))
-			flag = 1;
+	// -n 인식 코드
+	if (argv[1] && argv[1][0] == '-')
+	{
+		i = 0;
+		while (argv[1][++i])
+		{
+			if (argv[1][i] == 'n')
+			{
+				flag = 1;
+				continue ;
+			}
+			flag = 0;
+			break ;
+		}
+	}
 	i = 0;
 	while (argv[++i])
 	{

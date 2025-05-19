@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:34:55 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/18 17:51:13 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/18 23:28:51 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ int execute_unset(t_object *object, t_imp_stus *imp_stus)
 	char	*remove_target;
 
 	(void)imp_stus;
+	if (object->cmd_info->evecve_argv[1] == NULL)
+		return (1);
 	remove_target = object->cmd_info->evecve_argv[1];
 	pre = object->env;
 	cur = object->env->next;

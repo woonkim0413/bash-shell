@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/01 13:50:45 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/17 15:31:33 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 01:47:35 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,10 @@ int execute_cd(t_object *object, t_imp_stus *imp_stus)
 	flag = chdir(path);
 	if (flag == -1)
 	{
-		write(imp_stus->stdoutFd, "bash: cd: ", 10);
+		write(imp_stus->stdoutFd, "Error: cd: ", 10);
 		write(imp_stus->stdoutFd, path, ft_strlen(path));
 		write(imp_stus->stdoutFd,": No Such file or directory\n", 29);
+		object->last_exit_status = 1;
 	}
 	else
 	{
