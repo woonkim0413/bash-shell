@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirect_setting.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:02:03 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 10:37:07 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 14:24:26 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,15 +25,15 @@ void	input_output_setting(t_object *object, t_imp_stus *imp_stus, \
 		close(imp_stus->stderr_pipe[0]);
 		dup2(imp_stus->stderr_pipe[1], STDERR_FILENO);
 		close(imp_stus->stderr_pipe[1]);
-		close(imp_stus->pipeFd[imp_stus->cur_c_n][0]);
+		close(imp_stus->pipe_fd[imp_stus->cur_c_n][0]);
 		if (object->cmd_info->prev != NULL)
 		{
-			dup2(imp_stus->pipeFd[imp_stus->cur_c_n - 1][0], STDIN_FILENO);
-			close(imp_stus->pipeFd[imp_stus->cur_c_n - 1][0]);
+			dup2(imp_stus->pipe_fd[imp_stus->cur_c_n - 1][0], STDIN_FILENO);
+			close(imp_stus->pipe_fd[imp_stus->cur_c_n - 1][0]);
 		}
 		if (object->cmd_info->next != NULL)
-			dup2(imp_stus->pipeFd[imp_stus->cur_c_n][1], STDOUT_FILENO);
-		close(imp_stus->pipeFd[imp_stus->cur_c_n][1]);
+			dup2(imp_stus->pipe_fd[imp_stus->cur_c_n][1], STDOUT_FILENO);
+		close(imp_stus->pipe_fd[imp_stus->cur_c_n][1]);
 	}
 	redirect_process(object, imp_stus, one_builtin_flag);
 }

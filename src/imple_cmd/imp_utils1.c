@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   imp_utils1.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:19:05 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 13:07:35 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 14:17:28 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ static int	argv_end_check(char *argv, t_cmd_info *cmd_info)
 // 락윤이가 건네주는 execve는 한 파이프 안에 있는 모든 단어들임
 // 이것을 execve에 건네줄 수 있는 구조로 바꿔야 함
 // 단어 더 파싱할 수 있는지 고민해보기 ls > file1.txt -la
-void create_execve_args(t_cmd_info *cmd_info)
+void	create_execve_args(t_cmd_info *cmd_info)
 {
 	char	**argv;
 	int		i;
@@ -92,7 +92,7 @@ char	**create_new_argv(t_cmd_info *cmd_info, int i, int j, int option_index)
 {
 	int		k;
 	int		end_index;
-	char 	**argv;
+	char	**argv;
 
 	k = 0;
 	end_index = j;

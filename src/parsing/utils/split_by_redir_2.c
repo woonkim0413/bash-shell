@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 14:39:33 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/18 17:33:01 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/19 14:56:46 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ static	void	process_split_by_redir(char *s, t_result_info *result_info)
 	int		in_single;
 	int		in_double;
 	int		start;
-
 
 	s_idx = 0;
 	in_single = 0;

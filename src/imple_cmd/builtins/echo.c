@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:06:37 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 10:56:38 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 14:21:05 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	execute_echo(t_object *object, t_imp_stus *imp_stus)
 			continue ;
 		write(STDOUT_FILENO, argv[i], ft_strlen(argv[i]));
 		if (argv[i + 1] != NULL)
-			write(1, " ", 1);	
+			write(1, " ", 1);
 	}
 	if (!flag)
 		write(1, "\n", 1);

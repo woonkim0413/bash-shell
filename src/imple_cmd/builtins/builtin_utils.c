@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 15:47:06 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 11:16:53 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 14:24:12 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,8 +111,8 @@ void	execute_one_builtin(t_object *object, t_imp_stus *imp_stus)
 		else if (!ft_strncmp("cd", cmd, ft_strlen(cmd)))
 			execute_cd(object, imp_stus);
 	}
-	dup2(imp_stus->stdoutFd, STDOUT_FILENO);
-	dup2(imp_stus->stdinFd, STDIN_FILENO);
+	dup2(imp_stus->stdout_fd, STDOUT_FILENO);
+	dup2(imp_stus->stdin_fd, STDIN_FILENO);
 }
 
 void	printf_env(t_object *object)

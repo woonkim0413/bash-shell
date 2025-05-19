@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:33:32 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 13:07:57 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 14:23:59 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@ int	execute_export(t_object *object, t_imp_stus *imp_stus)
 		equals_flag = 0;
 		if (evecve_arg[(imp_stus->i)][0] == '=')
 		{
-			write(imp_stus->stdoutFd, "Error : export: '=': ", 21); 
-			write(imp_stus->stdoutFd, "not a valiid identifler\n", 25);
+			write(imp_stus->stdout_fd, "Error : export: '=': ", 21);
+			write(imp_stus->stdout_fd, "not a valiid identifler\n", 25);
 			object->last_exit_status = 1;
 			continue ;
 		}
@@ -120,4 +120,3 @@ static void	insert_node(t_object *object, char **argv, int equals_flag)
 	env->next = NULL;
 	temp->next = env;
 }
-

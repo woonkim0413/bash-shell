@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:32:46 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 10:58:05 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 14:23:59 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,12 @@ int	execute_exit(t_object *object, t_imp_stus *imp_stus)
 	{
 		if (argv[2])
 		{
-			write(imp_stus->stdoutFd, "bash: exit: too many arguments\n", 32);
+			write(imp_stus->stdout_fd, "bash: exit: too many arguments\n", 32);
 			return (1);
 		}
 		exit_extend(object, imp_stus, argv);
 	}
-	write(imp_stus->stdoutFd, "exit\n", 5);
+	write(imp_stus->stdout_fd, "exit\n", 5);
 	free_stus_and_object(object, imp_stus);
 	exit(0);
 }
@@ -44,7 +44,7 @@ static void	exit_extend(t_object *object, t_imp_stus *imp_stus, char **argv)
 	num = 0;
 	if (is_valid_numeric(argv[1], &num))
 	{
-		write(imp_stus->stdoutFd, "exit\n", 5);
+		write(imp_stus->stdout_fd, "exit\n", 5);
 		free_stus_and_object(object, imp_stus);
 		object->last_exit_status = 0;
 		exit((unsigned char)num);
@@ -52,7 +52,7 @@ static void	exit_extend(t_object *object, t_imp_stus *imp_stus, char **argv)
 	temp = ft_strjoin("bash: exit: ", argv[1]);
 	error_message = ft_strjoin(temp, ": numeric argumnet required\n");
 	free(temp);
-	write(imp_stus->stdoutFd, error_message, ft_strlen(error_message));
+	write(imp_stus->stdout_fd, error_message, ft_strlen(error_message));
 	free(error_message);
 	free_stus_and_object(object, imp_stus);
 	exit(255);

@@ -64,8 +64,8 @@ int run_shell_command(const char *shell_path,
     if (fd == -1) return -1;
     close(fd);
 
-    int pipefd[2];
-    if (pipe(pipefd) == -1) return -1;
+    int pipe_fd[2];
+    if (pipe(pipe_fd) == -1) return -1;
 
     pid_t pid = fork();
     if (pid < 0) {
@@ -73,9 +73,9 @@ int run_shell_command(const char *shell_path,
         return -1;
     } else if (pid == 0) {
         // Child: stdin ← pipe, stdout/stderr → temp_file
-        close(pipefd[1]);
-        dup2(pipefd[0], STDIN_FILENO);
-        close(pipefd[0]);
+        close(pipe_fd[1]);
+        dup2(pipe_fd[0], STDIN_FILENO);
+        close(pipe_fd[0]);
 
         int outfd = open(temp_file, O_CREAT | O_TRUNC | O_WRONLY, 0666);
         if (outfd < 0) exit(1);
@@ -97,10 +97,10 @@ int run_shell_command(const char *shell_path,
         exit(1);
     } else {
         // Parent: input → pipe, 대기, temp_file 읽기
-        close(pipefd[0]);
-        write(pipefd[1], input, strlen(input));
-        write(pipefd[1], "\n", 1);
-        close(pipefd[1]);
+        close(pipe_fd[0]);
+        write(pipe_fd[1], input, strlen(input));
+        write(pipe_fd[1], "\n", 1);
+        close(pipe_fd[1]);
 
         int status;
         waitpid(pid, &status, 0);
