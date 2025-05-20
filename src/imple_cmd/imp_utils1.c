@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   imp_utils1.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:19:05 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/20 14:18:32 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/20 15:02:53 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	create_execve_args(t_cmd_info *cmd_info)
 		cmd_info->evecve_argv[i], ft_strlen(cmd_info->cmd))
 		&& ft_strlen(cmd_info->cmd) == ft_strlen(cmd_info->evecve_argv[i]))
 		{
-			j = i;
+			j = 0;
 			while (cmd_info->evecve_argv[i])
 			{
 				if (argv_redirection_check(cmd_info->evecve_argv[i], cmd_info))
@@ -72,7 +72,6 @@ void	create_execve_args(t_cmd_info *cmd_info)
 				else
 					argv[j++] = ft_strdup(cmd_info->evecve_argv[i++]);
 			}
-			argv[j] = NULL;
 			free_doublechar(cmd_info->evecve_argv);
 			cmd_info->evecve_argv = argv;
 			return;
@@ -91,7 +90,9 @@ static int	count_size(t_cmd_info *cmd_info)
 	while (cmd_info->evecve_argv[i])
 	{
 		if (argv_redirection_check(cmd_info->evecve_argv[i], cmd_info))
+		{
 			i = i + 2;
+		}
 		else 
 		{
 			i ++;

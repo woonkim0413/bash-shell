@@ -87,7 +87,7 @@ int run_shell_command(const char *shell_path,
         {
             execl("/usr/bin/valgrind",
                     "valgrind",
-                    "--suppressions=/home/rakim/Desktop/minishell/etc/readline-leak.supp",
+                    "--suppressions=/home/woonkim/minishell/etc/readline-leak.supp",
                     "./minishell",
                     (char*)NULL);
         }

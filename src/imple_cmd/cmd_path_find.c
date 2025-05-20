@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_path_find.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 22:13:19 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/20 11:53:07 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/20 14:31:16 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static char	**make_path(char **paths, char *command)
 	return (paths);
 }
 
-static char	*check_and_return_path(char **paths)
+static char	*check_and_return_path(t_cmd_info *t_cmd, char **paths)
 {
 	int		i;
 	char	*cmd_path;
@@ -60,7 +60,8 @@ static char	*check_and_return_path(char **paths)
 		}
 		i++;
 	}
-	write(2, "This command does not exist\n", 29);
+	if (!t_cmd->redirect)
+		write(2, "This command does not exist\n", 29);
 	memory_free(paths);
 	return (NULL);
 }
@@ -95,7 +96,7 @@ int	find_path(t_cmd_info *t_cmd, t_env *env)
 		{
 			paths = ft_split(temp->value, ':');
 			paths = make_path(paths, t_cmd->cmd);
-			t_cmd->cmd_path = check_and_return_path(paths);
+			t_cmd->cmd_path = check_and_return_path(t_cmd, paths);
 			if (t_cmd->cmd_path == NULL)
 				return (0);
 			return (1);
