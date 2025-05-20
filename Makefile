@@ -36,6 +36,7 @@ src/imple_cmd/builtins/echo.c \
 src/imple_cmd/builtins/env.c \
 src/imple_cmd/builtins/exit.c \
 src/imple_cmd/builtins/export.c \
+src/imple_cmd/builtins/export_utils.c \
 src/imple_cmd/builtins/pwd.c \
 src/imple_cmd/builtins/unset.c \
 src/imple_cmd/builtins/cd.c \

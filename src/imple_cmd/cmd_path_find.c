@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 22:13:19 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 10:24:42 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/19 19:58:54 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,13 +65,26 @@ static char	*check_and_return_path(char **paths)
 	return (NULL);
 }
 
+static int	is_executable_file(const char *path)
+{
+	struct stat st;
+
+	if (stat(path, &st) < 0)
+		return 0;
+	if (!S_ISREG(st.st_mode))
+		return 0;
+	if (access(path, X_OK) < 0)
+		return 0;
+	return 1;
+}
+
 int	find_path(t_cmd_info *t_cmd, t_env *env)
 {
 	t_env	*temp;
 	char	**paths;
 
 	temp = env;
-	if (t_cmd->cmd && access(t_cmd->cmd, X_OK) == 0)
+	if (t_cmd->cmd && is_executable_file(t_cmd->cmd))
 	{
 		t_cmd->cmd_path = t_cmd->cmd;
 		return (1);
@@ -92,3 +105,5 @@ int	find_path(t_cmd_info *t_cmd, t_env *env)
 	t_cmd->cmd_path = NULL;
 	return (0);
 }
+
+

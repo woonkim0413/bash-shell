@@ -3,14 +3,50 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
+/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:53:47 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/19 14:52:01 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/19 20:30:21 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static	void	print_cmd(t_object *object, t_cmd_info *cmd_info)
+{
+	int			idx;
+	t_redirect	*redirect;
+
+	redirect = cmd_info->redirect;
+	print_log(1, object, "=========================\n");
+	print_log(1, object, "cmd : %s\n", cmd_info->cmd);
+	idx = 0;
+	while (cmd_info->evecve_argv[idx])
+	{
+		print_log(1, object, "evecve_argv : %s\n", cmd_info->evecve_argv[idx]);
+		idx++;
+	}
+	print_log(1, object, "cmd_path : %s\n", cmd_info->cmd_path);
+	while (redirect)
+	{
+		print_log(1, object, "redirect_type : %u\n", redirect->type);
+		print_log(1, object, "redirect_file_path : %s\n", redirect->file_path);
+		redirect = redirect->next;
+	}
+	print_log(1, object, "=========================\n");
+}
+
+void	print_all_cmd(t_object *object)
+{
+	t_cmd_info	*temp;
+	
+	temp = object->cmd_info;
+	while (temp)
+	{
+		print_cmd(object, temp);
+		temp = temp->next;
+	}
+}
 
 static	void	process_minishell(t_object *object, char **line)
 {
@@ -23,6 +59,7 @@ static	void	process_minishell(t_object *object, char **line)
 	parsing(line_splited_by_pipe, object);
 	handle_heardoc(object);
 	clean_up_quote(object->cmd_info);
+	print_all_cmd(object);
 	if (object->cmd_info)
 		implement(object);
 }
