@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:19:05 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/20 09:53:42 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/20 11:56:13 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,9 @@ void	create_execve_args(t_cmd_info *cmd_info)
 	int		i;
 	int		j;
 	
-	total_size = count_size(cmd_info);
-	if (!(cmd_info->evecve_argv[0]))
+	if (!cmd_info || !(cmd_info->evecve_argv[0]))
 		return ;
+	total_size = count_size(cmd_info);
 	argv = (char **)malloc(sizeof(char*) * total_size);
 	i = -1;
 	while (cmd_info->evecve_argv[++i])

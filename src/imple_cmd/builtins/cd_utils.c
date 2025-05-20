@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:07:00 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 15:31:27 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/20 12:18:43 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static void	update_oldpwd(t_object *object, t_imp_stus *imp_stus)
 	{
 		if (!ft_strncmp(temp->key, "PWD", ft_strlen(temp->key)))
 		{
-			export_arg = ft_strjoin("OLDPWD=", ft_strdup(temp->value));
+			export_arg = ft_strjoin("OLDPWD=", temp->value);
 			free(object->cmd_info->evecve_argv[1]);
 			object->cmd_info->evecve_argv[1] = export_arg;
 			execute_export(object, imp_stus);
