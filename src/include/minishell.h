@@ -6,7 +6,7 @@
 /*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/19 15:27:41 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/20 08:11:04 by woonkim          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,6 +165,7 @@ int			execute_echo(t_object *object, t_imp_stus *imp_stus);
 int			execute_env(t_object *object, t_imp_stus *imp_stus);
 int			execute_exit(t_object *object, t_imp_stus *imp_stus);
 int			execute_export(t_object *object, t_imp_stus *imp_stus);
+int			update_node(t_object *object, char **argv_equals, int equals_flag);
 int			execute_pwd(t_object *object, \
 	t_imp_stus *imp_stus, int prev_cwd_fd);
 int			execute_unset(t_object *object, t_imp_stus *imp_stus);
