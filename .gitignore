@@ -1,7 +1,0 @@
-minishell_tester
-.vscode
-*.o
-*.a
-minishell
-*.gch
-*.txt
