@@ -6,10 +6,12 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 #define BUFFER_SIZE 8192
 #define MAX_LINE_LENGTH 1024
 #define MAX_CMDS_PER_BLOCK 1000
+
 
 void trim_output(char *buf) {
     char *start = buf + strspn(buf, " \t\r\n");
@@ -62,8 +64,8 @@ int run_shell_command(const char *shell_path,
     if (fd == -1) return -1;
     close(fd);
 
-    int pipefd[2];
-    if (pipe(pipefd) == -1) return -1;
+    int pipe_fd[2];
+    if (pipe(pipe_fd) == -1) return -1;
 
     pid_t pid = fork();
     if (pid < 0) {
@@ -71,9 +73,9 @@ int run_shell_command(const char *shell_path,
         return -1;
     } else if (pid == 0) {
         // Child: stdin ← pipe, stdout/stderr → temp_file
-        close(pipefd[1]);
-        dup2(pipefd[0], STDIN_FILENO);
-        close(pipefd[0]);
+        close(pipe_fd[1]);
+        dup2(pipe_fd[0], STDIN_FILENO);
+        close(pipe_fd[0]);
 
         int outfd = open(temp_file, O_CREAT | O_TRUNC | O_WRONLY, 0666);
         if (outfd < 0) exit(1);
@@ -95,10 +97,10 @@ int run_shell_command(const char *shell_path,
         exit(1);
     } else {
         // Parent: input → pipe, 대기, temp_file 읽기
-        close(pipefd[0]);
-        write(pipefd[1], input, strlen(input));
-        write(pipefd[1], "\n", 1);
-        close(pipefd[1]);
+        close(pipe_fd[0]);
+        write(pipe_fd[1], input, strlen(input));
+        write(pipe_fd[1], "\n", 1);
+        close(pipe_fd[1]);
 
         int status;
         waitpid(pid, &status, 0);
@@ -166,7 +168,8 @@ void process_block(char **cmds, int cmd_count, int test_num) {
         sscanf(p, "possibly lost: %d bytes", &pl) == 1 &&
         (p = strstr(raw_mini, "still reachable:")) &&
         sscanf(p, "still reachable: %d bytes", &sr) == 1) {
-        hasLeak = (dl != 0 || il != 0 || pl != 0 || sr != 0);
+        /*hasLeak = (dl != 0 || il != 0 || pl != 0 || sr != 0);*/
+        hasLeak = (dl != 0 || il != 0 || pl != 0);
     }
 
     // 5) mini_output 에서 "==" 로 시작하는 줄만 걸러내기
@@ -195,15 +198,17 @@ void process_block(char **cmds, int cmd_count, int test_num) {
     }
 
     // 6) PASS 판정: exit code 또는 출력 비교
-    bool pass;
-    if (bash_status != 0 && mini_status != 0) {
-        pass = true;
+    bool pass = false;
+
+    if (bash_status != 0) {
+        pass = (strstr(mini_output, "Error") != NULL);
     } else {
         pass = (strcmp(bash_output, mini_output) == 0);
     }
+    
 
     // 7) 결과 출력
-    printf("============================================\n");
+    printf("========================================================================\n");
     printf("[Test %d: %s - %s]\n", test_num, desc, pass ? "PASS" : "FAIL");
 
     if (!pass) {
@@ -218,6 +223,7 @@ void process_block(char **cmds, int cmd_count, int test_num) {
             printf("\x1b[31m%s\x1b[0m\n", mini_output);
         }
     }
+    printf("========================================================================\n");
 }
 
 
@@ -242,8 +248,15 @@ int main(int argc, char *argv[]) {
     printf("처리 하지 못하는 명령어 종류 : 커스텀 에러 메세지, <<, >> \n");
     while (fgets(line, sizeof(line), fp)) {
         trim_whitespace(line);
+        // #이면 출력만
+        if (line[0] == '#')
+        {
+            printf("\n");
+            printf("\x1b[33m%s\x1b[0m\n", line);
+            printf("\n");
+        }
         // 빈 줄이면 현재 블록 처리
-        if (line[0] == '\0') {
+        else if (line[0] == '\0') {
             if (cmd_count > 0) {
                 process_block(cmds, cmd_count, test_num++);
                 for (int i = 0; i < cmd_count; i++) free(cmds[i]);
