@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:33:32 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/20 09:56:47 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/20 12:05:29 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void	execute_export_extend(t_object *object, t_imp_stus *imp_stus, \
 	char **evecve_arg, int equals_flag);
 static void	insert_node(t_object *object, char **argv, int equals_flag);
-static int check_export_error(t_object *object, t_imp_stus *imp_stus, \
+static int	check_export_error(t_object *object, t_imp_stus *imp_stus, \
 	char **evecve_arg);
 
 int	execute_export(t_object *object, t_imp_stus *imp_stus)
@@ -42,13 +42,14 @@ int	execute_export(t_object *object, t_imp_stus *imp_stus)
 	return (1);
 }
 
-static int check_export_error(t_object *object, t_imp_stus *imp_stus, char **evecve_arg)
+static int	check_export_error(t_object *object, \
+	t_imp_stus *imp_stus, char **evecve_arg)
 {
 	int		i;
 	char	*str;
 
 	i = 0;
-	str = evecve_arg[(imp_stus->i)]; 
+	str = evecve_arg[(imp_stus->i)];
 	if (str[i] == '=')
 	{
 		write(imp_stus->stdout_fd, "Error : export: '=': ", 21);

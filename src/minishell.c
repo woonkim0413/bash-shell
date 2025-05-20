@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:53:47 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/20 11:49:43 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/20 11:52:02 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static	void	print_cmd(t_object *object, t_cmd_info *cmd_info)
 void	print_all_cmd(t_object *object)
 {
 	t_cmd_info	*temp;
-	
+
 	temp = object->cmd_info;
 	while (temp)
 	{

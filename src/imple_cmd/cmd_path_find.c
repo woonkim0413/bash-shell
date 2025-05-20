@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_path_find.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 22:13:19 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 19:58:54 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/20 11:53:07 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,15 +67,15 @@ static char	*check_and_return_path(char **paths)
 
 static int	is_executable_file(const char *path)
 {
-	struct stat st;
+	struct stat	st;
 
 	if (stat(path, &st) < 0)
-		return 0;
+		return (0);
 	if (!S_ISREG(st.st_mode))
-		return 0;
+		return (0);
 	if (access(path, X_OK) < 0)
-		return 0;
-	return 1;
+		return (0);
+	return (1);
 }
 
 int	find_path(t_cmd_info *t_cmd, t_env *env)
@@ -105,5 +105,3 @@ int	find_path(t_cmd_info *t_cmd, t_env *env)
 	t_cmd->cmd_path = NULL;
 	return (0);
 }
-
-
