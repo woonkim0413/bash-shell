@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   imp_utils1.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:19:05 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/20 11:56:13 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/20 12:23:22 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,9 @@ void	create_execve_args(t_cmd_info *cmd_info)
 	int		total_size;
 	int		i;
 	int		j;
-	
-	if (!cmd_info || !(cmd_info->evecve_argv[0]))
+
+	total_size = count_size(cmd_info);
+	if (!(cmd_info->evecve_argv[0]))
 		return ;
 	total_size = count_size(cmd_info);
 	argv = (char **)malloc(sizeof(char*) * total_size);

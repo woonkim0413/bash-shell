@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirect_setting.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:02:03 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/19 19:37:38 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/20 12:02:34 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,10 @@ static void	redirect_process3(t_imp_stus *imp_stus, t_redirect *redirect);
 static void	redirect_process2(t_imp_stus *imp_stus, t_redirect *redirect);
 static void	redirect_process(t_object *object, t_imp_stus *imp_stus, \
 	int one_builtin_flag);
-static void	handle_error_print(t_object *object, t_imp_stus *imp_stus, char *file_path, int one_builtin_flag);
-static int validate_redirect(const char *p, int type);
-static char *get_parent(const char *p);
+static void	handle_error_print(t_object *object, \
+	t_imp_stus *imp_stus, char *file_path, int one_builtin_flag);
+static int	validate_redirect(const char *p, int type);
+static char	*get_parent(const char *p);
 
 void	input_output_setting(t_object *object, t_imp_stus *imp_stus, \
 		int one_builtin_flag)
@@ -51,7 +52,8 @@ static void	redirect_process(t_object *object, t_imp_stus *imp_stus, \
 	{
 		if (validate_redirect(redirect->file_path, redirect->type))
 		{
-			handle_error_print(object, imp_stus, redirect->file_path, one_builtin_flag);
+			handle_error_print(object, imp_stus, \
+				redirect->file_path, one_builtin_flag);
 			return ;
 		}
 		redirect_process2(imp_stus, redirect);
@@ -60,59 +62,78 @@ static void	redirect_process(t_object *object, t_imp_stus *imp_stus, \
 	}
 }
 
-static int validate_redirect(const char *p, int type)
+static int	validate_redirect(const char *p, int type)
 {
-    struct stat st, pst;
-    char       *parent;
+	struct stat	st;
+	struct stat	pst;
+	char		*parent;
 
-    parent = get_parent(p);
-    if (!parent)
-        return 1;
-
-    if (type == TOKEN_REDIR_IN) {
-        if (stat(p, &st) < 0 || !S_ISREG(st.st_mode)) {
-            free(parent);
-            return 1;
-        }
-    } else {
-        if (stat(p, &st) == 0) {
-            if (S_ISDIR(st.st_mode)) {
-                free(parent);
-                return 1;
-            }
-        } else if (stat(parent, &pst) < 0 || !S_ISDIR(pst.st_mode)) {
-            free(parent);
-            return 1;
-        }
-    }
-    free(parent);
-    return 0;
+	parent = get_parent(p);
+	if (!parent)
+		return (1);
+	if (type == TOKEN_REDIR_IN)
+	{
+		if (stat(p, &st) < 0 || !S_ISREG(st.st_mode))
+		{
+			free(parent);
+			return (1);
+		}
+	}
+	else
+	{
+		if (stat(p, &st) == 0)
+		{
+			if (S_ISDIR(st.st_mode))
+			{
+				free(parent);
+				return (1);
+			}
+		}
+		else if (stat(parent, &pst) < 0 || !S_ISDIR(pst.st_mode))
+		{
+			free(parent);
+			return (1);
+		}
+	}
+	free(parent);
+	return (0);
 }
 
-static char *get_parent(const char *p)
+static char	*get_parent(const char *p)
 {
-    int  last = -1;
-    char *parent;
-    for (int i = 0; p[i]; i++)
-        if (p[i] == '/')
-            last = i;
-    if (last >= 0)
-        parent = ft_calloc(last + 1, 1);
-    else
-        parent = ft_calloc(2, 1);
-    if (!parent)
-        return NULL;
-    if (last >= 0) {
-        ft_memcpy(parent, p, last);
-        parent[last] = '\0';
-    } else {
-        parent[0] = '.';
-        parent[1] = '\0';
-    }
-    return parent;
+	int		last;
+	char	*parent;
+	int		i;
+
+	last = -1;
+	i = 0;
+	while (p[i])
+	{
+		if (p[i] == '/')
+			last = i;
+		i++;
+	}
+	if (last >= 0)
+		parent = ft_calloc(last + 1, 1);
+	else
+		parent = ft_calloc(2, 1);
+	if (!parent)
+		return (NULL);
+	if (last >= 0)
+	{
+		ft_memcpy(parent, p, last);
+		parent[last] = '\0';
+	}
+	else
+	{
+		parent[0] = '.';
+		parent[1] = '\0';
+	}
+	return (parent);
 }
 
-static void	handle_error_print(t_object *object, t_imp_stus *imp_stus, char *file_path, int one_builtin_flag)
+static void	handle_error_print(t_object *object, \
+	t_imp_stus *imp_stus, char *file_path, int one_builtin_flag)
 {
 	write(2, "Error: ", 7);
 	write(2, file_path, ft_strlen(file_path));
@@ -126,7 +147,6 @@ static void	handle_error_print(t_object *object, t_imp_stus *imp_stus, char *fil
 	free_stus_and_object(object, imp_stus);
 	exit(1);
 }
-
 
 static void	redirect_process2(t_imp_stus *imp_stus, t_redirect *redirect)
 {
