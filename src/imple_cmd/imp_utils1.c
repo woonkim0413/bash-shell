@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:19:05 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/20 13:26:48 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/20 14:18:32 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void	create_execve_args(t_cmd_info *cmd_info)
 	if (!(cmd_info->evecve_argv[0]))
 		return ;
 	total_size = count_size(cmd_info);
-	argv = (char **)malloc(sizeof(char*) * total_size);
+	argv = ft_calloc(sizeof(char*), total_size);
 	i = -1;
 	while (cmd_info->evecve_argv[++i])
 	{
@@ -78,6 +78,7 @@ void	create_execve_args(t_cmd_info *cmd_info)
 			return;
 		}
 	}
+	free_string_arr(&argv);
 }
 
 static int	count_size(t_cmd_info *cmd_info)
