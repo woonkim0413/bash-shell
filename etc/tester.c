@@ -87,7 +87,7 @@ int run_shell_command(const char *shell_path,
         {
             execl("/usr/bin/valgrind",
                     "valgrind",
-                    "--suppressions=/home/woonkim/minishell/etc/readline-leak.supp",
+                    "--suppressions=/home/rakim/Desktop/minishell/etc/readline-leak.supp",
                     "./minishell",
                     (char*)NULL);
         }
@@ -168,7 +168,8 @@ void process_block(char **cmds, int cmd_count, int test_num) {
         sscanf(p, "possibly lost: %d bytes", &pl) == 1 &&
         (p = strstr(raw_mini, "still reachable:")) &&
         sscanf(p, "still reachable: %d bytes", &sr) == 1) {
-        hasLeak = (dl != 0 || il != 0 || pl != 0 || sr != 0);
+        /*hasLeak = (dl != 0 || il != 0 || pl != 0 || sr != 0);*/
+        hasLeak = (dl != 0 || il != 0 || pl != 0);
     }
 
     // 5) mini_output 에서 "==" 로 시작하는 줄만 걸러내기

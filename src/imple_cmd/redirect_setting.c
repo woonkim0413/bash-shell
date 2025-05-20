@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:02:03 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/20 12:02:34 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/20 15:47:03 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,6 @@ static void	redirect_process(t_object *object, t_imp_stus *imp_stus, \
 	int one_builtin_flag);
 static void	handle_error_print(t_object *object, \
 	t_imp_stus *imp_stus, char *file_path, int one_builtin_flag);
-static int	validate_redirect(const char *p, int type);
-static char	*get_parent(const char *p);
 
 void	input_output_setting(t_object *object, t_imp_stus *imp_stus, \
 		int one_builtin_flag)
@@ -62,74 +60,21 @@ static void	redirect_process(t_object *object, t_imp_stus *imp_stus, \
 	}
 }
 
-static int	validate_redirect(const char *p, int type)
+static void	redirect_process2(t_imp_stus *imp_stus, t_redirect *redirect)
 {
-	struct stat	st;
-	struct stat	pst;
-	char		*parent;
-
-	parent = get_parent(p);
-	if (!parent)
-		return (1);
-	if (type == TOKEN_REDIR_IN)
+	if (redirect->type == TOKEN_REDIR_IN)
 	{
-		if (stat(p, &st) < 0 || !S_ISREG(st.st_mode))
-		{
-			free(parent);
-			return (1);
-		}
+		imp_stus->input_fd = open(redirect->file_path, O_RDONLY);
+		dup2(imp_stus->input_fd, STDIN_FILENO);
+		close(imp_stus->input_fd);
 	}
-	else
+	else if (redirect->type == TOKEN_REDIR_OUT)
 	{
-		if (stat(p, &st) == 0)
-		{
-			if (S_ISDIR(st.st_mode))
-			{
-				free(parent);
-				return (1);
-			}
-		}
-		else if (stat(parent, &pst) < 0 || !S_ISDIR(pst.st_mode))
-		{
-			free(parent);
-			return (1);
-		}
+		imp_stus->output_fd = open(redirect->file_path, \
+			O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		dup2(imp_stus->output_fd, STDOUT_FILENO);
+		close(imp_stus->output_fd);
 	}
-	free(parent);
-	return (0);
-}
-
-static char	*get_parent(const char *p)
-{
-	int		last;
-	char	*parent;
-	int		i;
-
-	last = -1;
-	i = 0;
-	while (p[i])
-	{
-		if (p[i] == '/')
-			last = i;
-		i++;
-	}
-	if (last >= 0)
-		parent = ft_calloc(last + 1, 1);
-	else
-		parent = ft_calloc(2, 1);
-	if (!parent)
-		return (NULL);
-	if (last >= 0)
-	{
-		ft_memcpy(parent, p, last);
-		parent[last] = '\0';
-	}
-	else
-	{
-		parent[0] = '.';
-		parent[1] = '\0';
-	}
-	return (parent);
 }
 
 static void	handle_error_print(t_object *object, \
@@ -146,23 +91,6 @@ static void	handle_error_print(t_object *object, \
 	}
 	free_stus_and_object(object, imp_stus);
 	exit(1);
-}
-
-static void	redirect_process2(t_imp_stus *imp_stus, t_redirect *redirect)
-{
-	if (redirect->type == TOKEN_REDIR_IN)
-	{
-		imp_stus->input_fd = open(redirect->file_path, O_RDONLY);
-		dup2(imp_stus->input_fd, STDIN_FILENO);
-		close(imp_stus->input_fd);
-	}
-	else if (redirect->type == TOKEN_REDIR_OUT)
-	{
-		imp_stus->output_fd = open(redirect->file_path, \
-			O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		dup2(imp_stus->output_fd, STDOUT_FILENO);
-		close(imp_stus->output_fd);
-	}
 }
 
 static void	redirect_process3(t_imp_stus *imp_stus, t_redirect *redirect)

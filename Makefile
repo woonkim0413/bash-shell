@@ -26,6 +26,7 @@ src/parsing/quote/quote_handler.c \
 src/parsing/quote/clean_up_quote.c \
 src/parsing/redirect/redirect_parsing_handler.c \
 src/imple_cmd/redirect_setting.c \
+src/imple_cmd/redirect_setting_utils.c \
 src/imple_cmd/imp_utils1.c \
 src/imple_cmd/imp_utils2.c \
 src/imple_cmd/parent_wait_to_child.c \

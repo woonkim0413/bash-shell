@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/01 13:50:45 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/20 10:56:37 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/20 16:12:28 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 static void	change_wave(char **path, t_object *object);
 static void	change_dash(char **path, t_object *object);
 
-// PWD 위치를 변경해주는 명령어다 
 int	execute_cd(t_object *object, t_imp_stus *imp_stus)
 {
 	int		flag;
@@ -26,7 +25,7 @@ int	execute_cd(t_object *object, t_imp_stus *imp_stus)
 	if (argv[1] && argv[2])
 	{
 		write(imp_stus->stdout_fd, "Error: cd: ", 10);
-		write(imp_stus->stdout_fd,": Too many arguments\n", 22);
+		write(imp_stus->stdout_fd, ": Too many arguments\n", 22);
 		object->last_exit_status = 1;
 		return (1);
 	}
