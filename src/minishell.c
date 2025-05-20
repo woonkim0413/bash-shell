@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:53:47 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/20 11:52:02 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/20 12:32:26 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,12 +74,19 @@ static	int	check_heredoc_interrupt(t_object *object)
 	return (0);
 }
 
+static	void	check_isatty(void)
+{
+	if (!isatty(STDIN_FILENO) || !isatty(STDOUT_FILENO))
+		exit(1);
+}
+
 int	main(int length, char *input[], char *env[])
 {
 	char		*line;
 	t_object	object;
 
 	init(length, input, &object, env);
+	check_isatty();
 	while (1)
 	{
 		if (check_heredoc_interrupt(&object))
