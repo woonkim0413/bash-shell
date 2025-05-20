@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   imp_utils1.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:19:05 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/20 15:02:53 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/20 15:08:00 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,9 @@ void	create_execve_args(t_cmd_info *cmd_info)
 				if (argv_redirection_check(cmd_info->evecve_argv[i], cmd_info))
 					i = i + 2;
 				else
+				{
 					argv[j++] = ft_strdup(cmd_info->evecve_argv[i++]);
+				}
 			}
 			free_doublechar(cmd_info->evecve_argv);
 			cmd_info->evecve_argv = argv;
