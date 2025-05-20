@@ -6,7 +6,7 @@
 /*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 16:19:05 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/20 15:08:00 by rakim            ###   ########.fr       */
+/*   Updated: 2025/05/20 15:50:07 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,41 +42,44 @@ char	**env_to_char(t_env *env, int i)
 	return (str);
 }
 
-// 락윤이가 건네주는 execve는 한 파이프 안에 있는 모든 단어들임
-// 이것을 execve에 건네줄 수 있는 구조로 바꿔야 함
-// 단어 더 파싱할 수 있는지 고민해보기 ls > file1.txt -la
+static	void	set_argv(t_cmd_info *cmd_info, char **argv, int i)
+{
+	int		j;
+
+	j = 0;
+	while (cmd_info->evecve_argv[i])
+	{
+		if (argv_redirection_check(cmd_info->evecve_argv[i], cmd_info))
+			i = i + 2;
+		else
+		{
+			argv[j++] = ft_strdup(cmd_info->evecve_argv[i++]);
+		}
+	}
+	free_doublechar(cmd_info->evecve_argv);
+	cmd_info->evecve_argv = argv;
+}
+
 void	create_execve_args(t_cmd_info *cmd_info)
 {
 	char	**argv;
 	int		total_size;
 	int		i;
-	int		j;
 
 	total_size = count_size(cmd_info);
 	if (!(cmd_info->evecve_argv[0]))
 		return ;
 	total_size = count_size(cmd_info);
-	argv = ft_calloc(sizeof(char*), total_size);
+	argv = ft_calloc(sizeof(char *), total_size);
 	i = -1;
 	while (cmd_info->evecve_argv[++i])
 	{
 		if (cmd_info->cmd && !ft_strncmp(cmd_info->cmd, \
-		cmd_info->evecve_argv[i], ft_strlen(cmd_info->cmd))
-		&& ft_strlen(cmd_info->cmd) == ft_strlen(cmd_info->evecve_argv[i]))
+		cmd_info->evecve_argv[i], ft_strlen(cmd_info->cmd)) && \
+		ft_strlen(cmd_info->cmd) == ft_strlen(cmd_info->evecve_argv[i]))
 		{
-			j = 0;
-			while (cmd_info->evecve_argv[i])
-			{
-				if (argv_redirection_check(cmd_info->evecve_argv[i], cmd_info))
-					i = i + 2;
-				else
-				{
-					argv[j++] = ft_strdup(cmd_info->evecve_argv[i++]);
-				}
-			}
-			free_doublechar(cmd_info->evecve_argv);
-			cmd_info->evecve_argv = argv;
-			return;
+			set_argv(cmd_info, argv, i);
+			return ;
 		}
 	}
 	free_string_arr(&argv);
@@ -84,8 +87,8 @@ void	create_execve_args(t_cmd_info *cmd_info)
 
 static int	count_size(t_cmd_info *cmd_info)
 {
-	int i;
-	int total_size;
+	int	i;
+	int	total_size;
 
 	i = 0;
 	total_size = 0;
@@ -95,7 +98,7 @@ static int	count_size(t_cmd_info *cmd_info)
 		{
 			i = i + 2;
 		}
-		else 
+		else
 		{
 			i ++;
 			total_size ++;

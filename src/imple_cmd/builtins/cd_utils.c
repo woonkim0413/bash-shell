@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd_utils.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/19 15:07:00 by woonkim           #+#    #+#             */
-/*   Updated: 2025/05/20 12:18:43 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/20 15:57:25 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 static void	update_oldpwd(t_object *object, t_imp_stus *imp_stus);
 static void	update_pwd(t_object *object, t_imp_stus *imp_stus);
 
-
-void handle_flag(t_imp_stus *imp_stus, t_object *object, int flag, char *path)
+void	handle_flag(t_imp_stus *imp_stus, \
+	t_object *object, int flag, char *path)
 {
 	if (flag == -1)
 	{
@@ -63,4 +63,3 @@ static void	update_pwd(t_object *object, t_imp_stus *imp_stus)
 	object->cmd_info->evecve_argv[1] = export_arg;
 	execute_export(object, imp_stus);
 }
-

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: woonkim <woonkim@student.42gyeongsan.kr    +#+  +:+       +#+        */
+/*   By: rakim <fkrdbs234@naver.com>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 16:54:25 by rakim             #+#    #+#             */
-/*   Updated: 2025/05/20 08:11:04 by woonkim          ###   ########.fr       */
+/*   Updated: 2025/05/20 15:29:49 by rakim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,6 +182,7 @@ int			find_path(t_cmd_info *t_cmd, t_env *env);
 /* /imple_cmd/redirect_setting.c */
 void		input_output_setting(t_object *object, t_imp_stus *imp_stus, \
 		int one_builtin_flag);
+int			validate_redirect(const char *p, int type);
 
 /* /imple_cmd/imp_utils1.c */
 void		create_execve_args(t_cmd_info *cmd_info);
